@@ -6,7 +6,7 @@
     "sass": "^1.91.0"
   },
   "scripts": {
-    "build": "node build.js",
-    "postinstall": "node postinstall.js"
+    "build": "node scripts/build.js",
+    "postinstall": "node scripts/postinstall.js"
   }
 }
