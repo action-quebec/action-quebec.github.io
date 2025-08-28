@@ -1,0 +1,45 @@
+{
+    "terminal.integrated.env.windows": {
+        "PATH": "${workspaceFolder}\\bin;${env:PATH};${workspaceFolder}"
+    },
+    "terminal.integrated.env.osx": {
+        "PATH": "${workspaceFolder}/bin:${env:PATH}:${workspaceFolder}"
+    },
+    "filewatcher.commands": [
+        {
+            "match": ".*\\.core\\.js$",
+            "isAsync": false,
+            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:jsmin"],
+            "event": "onFileChange"
+        },
+        {
+            "match": "[\\\\/](?!_)[^\\\\/]+\\.scss$",
+            "isAsync": false,
+            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:sass:master"],
+            "event": "onFileChange"
+        },
+        {
+            "match": "[\\\\/]_[^\\\\/]+\\.scss$",
+            "isAsync": false,
+            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:sass:slave"],
+            "event": "onFileChange"
+        }
+    ],
+    "liveServer.settings.port": 5502,
+    "liveServer.settings.CustomBrowser": "chrome",
+    "liveServer.settings.root": "./src/",
+    "liveServer.settings.ignoreFiles": [
+        ".vscode/**",
+        ".github/**",
+        "**/_**",
+        "**/.git/**",
+        "**/.vendor/**",
+        "**/node_modules/**",
+        "**/*.scss",
+        "**/*.sass",
+        "**/*.php",
+        "**/*.ts",
+        "**/!(*.min).js",
+        "**/*.geojson"
+    ]
+}

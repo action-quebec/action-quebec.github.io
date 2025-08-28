@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages (dist)
+
+on:
+  push:
+    branches: ["main"]    # ⇦ change "main" si ta branche est différente
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ⬇️ Si ton site nécessite une étape de build, décommente ce bloc
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20
+      #     cache: npm
+      # - name: Install deps
+      #   run: npm ci
+      # - name: Build
+      #   run: npm run build
+      # # Assure-toi que la sortie va bien dans ./dist
+
+      - name: Créer bt1oh97j7X.json dans dist/
+        run: |
+          mkdir -p dist
+          cat > dist/bt1oh97j7X.json <<'JSON'
+          {
+            "GOOGLE_API_KEY": "${{ secrets.GOOGLE_API_KEY }}",
+            "CALENDAR_ID": "${{ secrets.CALENDAR_ID }}"
+          }
+          JSON
+
+      - name: Upload artifact (dist)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
