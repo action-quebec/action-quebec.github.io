@@ -2,6 +2,11 @@
   "dependencies": {
     "@toast-ui/calendar": "^2.1.3",
     "esbuild": "^0.25.9",
+    "ignore": "^7.0.5",
     "sass": "^1.91.0"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "postinstall": "node postinstall.js"
   }
 }
