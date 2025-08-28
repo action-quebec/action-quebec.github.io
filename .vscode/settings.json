@@ -7,9 +7,9 @@
     },
     "filewatcher.commands": [
         {
-            "match": ".*\\.core\\.js$",
+            "match": "src[/\\\\]scripts[/\\\\](?!.*\\.min\\.js$).*\\.js$",
             "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:jsmin"],
+            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:build"],
             "event": "onFileChange"
         },
         {

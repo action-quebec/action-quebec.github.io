@@ -1,6 +1,13 @@
 {
   "version": "2.0.0",
   "tasks": [
+      {
+      "label": "pxdoc:build",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}" },
+      "command": "./node_modules/.bin/esbuild \"${workspaceFolder}/src/scripts/action.quebec.core.js\" --bundle --platform=browser --log-level=error --tree-shaking=true --minify --target=es2020 --legal-comments=none --outfile=\"${workspaceFolder}/src/scripts/action.quebec.core.min.js\"",
+      "presentation": { "panel": "shared", "group": "pxdoc", "reveal": "never", "showReuseMessage": false }
+    },
     {
       "label": "pxdoc:jsmin",
       "type": "shell",

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="fr" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calendrier SSJB</title>
+
+  <!-- TUI Calendar -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --fg: #0f172a;          /* slate-900 */
+      --muted: #475569;       /* slate-600 */
+      --border: #e2e8f0;      /* slate-200 */
+      --accent: #2563eb;      /* blue-600 */
+      --accent-fg: #ffffff;
+      --chip: #e0e7ff;        /* indigo-100 */
+      --chip-fg:#3730a3;      /* indigo-800 */
+      --btn:#f1f5f9;          /* slate-100 */
+      --btn-fg:#0f172a;
+      --btn-active:#e2e8f0;
+    }
+    html[data-theme="dark"]{
+      --bg:#0b1220;           /* deep navy */
+      --fg:#e5e7eb;           /* slate-200 */
+      --muted:#94a3b8;        /* slate-400 */
+      --border:#1f2937;       /* gray-800 */
+      --accent:#60a5fa;       /* blue-300 */
+      --accent-fg:#0b1220;
+      --chip:#172554;         /* indigo-950 */
+      --chip-fg:#c7d2fe;      /* indigo-200 */
+      --btn:#111827;          /* gray-900 */
+      --btn-fg:#e5e7eb;
+      --btn-active:#0f172a;
+    }
+
+    /* Auto adopte le thème système */
+    @media (prefers-color-scheme: dark){
+      html[data-theme="auto"]{ color-scheme: dark; }
+      html[data-theme="auto"]{
+        --bg:#0b1220; --fg:#e5e7eb; --muted:#94a3b8; --border:#1f2937;
+        --accent:#60a5fa; --accent-fg:#0b1220;
+        --chip:#172554; --chip-fg:#c7d2fe;
+        --btn:#111827; --btn-fg:#e5e7eb; --btn-active:#0f172a;
+      }
+    }
+
+    html,body{height:100%; margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol";}
+    .wrap{display:flex; flex-direction:column; height:100vh; max-width:1200px; margin:0 auto;}
+    .toolbar{
+      display:flex; gap:.5rem; align-items:center; padding:.75rem 1rem; border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:10; background:var(--bg);
+    }
+    .brand{font-weight:700; letter-spacing:.2px; margin-right:auto;}
+    .title{font-weight:600; margin:0 .5rem; color:var(--muted);}
+    .btn{
+      appearance:none; border:1px solid var(--border); background:var(--btn); color:var(--btn-fg);
+      padding:.45rem .7rem; border-radius:.6rem; cursor:pointer; font-weight:600;
+    }
+    .btn:hover{ background:var(--btn-active); }
+    .btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--accent-fg);}
+    .seg{
+      display:flex; border:1px solid var(--border); border-radius:.6rem; overflow:hidden;
+    }
+    .seg button{ border:0; background:transparent; padding:.45rem .7rem; color:var(--muted); font-weight:700;}
+    .seg button.active{ background:var(--accent); color:var(--accent-fg); }
+    #calendar{flex:1; min-height:0;}
+    /* Petites retouches de TUI pour suivre le thème */
+    .toastui-calendar { --tui-color-gray-200: var(--border); --tui-color-gray-900: var(--fg); }
+    .toastui-calendar .toastui-calendar-panel,
+    .toastui-calendar .toastui-calendar-vertical,
+    .toastui-calendar .toastui-calendar-week-view { background:var(--bg) !important; color:var(--fg) !important; }
+
+    /* Responsif du toolbar */
+    @media (max-width: 600px){
+      .brand{display:none}
+      .title{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="brand">Calendrier</div>
+
+      <div class="seg" id="navSeg">
+        <button type="button" id="prevBtn" aria-label="Mois/sem. précédent">⟨</button>
+        <button type="button" id="todayBtn">Aujourd’hui</button>
+        <button type="button" id="nextBtn" aria-label="Mois/sem. suivant">⟩</button>
+      </div>
+
+      <div class="title" id="title">—</div>
+
+      <div class="seg" id="viewSeg" role="tablist" aria-label="Changer de vue">
+        <button type="button" id="dayBtn"   data-view="day">Jour</button>
+        <button type="button" id="weekBtn"  data-view="week">Semaine</button>
+        <button type="button" id="monthBtn" data-view="month" class="active">Mois</button>
+      </div>
+
+      <button class="btn" id="themeBtn" title="Basculer thème">Thème</button>
+    </div>
+
+    <div id="calendar"></div>
+  </div>
+
+  <script>
+    // ====== CONFIG ======
+    const API_KEY     = '';
+    const CALENDAR_ID = '';
+    const TIMEZONE    = 'America/Toronto';
+    const monthsBack  = 6;
+    const monthsAhead = 12;
+
+    // ====== THEME HANDLING ======
+    const htmlEl = document.documentElement;
+    const savedTheme = localStorage.getItem('calendar_theme'); // 'light' | 'dark' | 'auto'
+    if (savedTheme) htmlEl.setAttribute('data-theme', savedTheme);
+
+    function toggleTheme(){
+      const cur = htmlEl.getAttribute('data-theme') || 'auto';
+      const next = cur === 'light' ? 'dark' : cur === 'dark' ? 'auto' : 'light';
+      htmlEl.setAttribute('data-theme', next);
+      localStorage.setItem('calendar_theme', next);
+      updateThemeButton();
+    }
+    function updateThemeButton(){
+      const cur = htmlEl.getAttribute('data-theme') || 'auto';
+      document.getElementById('themeBtn').textContent = cur === 'dark' ? 'Light' : cur === 'light' ? 'Auto' : 'Dark';
+    }
+    updateThemeButton();
+    document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+
+    // ====== HELPERS ======
+    const pad = (n)=>String(n).padStart(2,'0');
+    const fmtDate = (d)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const isoLocal = (d)=>new Date(d).toISOString();
+
+    function rangeBounds(){
+      const now = new Date();
+      const min = new Date(now); min.setMonth(min.getMonth()-monthsBack);
+      const max = new Date(now); max.setMonth(max.getMonth()+monthsAhead);
+      return { timeMin: min.toISOString(), timeMax: max.toISOString() };
+    }
+
+    function mapGCalToTuiEvents(items){
+      return (items||[])
+        .filter(it=>it.status!=='cancelled')
+        .map(it=>{
+          const allDay = !!(it.start && it.start.date);
+          const start  = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
+          const end    = allDay ? fmtDate(new Date(it.end.date))   : isoLocal(it.end.dateTime || it.end);
+          return {
+            id: it.id,
+            calendarId: 'default',
+            title: it.summary || '(Sans titre)',
+            category: allDay ? 'allday' : 'time',
+            start, end,
+            location: it.location || '',
+            raw: { htmlLink: it.htmlLink }
+          };
+        });
+    }
+
+    async function fetchGoogleEvents(){
+      const { timeMin, timeMax } = rangeBounds();
+      const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`);
+      url.searchParams.set('key', API_KEY);
+      url.searchParams.set('singleEvents', 'true');
+      url.searchParams.set('orderBy', 'startTime');
+      url.searchParams.set('timeMin', timeMin);
+      url.searchParams.set('timeMax', timeMax);
+      url.searchParams.set('timeZone', TIMEZONE);
+      const res = await fetch(url.toString());
+      if(!res.ok) throw new Error('Erreur API Google Calendar');
+      const data = await res.json();
+      return mapGCalToTuiEvents(data.items);
+    }
+
+    // ====== RESPONSIVE DEFAULT VIEW ======
+    function preferredView(width = window.innerWidth){
+      if (width < 600) return 'day';
+      if (width < 1024) return 'week';
+      return 'month';
+    }
+
+    // ====== INIT TUI ======
+    const Calendar = tui.Calendar;
+    const cal = new tui.Calendar('#calendar', {
+    defaultView: 'month',
+    isReadOnly: true,
+    usageStatistics: false,
+    timezone: { zones: [{ timezoneName: TIMEZONE }] },
+    month: {
+        startDayOfWeek: 1,
+        isAlways6Weeks: true     // ← au lieu de visibleWeeksCount
+    },
+    week: {
+        startDayOfWeek: 1,
+        workweek: false,
+        hourStart: 6,
+        hourEnd: 22
+    }
+    });
+
+    // ====== UI HOOKS ======
+    const prevBtn  = document.getElementById('prevBtn');
+    const nextBtn  = document.getElementById('nextBtn');
+    const todayBtn = document.getElementById('todayBtn');
+    const titleEl  = document.getElementById('title');
+    const viewSeg  = document.getElementById('viewSeg');
+
+    function setTitle(){
+      const d = cal.getDate().toDate();
+      const view = cal.getViewName(); // 'month' | 'week' | 'day'
+      const opts = view === 'month'
+        ? { month:'long', year:'numeric' }
+        : view === 'week'
+          ? { day:'2-digit', month:'short', year:'numeric' }
+          : { weekday:'long', day:'2-digit', month:'long', year:'numeric' };
+      titleEl.textContent = d.toLocaleDateString('fr-CA', opts);
+      // activer le bouton de vue courant
+      [...viewSeg.querySelectorAll('button')].forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+    }
+
+    prevBtn.addEventListener('click', ()=>{ cal.prev(); setTitle(); });
+    nextBtn.addEventListener('click', ()=>{ cal.next(); setTitle(); });
+    todayBtn.addEventListener('click', ()=>{ cal.today(); setTitle(); });
+    viewSeg.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button[data-view]');
+      if(!btn) return;
+      cal.changeView(btn.dataset.view);
+      setTitle();
+    });
+
+    // Ajustement de la vue à la taille (sans casser le choix manuel si même "catégorie")
+    let lastAutoView = preferredView();
+    window.addEventListener('resize', (()=> {
+      let t; return ()=>{ clearTimeout(t); t=setTimeout(()=>{
+        const auto = preferredView();
+        // on change seulement si l'utilisateur est encore sur la même "plage"
+        // ex: il est sur 'month' et auto propose 'month' -> rien à faire
+        if (auto !== lastAutoView && ['day','week','month'].includes(auto)) {
+          lastAutoView = auto;
+          cal.changeView(auto);
+          setTitle();
+        }
+      }, 150); };
+    })());
+
+    // Double-clic pour ouvrir l’événement Google (lecture seule)
+    cal.on('clickEvent', ev=>{
+      const link = ev.event.raw && ev.event.raw.htmlLink;
+      if (link) window.open(link, '_blank', 'noopener');
+    });
+
+    function colorize(){
+      // Optionnel: couleurs distinctes pour alléger visuel (catégorie unique ici)
+      cal.setCalendars([{
+        id:'default',
+        name:'Activités',
+        backgroundColor:'var(--chip)',
+        borderColor:'var(--chip)',
+        dragBackgroundColor:'var(--chip)',
+        color:'var(--chip-fg)'
+      }]);
+    }
+
+    // ====== LOAD ======
+    (async()=>{
+      try{
+        const events = await fetchGoogleEvents();
+        colorize();
+        cal.createEvents(events);
+        setTitle();
+      }catch(err){
+        console.error(err);
+        alert('Impossible de charger les événements.');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calendrier (lecture seule)</title>
+  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+  <style>
+    html,body {height:100%;margin:0}
+    #calendar {height:100vh}
+  </style>
+</head>
+<body>
+  <div id="calendar"></div>
+
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+  <script>
+    // === 1) Config ===
+    const API_KEY     = '';     // clé API Google (Calendar v3)
+    const CALENDAR_ID = '';        // ex: 'abcdefg1234567890@group.calendar.google.com'
+    const TIMEZONE    = 'America/Toronto';
+
+    // Fenêtre de lecture (pour éviter de re-fetch à chaque navigation)
+    const monthsBack  = 6;
+    const monthsAhead = 12;
+
+    // === 2) Helpers ===
+    const pad = n => String(n).padStart(2,'0');
+    const fmtDate = d => {
+      // Renvoie YYYY-MM-DD pour les all-day
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    };
+    const isoLocal = d => new Date(d).toISOString(); // suffisant ici (TUI gère)
+
+    function rangeBounds() {
+      const now = new Date();
+      const min = new Date(now);
+      min.setMonth(min.getMonth() - monthsBack);
+      const max = new Date(now);
+      max.setMonth(max.getMonth() + monthsAhead);
+      return {
+        timeMin: min.toISOString(),
+        timeMax: max.toISOString()
+      };
+    }
+
+    function mapGCalToTuiEvents(items) {
+      return (items || [])
+        .filter(it => it.status !== 'cancelled')
+        .map(it => {
+          const allDay = !!(it.start && it.start.date); // all-day => "date" sans heure
+          const start  = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
+          // NB: en GCal, end.date (all-day) est exclusif — c'est OK pour TUI en 'allday'
+          const end    = allDay ? fmtDate(new Date(it.end.date))   : isoLocal(it.end.dateTime || it.end);
+
+          return {
+            id: it.id,
+            calendarId: 'default',
+            title: it.summary || '(Sans titre)',
+            category: allDay ? 'allday' : 'time',
+            start,
+            end,
+            location: it.location || '',
+            raw: { htmlLink: it.htmlLink } // utile si tu veux linker l’événement
+          };
+        });
+    }
+
+    async function fetchGoogleEvents() {
+      const { timeMin, timeMax } = rangeBounds();
+      const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`);
+      url.searchParams.set('key', API_KEY);
+      url.searchParams.set('singleEvents', 'true');
+      url.searchParams.set('orderBy', 'startTime');
+      url.searchParams.set('timeMin', timeMin);
+      url.searchParams.set('timeMax', timeMax);
+      url.searchParams.set('timeZone', TIMEZONE);
+
+      const res = await fetch(url.toString());
+      if (!res.ok) {
+        console.log(res);
+        throw new Error('Erreur API Google Calendar');
+      }
+      const data = await res.json();
+      return mapGCalToTuiEvents(data.items);
+    }
+
+    // === 3) Init TUI (lecture seule) ===
+    const Calendar = tui.Calendar;
+    const cal = new Calendar('#calendar', {
+      defaultView: 'month',
+      isReadOnly: true,
+      timezone: { zones: [{ timezoneName: TIMEZONE }] },
+      usageStatistics: false
+    });
+
+    // Option: petit titre/mois précédent/suivant
+    function setTitle() {
+      document.title = 'Calendrier – ' + cal.getDate().toDate().toLocaleString('fr-CA', { month:'long', year:'numeric' });
+    }
+
+    // === 4) Charger & afficher ===
+    (async () => {
+      try {
+        const events = await fetchGoogleEvents();
+        cal.createEvents(events);
+        setTitle();
+      } catch (e) {
+        console.error(e);
+        alert("Impossible de charger le calendrier.");
+      }
+    })();
+
+    // Navigation (facultatif mais agréable)
+    cal.on('afterRenderEvent', setTitle);
+  </script>
+</body>
+</html>

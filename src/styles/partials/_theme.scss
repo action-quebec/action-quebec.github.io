@@ -1,0 +1,37 @@
+:root{
+	--bg: #ffffff;
+	--fg: #0f172a;          /* slate-900 */
+	--muted: #475569;       /* slate-600 */
+	--border: #e2e8f0;      /* slate-200 */
+	--accent: #2563eb;      /* blue-600 */
+	--accent-fg: #ffffff;
+	--chip: #e0e7ff;        /* indigo-100 */
+	--chip-fg:#3730a3;      /* indigo-800 */
+	--btn:#f1f5f9;          /* slate-100 */
+	--btn-fg:#0f172a;
+	--btn-active:#e2e8f0;
+}
+html[data-theme="dark"]{
+	--bg:#0b1220;           /* deep navy */
+	--fg:#e5e7eb;           /* slate-200 */
+	--muted:#94a3b8;        /* slate-400 */
+	--border:#1f2937;       /* gray-800 */
+	--accent:#60a5fa;       /* blue-300 */
+	--accent-fg:#0b1220;
+	--chip:#172554;         /* indigo-950 */
+	--chip-fg:#c7d2fe;      /* indigo-200 */
+	--btn:#111827;          /* gray-900 */
+	--btn-fg:#e5e7eb;
+	--btn-active:#0f172a;
+}
+
+/* Auto adopte le thème système */
+@media (prefers-color-scheme: dark){
+	html[data-theme="auto"]{ color-scheme: dark; }
+	html[data-theme="auto"]{
+	--bg:#0b1220; --fg:#e5e7eb; --muted:#94a3b8; --border:#1f2937;
+	--accent:#60a5fa; --accent-fg:#0b1220;
+	--chip:#172554; --chip-fg:#c7d2fe;
+	--btn:#111827; --btn-fg:#e5e7eb; --btn-active:#0f172a;
+	}
+}
