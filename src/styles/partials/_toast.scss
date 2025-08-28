@@ -1,0 +1,6 @@
+
+/* Petites retouches de TUI pour suivre le thème */
+.toastui-calendar { --tui-color-gray-200: var(--border); --tui-color-gray-900: var(--fg); }
+.toastui-calendar .toastui-calendar-panel,
+.toastui-calendar .toastui-calendar-vertical,
+.toastui-calendar .toastui-calendar-week-view { background:var(--bg) !important; color:var(--fg) !important; }

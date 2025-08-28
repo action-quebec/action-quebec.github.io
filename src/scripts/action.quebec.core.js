@@ -1,10 +1,6 @@
 import './lightswitch.js';
 import Calendar from '@toast-ui/calendar';
-import { loadJsonProperties } from './helper.utils';
-
-
-// document.documentElement.setAttribute('data-theme', 'nuit')
-
+import { loadJsonProperties } from './helpers.js';
 
 
 window.Quebec = {
