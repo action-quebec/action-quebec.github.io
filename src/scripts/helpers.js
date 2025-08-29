@@ -1,7 +1,7 @@
 /******************************************************
  *           Load Json properties for target          *
  ******************************************************/
-export async function loadJsonProperties(target, files = {}) {
+self.loadJsonProperties = async function(target, files = {}) {
 	const entries = Object.entries(files); // [["sections","/data/sections.json"], ...]
 
 	const results = await Promise.allSettled(

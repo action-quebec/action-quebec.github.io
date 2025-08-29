@@ -1,9 +1,9 @@
 {
     "terminal.integrated.env.windows": {
-        "PATH": "${workspaceFolder}\\bin;${env:PATH};${workspaceFolder}"
+        "PATH": "${workspaceFolder}\\node_modules\\.bin;${env:PATH};${workspaceFolder}"
     },
     "terminal.integrated.env.osx": {
-        "PATH": "${workspaceFolder}/bin:${env:PATH}:${workspaceFolder}"
+        "PATH": "${workspaceFolder}/node_modules/.bin:${env:PATH}:${workspaceFolder}"
     },
     "filewatcher.commands": [
         {

@@ -1,19 +1,19 @@
+import './helpers.js';
 import './lightswitch.js';
 import Calendar from '@toast-ui/calendar';
-import { loadJsonProperties } from './helpers.js';
+
 
 
 window.Quebec = {
 
 	secrets: null,
-
-	calendrier: null,
+	calendar: null,
 
 
 
 	UnPays: async function() {
 
-		this.calendrier = new Calendar('#calendrier', {
+		this.calendar = new Calendar('#calendrier', {
 			defaultView: 'month',
 			isReadOnly: true,
 			timezone: { zones: [{ timezoneName: 'America/Toronto' }] },
