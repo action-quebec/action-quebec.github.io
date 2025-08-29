@@ -70,7 +70,7 @@ header {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        // padding: 2rem;
+        user-select: none;
 
 
         &__logo {
