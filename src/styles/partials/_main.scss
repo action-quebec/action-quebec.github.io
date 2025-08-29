@@ -50,10 +50,10 @@ header {
     align-items: center;
     left: 0;
     right: 0;
-    margin: 4rem auto 2rem auto;
+    height: 12rem;
     width: 100%;
     max-width: var(--font-size-break);
-    height: 12rem;
+    margin: 4rem auto 2rem auto;
 
     .header {
         width: 100%;
@@ -87,7 +87,7 @@ header {
             }
 
             &__calendrier {
-                margin-top: -1.8rem;
+                margin-top: -1.5rem;
                 font-size: 3.4rem;
                 font-weight: 300;
             }

@@ -26,11 +26,23 @@ window.Quebec = {
 					saturday: { color: 'var(--cal-text)' },
 					holiday:  { color: 'var(--cal-text)' },
 					dayName:  { color: 'var(--cal-text)' },
-					backgroundColor: 'var(--bg-alpha)'
+					backgroundColor: 'var(--bg-alpha)',
+					// border: '1px solid red',
+					// gridSelection: {
+					// 	backgroundColor: 'green',
+					// 	border: '1px solid red',
+					// }
+								
 				},
+
+
 				month: {
 					holidayExceptThisMonth: { color: 'var(--cal-text-alpha)' }, // dimanches hors mois
-					dayExceptThisMonth:     { color: 'var(--cal-text-alpha)' }  // tous jours hors mois
+					dayExceptThisMonth:     { color: 'var(--cal-text-alpha)' },  // tous jours hors mois
+					// dayName: {
+					// 	// backgroundColor: 'gree',
+					// 	border: '1px solid red',
+					// }
 				}
 			}
 

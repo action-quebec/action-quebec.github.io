@@ -1,16 +1,15 @@
-
-/* Petites retouches de TUI pour suivre le thème */
-.toastui-calendar { --tui-color-gray-200: var(--border); --tui-color-gray-900: var(--fg); }
-.toastui-calendar .toastui-calendar-panel,
-.toastui-calendar .toastui-calendar-vertical,
-.toastui-calendar .toastui-calendar-week-view { background:var(--bg) !important; color:var(--fg) !important; }
+.calendrier__container .toastui-calendar-weekday-grid,
+.calendrier__container .toastui-calendar-weekday-grid-line {
+  border-top: 1px solid var(--cal-border) !important;
+}
 
 
-// .toastui-calendar-layout {
-// 	// background-color: rgba(255, 255, 255, 0.223);
+/* neutralise traits par défaut des cellules (border/box-shadow) */
+.calendrier__container .toastui-calendar-month .toastui-calendar-daygrid-cell {
+  border-left: 0 !important;
+}
 
 
-// }
-
-
-
+.calendrier__container .toastui-calendar-month .toastui-calendar-daygrid-cell:not(:last-child) {
+  border-right: 1px solid var(--cal-border) !important;
+}
