@@ -1,8 +1,8 @@
 @use 'sass:color';
 
 
-$light-bg: #ffffff;
-$dark-bg:  #0b1220;
+$light-bg: #e3ebff;
+$dark-bg:  #192641;
 
 
 
@@ -14,6 +14,7 @@ $dark-bg-alpha:  color.adjust($dark-bg, $alpha: -0.7);
 // ===>>> Thème Light
 @mixin theme-light {
 	--theme: light;
+	
 	--bg: #{$light-bg};
 	--bg-alpha: #{$light-bg-alpha};
 	--fg: #0f172a;
@@ -36,7 +37,7 @@ $dark-bg-alpha:  color.adjust($dark-bg, $alpha: -0.7);
 	--fg:#e5e7eb;
 	--border:#1f2937;
 
-	--sky-color: #0b1220;
+	--sky-color: #{$dark-bg};
 	--sky-image: url(../images/ciel-nuit.webp);
 
 	.lightswitch::before {
