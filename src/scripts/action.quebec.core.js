@@ -1,5 +1,5 @@
-import './helpers.js';
-import './lightswitch.js';
+import './librairies/helpers.js';
+import './librairies/lightswitch.js';
 import Calendar from '@toast-ui/calendar';
 
 
@@ -13,7 +13,7 @@ window.Quebec = {
 	unPays: async function () {
 		
 		const DAYNAMES_FR = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-		this.calendar = new Calendar('#calendrier', {
+		this.calendar = new Calendar('.calendrier__container', {
 			defaultView: 'month',
 			isReadOnly: true,
 			timezone: { zones: [{ timezoneName: 'America/Toronto' }] },
@@ -30,14 +30,6 @@ window.Quebec = {
 		});
 
 		await loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' });
-
-
-
-
-
-
-
-
 
 		console.log('Québec un pays!');
 	},

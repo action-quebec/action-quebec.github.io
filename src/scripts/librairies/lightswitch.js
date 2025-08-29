@@ -12,6 +12,9 @@ window.LightSwitch = {
 			this.switch.addEventListener('click', e => this.toogleTheme());
         });
 
+		document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
+  		addEventListener('resize', e => { document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)); }, { passive: true });
+
 	},
 
 

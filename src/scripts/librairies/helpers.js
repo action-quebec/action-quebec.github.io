@@ -18,8 +18,7 @@ HTMLElement.prototype.create = function(tag, classname=null, content=null) {
  *           Load Json properties for target          *
  ******************************************************/
 self.loadJsonProperties = async function(target, files = {}) {
-	const entries = Object.entries(files); // [["sections","/data/sections.json"], ...]
-
+	const entries = Object.entries(files);
 	const results = await Promise.allSettled(
 		entries.map(async ([key, url]) => {
 			const res = await fetch(url);
@@ -28,7 +27,6 @@ self.loadJsonProperties = async function(target, files = {}) {
 			return { key, url, status: res.status, ok: res.ok, data };
 		})
 	);
-
 	for (const r of results) {
 		if (r.status === 'fulfilled') {
 			const { key, url, status, ok, data } = r.value;
@@ -41,6 +39,5 @@ self.loadJsonProperties = async function(target, files = {}) {
 			console.error('Erreur réseau/JS pendant le chargement :', r.reason);
 		}
 	}
-
 	return target;
 };
