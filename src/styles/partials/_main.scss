@@ -2,7 +2,23 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Lora", serif;
+    font-family: var(--font-family);
+}
+
+
+html {
+    scroll-behavior: smooth;
+    font-size: var(--font-size);
+}
+
+
+body {
+    background-color: var(--bg);
+}
+
+
+h1 {
+    text-align: center;
 }
 
 
@@ -16,8 +32,4 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
-
-body {
-    background-color: var(--bg);
 }

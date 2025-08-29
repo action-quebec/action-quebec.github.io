@@ -1,8 +1,6 @@
 import './helpers.js';
 import './lightswitch.js';
 import Calendar from '@toast-ui/calendar';
-// import frLocale from '@toast-ui/calendar/locales/fr';
-
 
 
 window.Quebec = {
@@ -12,7 +10,7 @@ window.Quebec = {
 
 
 
-	UnPays: async function () {
+	unPays: async function () {
 		
 		const DAYNAMES_FR = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 		this.calendar = new Calendar('#calendrier', {

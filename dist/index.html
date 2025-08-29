@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="fr-CA">
+<html lang="fr-CA" data-theme="auto">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="./styles/styles.min.css">
-    
+    <script src="./scripts/action.quebec.core.min.js"></script>
     <title>action.quebec</title>
 </head>
 <body>
-    <div id="calendar"></div>
-    <script src="./scripts/action.quebec.core.min.js"></script>
+    <h1>Action Québec</h1>
+    <div id="calendrier"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', e => {
+            Quebec.unPays();
+        });
+    </script>
 </body>
 </html>
