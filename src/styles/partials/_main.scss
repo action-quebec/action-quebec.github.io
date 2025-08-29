@@ -19,6 +19,8 @@ body {
     min-height: 200vh;
     color: var(--fg);
 
+    // transition-property: ;
+    transition: background-color var(--scheme-transition-duration);
 
     &::before {
         content: '';
@@ -38,6 +40,8 @@ body {
 
         -webkit-mask-image: linear-gradient(to bottom, black, transparent);
          mask-image: linear-gradient(to bottom, black, transparent);
+        transition: background-color var(--scheme-transition-duration);
+
          z-index: -1;
     }
 

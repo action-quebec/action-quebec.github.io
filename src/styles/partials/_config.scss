@@ -12,4 +12,5 @@ $font-resp:   calc($font-base * 100 / $font-break);
     --font-size:       min(var(--font-size-resp), var(--font-size-base));
     --scale-break:     #{$font-break};
     --scale-index:     min(calc(var(--vwpx) / var(--scale-break)), 1);
+    --scheme-transition-duration: 400ms;
 }
