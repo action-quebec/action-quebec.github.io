@@ -13,7 +13,7 @@ window.LightSwitch = {
         });
 
 		document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
-  		addEventListener('resize', e => { document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)); }, { passive: true });
+  		addEventListener('resize', e => document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)), { passive: true });
 
 	},
 

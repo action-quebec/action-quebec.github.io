@@ -23,8 +23,15 @@ window.Quebec = {
 
 			theme: {
 				common: {
+					saturday: { color: '#111827' },
+					holiday:  { color: '#111827' },
+					dayName:  { color: '#111827' },
 					backgroundColor: 'var(--bg-alpha)'
 				},
+				month: {
+					holidayExceptThisMonth: { color: '#1118278c' }, // dimanches hors mois
+					dayExceptThisMonth:     { color: '#1118278c' }  // tous jours hors mois
+				}
 			}
 
 		});
