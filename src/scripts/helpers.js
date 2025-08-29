@@ -1,4 +1,20 @@
 /******************************************************
+ *                    Create Element                  *
+ ******************************************************/
+self.create = (tag, classname=null, content=null) => {
+    const elm = document.createElement(tag);
+    if(classname) elm.className = classname;
+    if(content) elm.innerHTML = content;
+    return elm;
+}
+HTMLElement.prototype.create = function(tag, classname=null, content=null) {
+    const elm = create(tag, classname, content);
+    this.append(elm);
+    return elm;
+}
+
+
+/******************************************************
  *           Load Json properties for target          *
  ******************************************************/
 self.loadJsonProperties = async function(target, files = {}) {

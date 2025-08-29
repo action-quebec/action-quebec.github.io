@@ -13,7 +13,33 @@ html {
 
 
 body {
+    // position: relative;
+    
     background-color: var(--bg);
+    height: 200vh;
+
+
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+
+        background-color: var(--sky-color);
+        background-image: var(--sky-image);
+        background-repeat: no-repeat;
+        background-position: top center;
+        background-size: cover;
+        background-blend-mode: overlay;
+        
+        -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+         mask-image: linear-gradient(to bottom, black, transparent);
+         z-index: -1;
+    }
+
 }
 
 
@@ -23,6 +49,7 @@ h1 {
 
 
 #calendrier {
+    // display: none;
     width: 80vmin;
     aspect-ratio: 5/4;
     // height: 80vmin;
