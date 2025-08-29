@@ -35,7 +35,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"command": "./node_modules/.bin/sass \"${fileDirname}/../styles.scss\"  \"${fileDirname}/../styles.min.css\" --load-path=node_modules --style=compressed --no-source-map --quiet",
+			"command": "./node_modules/.bin/sass \"${fileDirname}/../action.quebec.core.scss\"  \"${fileDirname}/../action.quebec.core.min.css\" --load-path=node_modules --style=compressed --no-source-map --quiet",
 			"presentation": {
 				"panel": "shared",
 				"group": "pxdoc",
