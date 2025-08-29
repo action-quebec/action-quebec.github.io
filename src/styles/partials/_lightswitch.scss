@@ -1,7 +1,21 @@
+@use 'sass:color';
+
+
+$light-bg: #ffffff;
+$dark-bg:  #0b1220;
+
+
+
+
+$light-bg-alpha: color.adjust($light-bg, $alpha: -0.7);
+$dark-bg-alpha:  color.adjust($dark-bg, $alpha: -0.7);
+
+
 // ===>>> Thème Light
 @mixin theme-light {
 	--theme: light;
-	--bg: #ffffff;
+	--bg: #{$light-bg};
+	--bg-alpha: #{$light-bg-alpha};
 	--fg: #0f172a;
 	--border: #e2e8f0;
 
@@ -14,10 +28,11 @@
 // ===>>> Thème Dark
 @mixin theme-dark {
 	color-scheme: dark;
-
 	--theme: dark;
 
-	--bg:#0b1220;
+	--bg: #{$dark-bg};
+	--bg-alpha: #{$dark-bg-alpha};
+	
 	--fg:#e5e7eb;
 	--border:#1f2937;
 
@@ -34,11 +49,10 @@
 
 }
 
+
 // ===>>> Thème par défaut
 :root {
 	@include theme-light;
-
-
 }
 
 

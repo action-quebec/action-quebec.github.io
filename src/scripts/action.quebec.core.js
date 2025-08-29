@@ -21,6 +21,12 @@ window.Quebec = {
 			month: { dayNames: DAYNAMES_FR },  // vue mois
 			week: { dayNames: DAYNAMES_FR },  // vues semaine/jour
 
+			theme: {
+				common: {
+					backgroundColor: 'var(--bg-alpha)'
+				},
+			}
+
 		});
 
 		await loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' });

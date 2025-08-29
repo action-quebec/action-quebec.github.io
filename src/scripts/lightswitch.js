@@ -15,17 +15,19 @@ window.LightSwitch = {
 	},
 
 
-	toogleTheme: function() {
-		document.documentElement.setAttribute('data-theme', this.getTheme() === 'dark' ? 'light' : 'dark');
-	},
-
-
 	getTheme: function() {
 		return getComputedStyle(document.documentElement)
 			.getPropertyValue('--theme')
 			.replace(/^['"]|['"]$/g, '')
 			.toLocaleLowerCase()
 			.trim();
+	},
+
+
+	toogleTheme: function() {
+		const theme = this.getTheme() === 'dark' ? 'light' : 'dark';
+		document.documentElement.setAttribute('data-theme', theme);
+		localStorage.setItem('theme', theme);
 	},
 
 };
