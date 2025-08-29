@@ -13,13 +13,10 @@ html {
 
 
 body {
-    // position: relative;
-    overflow-x: hidden;
-    background-color: var(--bg);
     min-height: 200vh;
     color: var(--fg);
-
-    // transition-property: ;
+    background-color: var(--bg);
+    overflow-x: hidden;
     transition: background-color var(--scheme-transition-duration);
 
     &::before {
@@ -29,7 +26,6 @@ body {
         left: 0;
         width: 100%;
         aspect-ratio: 3/2;
-        // height: 100vh;
 
         background-color: var(--sky-color);
         background-image: var(--sky-image);
@@ -49,40 +45,28 @@ body {
 
 
 header {
-    // background-color: red;
-    left: 0;
-    right: 0;
-    margin: 2rem auto;
-    width: 100%;
-    max-width: var(--font-size-break);
-    // margin-top: 2rem;
-
-
-    height: 12rem;
-
     display: flex;
     justify-content: center;
     align-items: center;
+    left: 0;
+    right: 0;
+    margin: 4rem auto 2rem auto;
+    width: 100%;
+    max-width: var(--font-size-break);
+    height: 12rem;
 
     .header {
-        // background-color: blue;
         width: 100%;
         max-width: var(--font-size-break);
-        // overflow: hidden;
         margin: 0 2rem;
-        
         display: flex;
         flex-direction: row;
         justify-content: center;
         user-select: none;
 
-
         &__logo {
-            // background-color: green;
-            // margin-left: 2rem;
             width: 11rem;
             aspect-ratio: 1/1;
-            // background-color: green;
             background-image: var(--logo);
             background-position: center center;
             background-repeat: no-repeat;
@@ -90,34 +74,22 @@ header {
             flex-shrink: 0;
         }
 
-
         &__title {
-            // margin-right: 2rem;
-            // background-color: pink;
-
-            flex-grow: auto;
-
-            padding-left: 1rem;
             display: flex;
+            flex-grow: auto;
             justify-content: center;
-            // align-items: center;
             flex-direction: column;
-            // background-color: pink;
+            padding-left: 1rem;
 
             &__action {
-                // background-color: greenyellow;
                 font-size: 6.1rem;
                 font-weight: 800;
-                
             }
-
 
             &__calendrier {
                 margin-top: -1.8rem;
-                // background-color: coral;
                 font-size: 3.4rem;
                 font-weight: 300;
-                
             }
         }
 

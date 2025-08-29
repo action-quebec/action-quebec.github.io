@@ -1,6 +1,8 @@
 @use 'sass:color';
 @use 'sass:string';
 
+$accent: #f9d71c;
+
 $light-fg: #0f172a;
 $light-bg: #e3ebff;
 $light-bg-alpha: color.adjust($light-bg, $alpha: -0.7);
@@ -24,6 +26,7 @@ $dark-cal-text-alpha: color.adjust($dark-cal-text, $alpha: -0.5);
 @mixin theme-light {
 	--theme: light;
 	
+	--accent: #{$accent};
 
 	--fg: #{$light-fg};
 	--bg: #{$light-bg};
@@ -51,6 +54,8 @@ $dark-cal-text-alpha: color.adjust($dark-cal-text, $alpha: -0.5);
 @mixin theme-dark {
 	color-scheme: dark;
 	--theme: dark;
+
+	--accent: #{$accent};
 
 	--fg: #{$dark-fg};
 
@@ -114,8 +119,8 @@ html[data-theme="dark"] {
 	height: var(--toggle-size);
 	background-color: var(--lightswitch-bg);
 	border-radius: calc(var(--toggle-size) / 2);
-	top: 1rem;
-	right: 1rem;
+	top: 2rem;
+	right: 2rem;
 	
 	transform: scale(calc(var(--scale-index) * 0.8));
 	transform-origin: top right;
