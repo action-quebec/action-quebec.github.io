@@ -23,14 +23,14 @@ window.Quebec = {
 
 			theme: {
 				common: {
-					saturday: { color: '#111827' },
-					holiday:  { color: '#111827' },
-					dayName:  { color: '#111827' },
+					saturday: { color: 'var(--cal-text)' },
+					holiday:  { color: 'var(--cal-text)' },
+					dayName:  { color: 'var(--cal-text)' },
 					backgroundColor: 'var(--bg-alpha)'
 				},
 				month: {
-					holidayExceptThisMonth: { color: '#1118278c' }, // dimanches hors mois
-					dayExceptThisMonth:     { color: '#1118278c' }  // tous jours hors mois
+					holidayExceptThisMonth: { color: 'var(--cal-text-alpha)' }, // dimanches hors mois
+					dayExceptThisMonth:     { color: 'var(--cal-text-alpha)' }  // tous jours hors mois
 				}
 			}
 
