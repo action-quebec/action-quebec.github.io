@@ -8,9 +8,22 @@
     <title>action.quebec</title>
 </head>
 <body>
-    <h1>Action Québec</h1>
-    <div id="calendrier"></div>
+    <header>
+        <div class="header">
+            <div class="header__logo"></div>
+            <div class="header__title">
+                <div class="header__title__action">action.quebec</div>
+                <div class="header__title__calendrier">calendrier indépendantiste</div>
+            </div>
+        </div>
+    </header>
 
+    <main>
+        <section class="calendrier">
+            <div id="calendrier"></div>
+        </section>
+    </main>
+    
     <script>
         document.addEventListener('DOMContentLoaded', e => {
             Quebec.unPays();
