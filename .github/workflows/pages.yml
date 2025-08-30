@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages (dist)
 
 on:
   push:
-    branches: ["main"]    # ⇦ change "main" si ta branche est différente
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -25,17 +25,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ⬇️ Si ton site nécessite une étape de build, décommente ce bloc
       # - name: Setup Node
       #   uses: actions/setup-node@v4
       #   with:
-      #     node-version: 20
+      #     node-version: 24
       #     cache: npm
       # - name: Install deps
       #   run: npm ci
       # - name: Build
       #   run: npm run build
-      # # Assure-toi que la sortie va bien dans ./dist
 
       - name: Créer bt1oh97j7X.json dans dist/
         run: |
