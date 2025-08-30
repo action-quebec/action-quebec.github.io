@@ -114,8 +114,8 @@ footer {
     margin-bottom: 2rem;
     opacity: 0.6;
     
-
-    .logo-ssjb {
+    &::before {
+        content: '';
         width: 1.7em;
         aspect-ratio: 43/75;
         background-image: var(--ssjb);
@@ -134,7 +134,7 @@ section {
     padding: 2rem;
     margin-bottom: 2rem;
 
-    .textbox {
+    & > div:not(.calendrier__box) {
 		-webkit-box-shadow: var(--shadow);
 		box-shadow: var(--shadow);
         padding: 2rem;
@@ -142,6 +142,7 @@ section {
 
         h2, p, ul {
             margin-left: 0.5em;
+            margin-right: 0.5em;
         }
 
         h1 {
