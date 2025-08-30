@@ -1,0 +1,130 @@
+.calendrier {
+	user-select: none;
+
+	&__pagination {
+		background-color: var(--bg-alpha);
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		height: 5rem;
+
+		& > * {
+			flex: 1 1 0;
+			min-width: 0;
+		}
+
+		&__cour {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 2.2rem;
+			font-weight: 500;
+			white-space: nowrap;
+		}
+
+
+		&__prec {
+			display: flex;
+			align-items: center;
+			justify-content: left;
+			font-size: 2.2rem;
+			font-weight: 300;
+			padding-left: 1rem;
+
+			&>span {
+				display: flex;
+				align-items: center;
+				justify-content: left;
+				cursor: pointer;
+				transition: filter 100ms;
+
+				&:hover {
+					filter: drop-shadow(0px 0px 8px var(--accent));
+				}
+
+				&::before {
+					content: '';
+					display: inline-block;
+					width: 2.5rem;
+					aspect-ratio: 1/1;
+					background-image: var(--arrow);
+					background-repeat: no-repeat;
+					background-size: contain;
+					background-position: center;
+					margin-right: 0.5rem;
+				}
+			}
+		}
+
+
+		&__suiv {
+			display: flex;
+			align-items: center;
+			justify-content: right;
+			font-size: 2.2rem;
+			font-weight: 300;
+			padding-right: 1rem;
+
+			&>span {
+				display: flex;
+				align-items: center;
+				justify-content: right;
+				cursor: pointer;
+				transition: filter 100ms;
+
+
+				&:hover {
+					filter: drop-shadow(0px 0px 8px var(--accent));
+				}
+
+				&::after {
+					content: '';
+					display: inline-block;
+					width: 2.5rem;
+					aspect-ratio: 1/1;
+					background-image: var(--arrow);
+					background-repeat: no-repeat;
+					background-size: contain;
+					background-position: center;
+					transform: scaleX(-1);
+					margin-left: 0.5rem;
+				}
+			}
+		}
+
+	}
+
+
+	&__container {
+		aspect-ratio: 5/4;
+		overflow: hidden;
+	}
+
+
+	&__box {
+		-webkit-box-shadow: 0px 12px 38px 18px var(--shadow);
+		box-shadow: var(--shadow);
+	}
+
+
+	&__container {
+		.toastui-calendar-daygrid-cell {
+			border-left: 0 !important;
+		}
+
+		.toastui-calendar-daygrid-cell:not(:last-child) {
+			border-right: 1px solid var(--cal-border) !important;
+		}
+
+		.toastui-calendar-weekday-grid,
+		.toastui-calendar-weekday-grid-line {
+			border-top: 1px solid var(--cal-border) !important;
+		}
+
+		.toastui-calendar-template-monthDayName {
+			text-align: center;
+			font-size: 1.2rem;
+		}
+	}
+
+}

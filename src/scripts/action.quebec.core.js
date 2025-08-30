@@ -81,8 +81,10 @@ window.Quebec = {
 
 	getRangeBounds: function(){
 		const now = new Date();
-		const min = new Date(now); min.setMonth(min.getMonth()-MONTHS_BACK);
-		const max = new Date(now); max.setMonth(max.getMonth()+MONTHS_AHEAD);
+		const min = new Date(now);
+		const max = new Date(now); 
+		min.setMonth(min.getMonth() - MONTHS_BACK);
+		max.setMonth(max.getMonth() + MONTHS_AHEAD);
 		return { timeMin: min.toISOString(), timeMax: max.toISOString() };
 	},
 
