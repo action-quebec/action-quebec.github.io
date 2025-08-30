@@ -116,12 +116,7 @@ section {
 
 
 .calendrier {
-    // text-align: center;
-// background-color: blue;
-//         display: flex;
-//     flex-direction: row;
-//     align-items: center;
-
+    user-select: none;
 
     &__pagination {
         background-color: var(--bg-alpha);
@@ -156,6 +151,12 @@ section {
                 display: flex;
                 align-items: center;
                 justify-content: left;
+                cursor: pointer;
+                transition: filter 100ms;
+
+                &:hover {
+                    filter: drop-shadow(0px 0px 8px var(--fg));
+                }
 
                 &::before {
                     content: '';
@@ -185,6 +186,12 @@ section {
                 display: flex;
                 align-items: center;
                 justify-content: right;
+                cursor: pointer;
+                transition: filter 100ms;
+
+                &:hover {
+                    filter: drop-shadow(0px 0px 8px var(--fg));
+                }
 
                 &::after {
                     content: '';
@@ -205,21 +212,8 @@ section {
     }
 
     &__container {
-        // display: none;
-        // width: 80vmin;
-        // width: 100%;
-        // background-color: red;
-        // margin: 0 2rem;
         aspect-ratio: 5/4;
-        // height: 80vmin;
         overflow: hidden;
-
-        // position: absolute;
-        // top: 50%;
-        // left: 50%;
-        // transform: translate(-50%, -20%);
-
-
     }
 
     &__box {

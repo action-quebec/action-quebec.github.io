@@ -13,3 +13,8 @@
 .calendrier__container .toastui-calendar-month .toastui-calendar-daygrid-cell:not(:last-child) {
   border-right: 1px solid var(--cal-border) !important;
 }
+
+
+.toastui-calendar-template-monthDayName {
+  text-align: center;
+}

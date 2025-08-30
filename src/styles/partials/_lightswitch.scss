@@ -138,6 +138,7 @@ html[data-theme="dark"] {
 
 	transition-property: background-color border-color;
 	transition-duration: var(--scheme-transition-duration);
+	
 
 	&::before {
 		content: '';
