@@ -7,6 +7,7 @@ const TIMEZONE = 'America/Toronto';
 const MONTHS_BACK = 6;
 const MONTHS_AHEAD = 12;
 
+
 window.Quebec = {
 
 	secrets: null,
@@ -67,10 +68,10 @@ window.Quebec = {
 		url.searchParams.set('timeMin', timeMin);
 		url.searchParams.set('timeMax', timeMax);
 		url.searchParams.set('timeZone', TIMEZONE);
-		url.searchParams.set(
-  'fields',
-  'items(id,summary,description,start,end,attachments(fileId,fileUrl,title,mimeType)),summary,timeZone,updated'
-);
+// 		url.searchParams.set(
+//   'fields',
+//   'items(id,summary,description,start,end,attachments(fileId,fileUrl,title,mimeType)),summary,timeZone,updated'
+// );
 		const res = await fetch(url.toString());
 		if(!res.ok) throw new Error('Erreur API Google Calendar');
 		const data = await res.json();

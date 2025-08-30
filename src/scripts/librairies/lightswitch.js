@@ -12,8 +12,9 @@ window.LightSwitch = {
 			this.switch.addEventListener('click', e => this.toogleTheme());
         });
 
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => this.setTheme(e.matches ? 'dark' : 'light'));
 		document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
-  		addEventListener('resize', e => document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)), { passive: true });
+  		window.addEventListener('resize', e => document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)), { passive: true });
 
 	},
 
@@ -27,10 +28,14 @@ window.LightSwitch = {
 	},
 
 
-	toogleTheme: function() {
-		const theme = this.getTheme() === 'dark' ? 'light' : 'dark';
+	setTheme: function(theme) {
 		document.documentElement.setAttribute('data-theme', theme);
 		localStorage.setItem('theme', theme);
+	},
+
+
+	toogleTheme: function() {
+		this.setTheme(this.getTheme() === 'dark' ? 'light' : 'dark');
 	},
 
 };
