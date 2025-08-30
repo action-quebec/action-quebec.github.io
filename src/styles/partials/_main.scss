@@ -54,7 +54,7 @@ header {
     max-width: var(--font-size-break);
     margin: 4rem auto 2rem auto;
 
-    .header {
+    & > :first-child {
         width: 100%;
         max-width: var(--font-size-break);
         margin: 0 2rem;
@@ -63,7 +63,8 @@ header {
         justify-content: center;
         user-select: none;
 
-        &__logo {
+        &::before {
+            content: '';
             width: 11rem;
             aspect-ratio: 1/1;
             background-image: var(--logo);
@@ -73,19 +74,19 @@ header {
             flex-shrink: 0;
         }
 
-        &__title {
+        & > :first-child {
             display: flex;
             flex-grow: auto;
             justify-content: center;
             flex-direction: column;
             padding-left: 1rem;
 
-            &__action {
+            & > :first-child {
                 font-size: 6.1rem;
                 font-weight: 800;
             }
 
-            &__calendrier {
+            & > :last-child {
                 margin-top: -1.5rem;
                 font-size: 3.4rem;
                 font-weight: 300;
@@ -112,7 +113,8 @@ footer {
     font-size: 1.7rem;
     height: 12rem;
     margin-bottom: 2rem;
-    opacity: 0.6;
+    opacity: 0.4;
+    user-select: none;
     
     &::before {
         content: '';
@@ -134,7 +136,7 @@ section {
     padding: 2rem;
     margin-bottom: 2rem;
 
-    & > div:not(.calendrier__box) {
+    &:not(:first-child) > div {
 		-webkit-box-shadow: var(--shadow);
 		box-shadow: var(--shadow);
         padding: 2rem;

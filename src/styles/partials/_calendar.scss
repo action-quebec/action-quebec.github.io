@@ -31,7 +31,7 @@
 			font-weight: 300;
 			padding-left: 1rem;
 
-			&>span {
+			& > span {
 				display: flex;
 				align-items: center;
 				justify-content: left;
@@ -65,7 +65,7 @@
 			font-weight: 300;
 			padding-right: 1rem;
 
-			&>span {
+			& > span {
 				display: flex;
 				align-items: center;
 				justify-content: right;
@@ -101,7 +101,7 @@
 	}
 
 
-	&__box {
+	& > div {
 		-webkit-box-shadow: var(--shadow);
 		box-shadow: var(--shadow);
 	}
