@@ -11,19 +11,19 @@
         {
             "match": "src[/\\\\]scripts[/\\\\](?!.*\\.min\\.js$).*\\.js$",
             "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:build"],
+            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:build"],
             "event": "onFileChange"
         },
         {
             "match": "[\\\\/](?!_)[^\\\\/]+\\.scss$",
             "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:sass:master"],
+            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:sass:master"],
             "event": "onFileChange"
         },
         {
             "match": "[\\\\/]_[^\\\\/]+\\.scss$",
             "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "pxdoc:sass:slave"],
+            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:sass:slave"],
             "event": "onFileChange"
         }
     ],
