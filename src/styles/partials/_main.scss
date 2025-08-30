@@ -13,7 +13,6 @@ html {
 
 
 body {
-    min-height: 200vh;
     color: var(--fg);
     background-color: var(--bg);
     overflow-x: hidden;
@@ -100,10 +99,32 @@ header {
 
 
 main {
-    // overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.7rem;
+    height: 12rem;
+    margin-bottom: 2rem;
+    opacity: 0.6;
+    
+
+    .logo-ssjb {
+        width: 1.7em;
+        aspect-ratio: 43/75;
+        background-image: var(--ssjb);
+        background-size: contain;
+        background-position: left center;
+        background-repeat: no-repeat;
+        margin-right: 0.5em;
+    }
+    
 }
 
 
@@ -111,7 +132,43 @@ section {
     width: 100%;
     max-width: var(--font-size-break);
     padding: 2rem;
-    // background-color: yellow;
+    margin-bottom: 2rem;
+
+    .textbox {
+		-webkit-box-shadow: var(--shadow);
+		box-shadow: var(--shadow);
+        padding: 2rem;
+        font-size: 1.8rem;
+
+        h2, p, ul {
+            margin-left: 0.5em;
+        }
+
+        h1 {
+            font-size: 1.4em;
+            font-weight: 800;
+        }
+
+        h2 {
+            margin-top: 0.6em;
+            font-size: 1.2em;
+        }
+
+        p {
+            margin-top: 0.6em;
+        }
+
+        ul {
+            margin-left: 2em;
+            li {
+                margin-top: 0.5em;
+            }
+        }
+
+
+
+    }
+
 }
 
 

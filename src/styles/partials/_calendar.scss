@@ -102,7 +102,7 @@
 
 
 	&__box {
-		-webkit-box-shadow: 0px 12px 38px 18px var(--shadow);
+		-webkit-box-shadow: var(--shadow);
 		box-shadow: var(--shadow);
 	}
 
@@ -123,7 +123,7 @@
 
 		.toastui-calendar-template-monthDayName {
 			text-align: center;
-			font-size: 1.2rem;
+			font-size: 1.4rem;
 		}
 	}
 
