@@ -136,7 +136,7 @@ section {
     padding: 2rem;
     margin-bottom: 2rem;
 
-    &:not(:first-child) > div {
+    &:not(.calendrier) > div {
 		-webkit-box-shadow: var(--shadow);
 		box-shadow: var(--shadow);
         padding: 2rem;
