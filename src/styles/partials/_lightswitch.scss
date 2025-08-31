@@ -6,7 +6,7 @@
 $light-fg:             #0f172a;
 $light-bg:             #e3ebff;
 $light-accent:         #f9d71c;
-$light-shadow:         #14779e33;
+$light-shadow:         #0e4d6433;
 $light-sky-color:      #c2eafa;
 $light-bg-accent:      #004662;
 $light-lightswich-bg:  #c2eafa;
@@ -19,12 +19,15 @@ $dark-bg:              #192641;
 $dark-accent:          #f9d71c;
 $dark-shadow:          #00000033;
 $dark-sky-color:       #192641;
-$dark-bg-accent:      #c2eafa;
+$dark-bg-accent:       #c2eafa;
 $dark-lightswich-bg:   #192641;
 $dark-lightswich-pin:  #e5e7eb;
 
 
+
+
 // ===>>> Light theme generated colors
+$light-bg-part: color.adjust($light-sky-color, $blackness: 8%);
 $light-bg-alpha: color.adjust($light-bg, $alpha: -0.7);
 $light-fg-hex: string.unquote('#{string.slice(ie-hex-str($light-fg), 4)}');
 
@@ -34,6 +37,7 @@ $light-cal-border: color.adjust($light-cal-text, $alpha: -0.8);
 
 
 // ===>>> Dark theme generated colors
+$dark-bg-part: color.adjust($dark-bg, $lightness: 6%);
 $dark-bg-alpha:  color.adjust($dark-bg, $alpha: -0.7);
 $dark-fg-hex: string.unquote('#{string.slice(ie-hex-str($dark-fg), 4)}');
 
@@ -54,6 +58,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg: #{$light-bg};
 	--bg-alpha: #{$light-bg-alpha};
 	--bg-accent: #{$light-bg-accent};
+	--bg-part: #{$light-bg-part};
 
 	--sky-color: #{$light-sky-color};
 	--sky-image: url(../images/ciel-jour.webp);
@@ -89,6 +94,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg: #{$dark-bg};
 	--bg-alpha: #{$dark-bg-alpha};
 	--bg-accent: #{$dark-bg-accent};
+	--bg-part: #{$dark-bg-part};
 
 	--sky-color: #{$dark-sky-color};
 	--sky-image: url(../images/ciel-nuit.webp);

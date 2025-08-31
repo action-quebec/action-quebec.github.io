@@ -7,6 +7,8 @@ const MONTHS_BACK  = 6;
 const MONTHS_AHEAD = 12;
 const TIMEZONE     = 'America/Toronto';
 
+const RX_GOOGLE_CA = /^\s*(?:(?<place>(?!\d)[^,]+?),\s*)?(?<street>[^,]+?),\s*(?<city>[^,]+?),\s*(?<province>AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|Québec|Quebec|QC\.?)(?:\s+(?<postal>[A-Z]\d[A-Z][ -]?\d[A-Z]\d))?(?:,\s*(?<country>Canada))?\s*$/iu;
+
 
 
 window.Quebec = {
@@ -125,8 +127,28 @@ window.Quebec = {
 	renderEvent: async function(date, elm) {
 		const events = this.getEventsByDate(date);
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
+		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
+		const tipcontent = events.map(e => this.renderEventTip(e)).join('<hr>');
+		evtip.innerHTML = tipcontent;
+
 		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
 		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
+	},
+
+
+	renderEventTip: function(evt) {
+		const time = new Intl.DateTimeFormat('fr-CA', { timeZone: TIMEZONE, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(evt.start));
+		let str = `<h3>${evt.title}</h3>`;
+		str += `<strong>Heure:</strong> ${time}`;
+		if(evt.location) {
+			const { city, place } = this.parseGoogleAddress(evt.location);
+			if(city) {
+				let addr = city;
+				if(place) addr = `${place}, ${addr}`;
+				str += `<br><strong>Endroit:</strong> ${addr}`;
+			}
+		}
+		return str;
 	},
 
 
@@ -157,7 +179,22 @@ window.Quebec = {
 		const container = create('div', 'modal-events__placeholder__events__event');
 		container.innerHTML = evt.description;
 		return container;
-	}
+	},
+
+
+	parseGoogleAddress: function (addr) {
+		const m = addr.match(RX_GOOGLE_CA);
+		if (!m) return null;
+		const g = m.groups || {};
+		return {
+			place: g.place?.trim() || null,
+			street: g.street?.trim() || null,
+			city: g.city?.trim() || null,
+			province: g.province?.trim() || null,
+			postal: g.postal?.replace(/\s+/g, ' ') || null,
+			country: g.country?.trim() || null
+		};
+	},
 
 
 };

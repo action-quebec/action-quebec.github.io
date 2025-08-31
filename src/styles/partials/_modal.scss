@@ -11,6 +11,7 @@
 	justify-content: center;
     visibility: hidden;
     opacity: 0;
+	z-index: 10000;
 
     transition-property: opacity visibility;
     transition-duration: var(--transition-duration);

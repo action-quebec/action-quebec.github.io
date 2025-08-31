@@ -99,15 +99,9 @@
 
 	}
 
-
 	&__container {
 		aspect-ratio: 5/4;
-		overflow: hidden;
 	}
-
-
-
-
 
 }
 
@@ -208,6 +202,36 @@
 			}
 
 
+			&__evtip {
+				color: var(--fg);
+				visibility: hidden;
+				transform: scale(0);
+				position: absolute;
+				bottom: 90%;
+				left: 50%;
+				background-color: var(--bg-part);
+				box-shadow: var(--shadow);;
+				z-index: 1000;
+				transform-origin: bottom left;
+				transition-property: transform visibility;
+				transition-duration: 100ms;
+				white-space: nowrap;
+				padding: 0.5rem;
+
+				@media (pointer: coarse) {
+					display: none;
+				}
+
+				hr {
+					margin: 0.5rem 0;
+					border-color: var(--fg-alpha);
+				}
+				h3 {
+					font-weight: 800;
+				}
+			}
+
+
 			&.outside {
 				color: var(--cal-text-alpha);
 			}
@@ -218,6 +242,10 @@
 
 				&:hover {
 					--opacity: 0.9;
+					.pxcalendar__month__day__evtip {
+						visibility: visible;
+						transform: scale(1);
+					}
 				}
 			}
 
