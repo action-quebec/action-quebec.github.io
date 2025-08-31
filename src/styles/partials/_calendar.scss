@@ -123,21 +123,21 @@
 
 	&__daynames {
 		// background-color: green;
+		display: flex;
+		flex-direction: row;
+		box-sizing: content-box;
 		height: 2rem;
 		width: 100%;
 		border-top: 1px solid var(--cal-border);
-		
 
-		display: flex;
-		flex-direction: row;
 
 		& > &__name:not(:last-child) {
+			
 			border-right: 1px solid var(--cal-border);
 		}
 
 		&__name {
-			flex: 1;
-			// background-color: purple;
+			width: calc(100% / 7);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -150,14 +150,20 @@
 		flex: 1;
 		display:grid;
 		grid-template-columns: repeat(7, 1fr);
+		table-layout: fixed;
+		width: 100%;
+		gap: 0;
 
 		& > &__day:not(:nth-child(7n)) {
+			
 			border-right: 1px solid var(--cal-border);
 		}
 
 		&__day {
+			// box-sizing: content-box;
 			border-top: 1px solid var(--cal-border);
 			padding: 0.5rem;
+			
 			// background-color: aqua;
 			&.outside {
 				// background-color: grey;
