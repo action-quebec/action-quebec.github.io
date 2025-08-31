@@ -46,6 +46,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	
 	--accent: #{$light-accent};
 	--shadow: 0 0.8rem 2rem 1rem #{$light-shadow};
+	--inset: inset 0 0 2rem 1rem #{$light-shadow};
 
 	--fg: #{$light-fg};
 	--bg: #{$light-bg};
@@ -77,6 +78,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 
 	--accent: #{$dark-accent};
 	--shadow: 0 0.8rem 2rem 1rem #{$dark-shadow};
+	--inset: inset 0 0 2rem 1rem #{$dark-shadow};
 
 	--fg: #{$dark-fg};
 	--bg: #{$dark-bg};

@@ -43,7 +43,18 @@ self.loadJsonProperties = async function(target, files = {}) {
 };
 
 
-    // // ====== HELPERS ======
-    // self.pad = (n)=>String(n).padStart(2,'0');
-    // self.fmtDate = (d)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    // self.isoLocal = (d)=>new Date(d).toISOString();
+/******************************************************
+ *                     Date Helpers                   *
+ ******************************************************/
+self.pad = (n)=>String(n).padStart(2,'0');
+self.fmtDate = (d)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+self.isoLocal = (d)=>new Date(d).toISOString();
+self.addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+self.inTZ = (iso, tz='America/Toronto') => new Date(iso).toLocaleDateString('fr-CA', { timeZone: tz });
+self.ymd = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0, 10);
+self.startOfWeek = (d, start = 0) => {
+	const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+	const diff = (x.getDay() - start + 7) % 7;
+	x.setDate(x.getDate() - diff);
+	return x;
+};
