@@ -3,7 +3,6 @@ export default class PXCalendar {
 	MONTH_NAMES = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 	WEEKDAY_NAMES = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
-
 	parent = null;
 	container = null;
 	label = null;
@@ -15,14 +14,13 @@ export default class PXCalendar {
 	opts = {
 		placeholder: false,
 		onRenderDate: false,
-
 	};
 
 
 	constructor(selector, opts = {}) {
-		this.opts = { ...this.opts, ...opts};
 		this.events = new Set();
 		this.current = new Date();
+		this.opts = { ...this.opts, ...opts };
 		this.parent = document.querySelector(selector);
 		this.label = this.opts.placeholder ? document.querySelector(this.opts.placeholder) : null;
 		this.container = this.parent.create('div', 'pxcalendar');

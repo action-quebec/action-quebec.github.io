@@ -116,13 +116,11 @@
 .pxcalendar {
 	width: 100%;
 	height: 100%;
-	// background-color: red;
 	display: flex;
 	flex-direction: column;
 
 
 	&__daynames {
-		// background-color: green;
 		display: flex;
 		flex-direction: row;
 		box-sizing: content-box;
@@ -130,9 +128,7 @@
 		width: 100%;
 		border-top: 1px solid var(--cal-border);
 
-
 		& > &__name:not(:last-child) {
-			
 			border-right: 1px solid var(--cal-border);
 		}
 
@@ -142,8 +138,6 @@
 			align-items: center;
 			justify-content: center;
 		}
-
-
 	}
 
 	&__month {
@@ -155,48 +149,84 @@
 		gap: 0;
 
 		& > &__day:not(:nth-child(7n)) {
-			
 			border-right: 1px solid var(--cal-border);
 		}
 
 		&__day {
-			// box-sizing: content-box;
+			--opacity: 0.6;
+			position: relative;
 			border-top: 1px solid var(--cal-border);
 			padding: 0.5rem;
-			
-			// background-color: aqua;
-			&.outside {
-				// background-color: grey;
-				// box-shadow: var(--inset);
-				color: var(--cal-text-alpha);
+
+
+			&:has(&__bgimg) {
+				--stroke: var(--bg);
+				text-shadow:
+					0.1rem 0 var(--stroke), -0.1rem 0 var(--stroke),
+					0 0.1rem var(--stroke),  0 -0.1rem var(--stroke),
+					0.1rem 0.1rem var(--stroke),  0.1rem -0.1rem var(--stroke),
+					-0.1rem 0.1rem var(--stroke), -0.1rem -0.1rem var(--stroke),
+					0.2rem 0 var(--stroke), -0.2rem 0 var(--stroke),
+					0 0.2rem var(--stroke),  0 -0.2rem var(--stroke),
+					0.2rem 0.2rem var(--stroke),  0.2rem -0.2rem var(--stroke),
+					-0.2rem 0.2rem var(--stroke), -0.2rem -0.2rem var(--stroke);
 			}
 
-			&.has-event {
+			& > span {
+				z-index: 10;
 				position: relative;
-				cursor: pointer;
-				font-weight: 800;
-				&::before {
+			}
+
+			
+			&__bgimg {
+				--image-1: url(../images/foule.webp);
+				--image-2: none;
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-image: var(--image-1);
+				background-position: center center;
+				background-repeat: no-repeat;
+				background-size: cover;
+				opacity: var(--opacity);
+				transition: opacity 50ms;
+				z-index: 5;
+
+				&::after {
 					content: '';
 					position: absolute;
 					top: 0;
 					left: 0;
 					width: 100%;
 					height: 100%;
-					background-color: var(--accent);
-					opacity: 0.2;
+					clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
+					background-image: var(--image-2);
+					background-position: center center;
+					background-repeat: no-repeat;
+					background-size: cover;
 				}
-				
-				// background-color: var(--accent);
-				// box-shadow: var(--inset)
+
+			}
+
+
+			&.outside {
+				color: var(--cal-text-alpha);
+			}
+
+			&.has-event {
+				// position: relative;
+				cursor: pointer;
+				font-weight: 700;
+
+				&:hover {
+					--opacity: 0.9;
+				}
 			}
 
 			&.today {
-				// color: yellow;
-				// & > span {
-				// 	background-color: var(--accent);
-				// }
-				position: relative;
-
+				// position: relative;
 				&::after {
 					content: '';
 					position: absolute;
@@ -206,9 +236,8 @@
 					height: 2rem;
 					background-color: var(--accent);
 					clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+					z-index: 50;
 				}
-
-
 			}
 
 

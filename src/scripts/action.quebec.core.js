@@ -10,7 +10,7 @@ const MONTHS_AHEAD = 12;
 window.Quebec = {
 
 	secrets: null,
-	
+
 	prec: null,
 	suiv: null,
 	title: null,
@@ -20,14 +20,8 @@ window.Quebec = {
 
 
 	unPays: async function () {
-		await Promise.all([
-			loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' }),
-			this.initCalendar()
-		]);
-		
+		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: 'bt1oh97j7X.json' })]);
 		this.loadGoogleCalendar();
-
-		console.log('Québec un pays!');
 	},
 
 
@@ -54,8 +48,8 @@ window.Quebec = {
 
 
 	queryGoogleCalendar: async function() {
-		const cache = localStorage.getItem('lastItems');
-		if(cache) return this.mapGCalEvents(JSON.parse(cache));
+		// const cache = localStorage.getItem('lastItems');
+		// if(cache) return this.mapGCalEvents(JSON.parse(cache));
 		const { timeMin, timeMax } = this.getRangeBounds();
 		const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(this.secrets.CALENDAR_ID)}/events`);
 		url.searchParams.set('key', this.secrets.GOOGLE_API_KEY);
@@ -76,7 +70,7 @@ window.Quebec = {
 	getRangeBounds: function(){
 		const now = new Date();
 		const min = new Date(now);
-		const max = new Date(now); 
+		const max = new Date(now);
 		min.setMonth(min.getMonth() - MONTHS_BACK);
 		max.setMonth(max.getMonth() + MONTHS_AHEAD);
 		return { timeMin: min.toISOString(), timeMax: max.toISOString() };
@@ -88,15 +82,30 @@ window.Quebec = {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
+			const { html, firstImage } = this.replaceImageLinks(it.description || '');
 			return {
 				id: it.id,
 				title: it.summary || '(Sans titre)',
 				start, end,
-				location: it.location || '',
+				location: it.location || null,
 				raw: { htmlLink: it.htmlLink },
-				description: it.description || '',
+				description: html,
+				image: firstImage,
 			};
 		});
+	},
+
+
+	replaceImageLinks: function (html) {
+		const regex = /<a\s+href="([^"]+\.(?:jpg|jpeg|png|webp|gif|svg))"[^>]*>.*?<\/a>/gi;
+		let firstImage = null;
+
+		const newHtml = html.replace(regex, (match, url) => {
+			if (!firstImage) firstImage = url; // première image trouvée
+			return `<img src="${url}">`;
+		});
+
+		return { html: newHtml, firstImage };
 	},
 
 
@@ -111,12 +120,13 @@ window.Quebec = {
 
 	renderEvent: async function(date, elm) {
 		const events = this.getEventsByDate(date);
-		events.forEach(v => {
-			console.log(v);
-		});
+
+		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
+		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
+		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
 
 
-		// console.log(events);
+
 	},
 
 
