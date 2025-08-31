@@ -41,3 +41,9 @@ self.loadJsonProperties = async function(target, files = {}) {
 	}
 	return target;
 };
+
+
+    // // ====== HELPERS ======
+    // self.pad = (n)=>String(n).padStart(2,'0');
+    // self.fmtDate = (d)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    // self.isoLocal = (d)=>new Date(d).toISOString();

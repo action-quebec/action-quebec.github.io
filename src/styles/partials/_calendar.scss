@@ -1,6 +1,11 @@
 .calendrier {
 	user-select: none;
 
+	& > div {
+		-webkit-box-shadow: var(--shadow);
+		box-shadow: var(--shadow);
+	}
+
 	&__pagination {
 		background-color: var(--bg-alpha);
 		display: flex;
@@ -101,30 +106,62 @@
 	}
 
 
-	& > div {
-		-webkit-box-shadow: var(--shadow);
-		box-shadow: var(--shadow);
+
+
+
+}
+
+
+
+.pxcalendar {
+	width: 100%;
+	height: 100%;
+	// background-color: red;
+	display: flex;
+	flex-direction: column;
+
+
+	&__daynames {
+		// background-color: green;
+		height: 2rem;
+		width: 100%;
+		border-top: 1px solid var(--cal-border);
+		
+
+		display: flex;
+		flex-direction: row;
+
+		& > &__name:not(:last-child) {
+			border-right: 1px solid var(--cal-border);
+		}
+
+		&__name {
+			flex: 1;
+			// background-color: purple;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+
 	}
 
+	&__month {
+		flex: 1;
+		display:grid;
+		grid-template-columns: repeat(7, 1fr);
 
-	&__container {
-		.toastui-calendar-daygrid-cell {
-			border-left: 0 !important;
+		& > &__day:not(:nth-child(7n)) {
+			border-right: 1px solid var(--cal-border);
 		}
 
-		.toastui-calendar-daygrid-cell:not(:last-child) {
-			border-right: 1px solid var(--cal-border) !important;
+		&__day {
+			border-top: 1px solid var(--cal-border);
+			// background-color: aqua;
 		}
 
-		.toastui-calendar-weekday-grid,
-		.toastui-calendar-weekday-grid-line {
-			border-top: 1px solid var(--cal-border) !important;
-		}
 
-		.toastui-calendar-template-monthDayName {
-			text-align: center;
-			font-size: 1.4rem;
-		}
 	}
+
 
 }

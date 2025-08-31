@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calendrier vanilla</title>
+<style>
+  :root{
+    --bg:#0b1220; --fg:#e5e7eb; --muted:#94a3b8; --border:#1f2937;
+    --accent:#60a5fa; --accent-fg:#0b1220;
+  }
+  body{margin:0; font-family:system-ui,Segoe UI,Inter,Arial; background:var(--bg); color:var(--fg);}
+
+  .calendar{
+    max-width: 1000px; margin: 24px auto; padding:16px; border:1px solid var(--border); border-radius:16px;
+    background: color-mix(in oklab, var(--bg) 92%, black 8%);
+  }
+
+  .cal-header{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;
+  }
+  .cal-title{ font-size: clamp(18px, 3vw, 28px); font-weight: 700; letter-spacing:.5px; }
+  .cal-controls{ display:flex; gap:8px; }
+  .cal-btn{
+    border:1px solid var(--border); background: transparent; color:var(--fg);
+    padding:8px 10px; border-radius:10px; cursor:pointer;
+  }
+  .cal-btn:hover{ outline:2px solid var(--border); }
+
+  .weekday-row{
+    display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; margin-bottom:6px; user-select:none;
+  }
+  .weekday{ text-align:center; font-size:12px; color:var(--muted); padding:6px 0; }
+
+  .grid{
+    display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;
+  }
+
+  /* Case d’un jour */
+  .day{
+    position:relative; min-height: 110px; /* ⇠ augmente pour “gros” calendrier */
+    border:1px solid var(--border); border-radius:12px; padding:8px; overflow:hidden;
+    background: color-mix(in oklab, var(--bg) 94%, black 6%);
+  }
+  .day:hover{ outline:2px solid var(--border); }
+  .day-number{ font-weight:700; font-size:14px; opacity: .9; }
+
+  /* Jours hors du mois courant */
+  .day.outside{ opacity:.45; }
+
+  /* Aujourd’hui */
+  .day.today{ box-shadow: 0 0 0 2px var(--accent) inset; }
+
+  /* Indicateur d’événement (ex: halo) */
+  .day.has-event::after{
+    content:''; position:absolute; inset:10px; border-radius:10px;
+    outline: 2px solid var(--accent); pointer-events:none;
+  }
+
+  /* Exemple de puces événement si tu veux en mettre plusieurs + libres d’ajouter ton HTML dedans */
+  .dots{ position:absolute; left:8px; bottom:8px; display:flex; gap:6px; }
+  .dot{ width:8px; height:8px; border-radius:999px; background: var(--accent); }
+
+  @media (max-width:700px){
+    .day{ min-height: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="calendar" id="calendar"></div>
+
+<script>
+(() => {
+  // ====== Config basique ======
+  const START_DOW = 0; // 0 = dimanche, 1 = lundi
+  const MONTH_NAMES = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const WEEKDAY_NAMES = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+
+  // ====== Utilitaires dates ======
+  const ymd = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0,10);
+  const startOfWeek = (d, start=0) => {
+    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const diff = (x.getDay() - start + 7) % 7;
+    x.setDate(x.getDate() - diff);
+    return x;
+  };
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
+
+  // ====== Construction DOM ======
+  const root = document.getElementById('calendar');
+
+  root.innerHTML = `
+    <div class="cal-header">
+      <div class="cal-title" id="cal-title"></div>
+      <div class="cal-controls">
+        <button class="cal-btn" data-action="prev">◀</button>
+        <button class="cal-btn" data-action="today">Aujourd'hui</button>
+        <button class="cal-btn" data-action="next">▶</button>
+      </div>
+    </div>
+    <div class="weekday-row" id="weekday-row"></div>
+    <div class="grid" id="grid"></div>
+  `;
+
+  const $title = root.querySelector('#cal-title');
+  const $week = root.querySelector('#weekday-row');
+  const $grid  = root.querySelector('#grid');
+
+  // En-têtes jours
+  $week.innerHTML = WEEKDAY_NAMES.map(n => `<div class="weekday">${n}</div>`).join('');
+
+  // État courant
+  let current = new Date(); // mois affiché
+  let eventDays = new Set(); // "YYYY-MM-DD" qui ont ≥1 event (tu peux mettre ce que tu veux)
+
+  function render(){
+    // Titre (mois année)
+    $title.textContent = `${MONTH_NAMES[current.getMonth()]} ${current.getFullYear()}`;
+
+    // Première date à afficher (début de la grille)
+    const firstOfMonth = new Date(current.getFullYear(), current.getMonth(), 1);
+    const gridStart = startOfWeek(firstOfMonth, START_DOW);
+
+    // 6 semaines * 7 jours = 42 cases => couverture sûre
+    const cells = [];
+    for (let i=0;i<42;i++){
+      const d = addDays(gridStart, i);
+      const isOutside = d.getMonth() !== current.getMonth();
+      const isToday = ymd(d) === ymd(new Date());
+      const iso = ymd(d);
+      const hasEvent = eventDays.has(iso);
+
+      cells.push(`
+        <div class="day${isOutside?' outside':''}${isToday?' today':''}${hasEvent?' has-event':''}" data-date="${iso}">
+          <div class="day-number">${d.getDate()}</div>
+          <!-- Tu peux injecter ici ton HTML custom pour chaque jour -->
+          ${hasEvent ? `<div class="dots"><span class="dot"></span></div>` : ''}
+        </div>
+      `);
+    }
+    $grid.innerHTML = cells.join('');
+  }
+
+  // Navigation
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cal-btn');
+    if(!btn) return;
+    const act = btn.dataset.action;
+    if(act === 'prev'){
+      current = new Date(current.getFullYear(), current.getMonth()-1, 1);
+    } else if(act === 'next'){
+      current = new Date(current.getFullYear(), current.getMonth()+1, 1);
+    } else if(act === 'today'){
+      current = new Date();
+    }
+    render();
+  });
+
+  // API simple pour poser tes événements (par dates ISO)
+  function setEvents(isoDatesOrRanges){
+    // Accepte: ["2025-09-01", "2025-09-05"] OU [{start:"2025-09-10", end:"2025-09-12"}, ...]
+    const set = new Set();
+    for(const it of isoDatesOrRanges){
+      if(typeof it === 'string'){
+        set.add(it);
+      }else if(it && it.start){
+        const s = new Date(it.start);
+        const e = new Date(it.end ?? it.start);
+        for(let d=new Date(s.getFullYear(), s.getMonth(), s.getDate()); d<=e; d.setDate(d.getDate()+1)){
+          set.add(ymd(d));
+        }
+      }
+    }
+    eventDays = set;
+    render();
+  }
+
+  // Option : adaptateur pour tes items Google Calendar (start.date / start.dateTime)
+  function setEventsFromGoogle(items){
+    const ranges = [];
+    for(const ev of items){
+      let s, e;
+      if(ev.start?.date){ // all-day (end exclusif côté Google)
+        s = ev.start.date;
+        const end = new Date(ev.end?.date ?? ev.start.date);
+        end.setDate(end.getDate()-1);
+        e = ymd(end);
+      }else{
+        const sdt = new Date(ev.start?.dateTime ?? ev.start);
+        const edt = new Date(ev.end?.dateTime ?? ev.end ?? ev.start);
+        s = ymd(sdt); e = ymd(edt);
+      }
+      ranges.push({start:s, end:e});
+    }
+    setEvents(ranges);
+  }
+
+  // Expose une mini-API si tu veux piloter de l’extérieur
+  window.vanillaCal = { setEvents, setEventsFromGoogle, goTo(date){ current=new Date(date); render(); } };
+
+  // Démo : quelques dates “avec events”
+  setEvents([
+    "2025-09-02",
+    { start:"2025-09-10", end:"2025-09-12" },
+    "2025-08-31", // montre que les jours hors mois sont taggés aussi
+    "2025-10-01"
+  ]);
+})();
+</script>
+</body>
+</html>
