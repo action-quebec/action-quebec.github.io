@@ -10,13 +10,11 @@ const MONTHS_AHEAD = 12;
 window.Quebec = {
 
 	secrets: null,
+	events: null,
 
+	calendar: null,
 	prec: null,
 	suiv: null,
-	title: null,
-	calendar: null,
-
-	events: null,
 
 
 	unPays: async function () {
@@ -28,11 +26,11 @@ window.Quebec = {
 	initCalendar: async function() {
 		this.calendar = new PXCalendar('.calendrier__container', {
 			placeholder: '.calendrier__pagination__cour',
-			onRenderDate: (date, elm) => this.renderEvent(date, elm)
+			onRenderDate: (date, elm) => this.renderEvent(date, elm),
+			onClickDate: (date, elm) => this.clickEvent(date, elm)
 		});
 		document.querySelector('.calendrier__pagination__prec > span').addEventListener('click', e => this.calendar.previous());
 		document.querySelector('.calendrier__pagination__suiv > span').addEventListener('click', e => this.calendar.next());
-		this.title = document.querySelector('.calendrier__pagination__cour');
 	},
 
 
@@ -48,8 +46,8 @@ window.Quebec = {
 
 
 	queryGoogleCalendar: async function() {
-		// const cache = localStorage.getItem('lastItems');
-		// if(cache) return this.mapGCalEvents(JSON.parse(cache));
+		const cache = localStorage.getItem('lastItems');
+		if(cache) return this.mapGCalEvents(JSON.parse(cache));
 		const { timeMin, timeMax } = this.getRangeBounds();
 		const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(this.secrets.CALENDAR_ID)}/events`);
 		url.searchParams.set('key', this.secrets.GOOGLE_API_KEY);
@@ -97,22 +95,20 @@ window.Quebec = {
 
 
 	replaceImageLinks: function (html) {
-		const regex = /<a\s+href="([^"]+\.(?:jpg|jpeg|png|webp|gif|svg))"[^>]*>.*?<\/a>/gi;
+		const regex = /<a\s+href="([^"]+\.(?:jpg|jpeg|png|webp|gif|svg))"[^>]*>(.*?)<\/a>/gi;
 		let firstImage = null;
-
-		const newHtml = html.replace(regex, (match, url) => {
-			if (!firstImage) firstImage = url; // première image trouvée
-			return `<img src="${url}">`;
+		const newHtml = html.replace(regex, (match, url, title) => {
+			if (!firstImage) firstImage = url;
+			return `<img src="${url}" alt="${escapeForAttr(title)}">`;
 		});
-
 		return { html: newHtml, firstImage };
 	},
 
 
 	getEventsByDate: function(date) {
 		return this.events.filter(ev => {
-			const s = inTZ(ev.start);
-			const e = inTZ(new Date(new Date(ev.end) - 1));
+			const s = inTZ(ev.start, TIMEZONE);
+			const e = inTZ(new Date(new Date(ev.end) - 1), TIMEZONE);
 			return s <= date && date <= e;
 		});
 	},
@@ -120,13 +116,14 @@ window.Quebec = {
 
 	renderEvent: async function(date, elm) {
 		const events = this.getEventsByDate(date);
-
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
 		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
 		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
+	},
 
 
-
+	clickEvent: async function(date, elm) {
+		console.log(date);
 	},
 
 

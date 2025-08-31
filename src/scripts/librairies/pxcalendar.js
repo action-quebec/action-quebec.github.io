@@ -14,6 +14,7 @@ export default class PXCalendar {
 	opts = {
 		placeholder: false,
 		onRenderDate: false,
+		onClickDate: false,
 	};
 
 
@@ -46,6 +47,7 @@ export default class PXCalendar {
 			if(hasEvent) cell.classList.add('has-event');
 			if(isToday) cell.classList.add('today');
 			if(hasEvent && this.opts.onRenderDate) this.opts.onRenderDate(iso, cell);
+			if(hasEvent && this.opts.onClickDate) cell.addEventListener('click', () => this.opts.onClickDate(iso, cell));
 			cells.push(cell);
 		}
 		this.month.replaceChildren(...cells);

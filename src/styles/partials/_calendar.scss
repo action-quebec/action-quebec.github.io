@@ -44,7 +44,7 @@
 				transition: filter 100ms;
 
 				&:hover {
-					filter: drop-shadow(0px 0px 8px var(--accent));
+					filter: drop-shadow(0 0 0.5rem var(--accent));
 				}
 
 				&::before {
@@ -79,7 +79,7 @@
 
 
 				&:hover {
-					filter: drop-shadow(0px 0px 8px var(--accent));
+					filter: drop-shadow(0 0 0.5rem var(--accent));
 				}
 
 				&::after {
@@ -126,10 +126,10 @@
 		box-sizing: content-box;
 		height: 2rem;
 		width: 100%;
-		border-top: 1px solid var(--cal-border);
+		border-top: 0.1rem solid var(--cal-border);
 
 		& > &__name:not(:last-child) {
-			border-right: 1px solid var(--cal-border);
+			border-right: 0.1rem solid var(--cal-border);
 		}
 
 		&__name {
@@ -149,27 +149,24 @@
 		gap: 0;
 
 		& > &__day:not(:nth-child(7n)) {
-			border-right: 1px solid var(--cal-border);
+			border-right: 0.1rem solid var(--cal-border);
 		}
 
 		&__day {
 			--opacity: 0.6;
 			position: relative;
-			border-top: 1px solid var(--cal-border);
+			border-top: 0.1rem solid var(--cal-border);
 			padding: 0.5rem;
 
 
-			&:has(&__bgimg) {
+			&:has(&__bgimg) > span {
 				--stroke: var(--bg);
 				text-shadow:
 					0.1rem 0 var(--stroke), -0.1rem 0 var(--stroke),
 					0 0.1rem var(--stroke),  0 -0.1rem var(--stroke),
 					0.1rem 0.1rem var(--stroke),  0.1rem -0.1rem var(--stroke),
-					-0.1rem 0.1rem var(--stroke), -0.1rem -0.1rem var(--stroke),
-					0.2rem 0 var(--stroke), -0.2rem 0 var(--stroke),
-					0 0.2rem var(--stroke),  0 -0.2rem var(--stroke),
-					0.2rem 0.2rem var(--stroke),  0.2rem -0.2rem var(--stroke),
-					-0.2rem 0.2rem var(--stroke), -0.2rem -0.2rem var(--stroke);
+					-0.1rem 0.1rem var(--stroke), -0.1rem -0.1rem var(--stroke);
+				filter: drop-shadow(0 0 0.4rem var(--stroke));
 			}
 
 			& > span {

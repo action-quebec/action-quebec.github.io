@@ -44,6 +44,19 @@ self.loadJsonProperties = async function(target, files = {}) {
 
 
 /******************************************************
+ *            Escape String for Attributes            *
+ ******************************************************/
+self.escapeForAttr = (str) => {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+
+/******************************************************
  *                     Date Helpers                   *
  ******************************************************/
 self.pad = (n)=>String(n).padStart(2,'0');
