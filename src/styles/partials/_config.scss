@@ -3,9 +3,11 @@ $font-base:   18;
 $font-break:  1024;
 $font-resp:   calc($font-base * 100 / $font-break);
 
+$modal-break: 768;
+$modal-resp:   calc($font-base * 100 / $modal-break);
 
 :root {
-	--modal-break:     768px;
+
     --font-family:     #{$font-family};
     --font-size-base:  #{$font-base}px;
     --font-size-break: #{$font-break}px;
@@ -13,5 +15,10 @@ $font-resp:   calc($font-base * 100 / $font-break);
     --font-size:       min(var(--font-size-resp), var(--font-size-base));
     --scale-break:     #{$font-break};
     --scale-index:     min(calc(var(--vwpx) / var(--scale-break)), 1);
+
+	--modal-break:     #{$modal-break}px;
+    --modal-resp:      #{$modal-resp}vw;
+    --modal-size:      min(var(--modal-resp), var(--font-size-base));
+
     --scheme-transition-duration: 400ms;
 }

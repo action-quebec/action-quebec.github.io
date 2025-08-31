@@ -5,20 +5,25 @@ export default class Modal {
 
 	opts = {
 		class: false,
-		block: false,
-		bgClick: false,
+		lock: false,
+		onlyBgClick: false,
 	};
 
-
+	
 	constructor(opts = {}) {
 		this.opts = { ...this.opts, ...opts };
-		
 		this.container = document.body.create('div', 'modal');
 		this.placeholder = this.container.create('div', 'modal__placeholder');
 		if(this.opts.class) this.container.classList.add(this.opts.class);
+		if(!this.opts.lock) this.container.addEventListener('click', e => this.click(e));
 
-		this.container.addEventListener('click', e => this.hide());
+	}
 
+
+	async click(evt) {
+		if(!this.opts.onlyBgClick || evt.target.classList.contains('modal') || evt.target.classList.contains('modal__placeholder')) {
+			this.hide();
+		}
 	}
 
 
@@ -29,10 +34,6 @@ export default class Modal {
 			case 'array': this.placeholder.replaceChildren(...elm); break;
 			default: return false;
 		}
-		
-		// if(typeof elm == 'string') this.placeholder.innerHTML = elm;
-		// if(typeof elm)
-
 		this.container.classList.add('show');
 		return true;
 	}

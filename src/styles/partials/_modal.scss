@@ -56,26 +56,11 @@
 
 
 
-
-.modal-events {
-	position: relative;
-	width: 100%;
-	max-width: var(--modal-break);
-	padding: 2rem;
-
-	&__placeholder {
-		width: 100%;
-		height: 50vh;
-		background-color: var(--bg);
-		box-shadow: var(--shadow);
-		overflow-y: auto;
-		padding: 1rem;
-	}
-
-	&__event {
-		img {
-			width: 100%;
-		}
-	}
-
+body:has(.modal.show) {
+	overflow-y: clip;
+	// height: 100vh;
+	// width: 100vw;
+	// overscroll-behavior: contain;
+	overscroll-behavior: contain;
+	// background-color: red;
 }

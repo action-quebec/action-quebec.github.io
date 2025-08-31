@@ -22,7 +22,7 @@ window.Quebec = {
 
 	unPays: async function () {
 		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: 'bt1oh97j7X.json' })]);
-		this.modal = new ModalEvent();
+		this.modal = new Modal({ onlyBgClick: true });
 		this.loadGoogleCalendar();
 // 		setTimeout(() => {
 // this.modal.show(`<div class="modal-test"></div>`);
@@ -35,7 +35,7 @@ window.Quebec = {
 		this.calendar = new PXCalendar('.calendrier__container', {
 			placeholder: '.calendrier__pagination__cour',
 			onRenderDate: (date, elm) => this.renderEvent(date, elm),
-			onClickDate: (date, elm) => this.clickEvent(date, elm)
+			onClickDate: (date, elm) => this.clickEventDay(date, elm)
 		});
 		document.querySelector('.calendrier__pagination__prec > span').addEventListener('click', e => this.calendar.previous());
 		document.querySelector('.calendrier__pagination__suiv > span').addEventListener('click', e => this.calendar.next());
@@ -130,35 +130,34 @@ window.Quebec = {
 	},
 
 
-	clickEvent: async function(date, elm) {
+	clickEventDay: async function(date, elm) {
 		
 		const container = create('div', 'modal-events');
 		const placeholder = container.create('div', 'modal-events__placeholder');
+		const close = placeholder.create('div', 'modal-events__placeholder__close');
+		const dateholder = placeholder.create('div', 'modal-events__placeholder__date');
+		const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
 		const events = this.getEventsByDate(date);
 		const eventDetails = events.map(v => this.renderEventDetails(v));
+		
+		const d = new Date(`${date}T00:00:00`);
+		const options = { weekday: "long", day: "numeric", month: "long", timeZone: "America/Toronto"};
+		const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
+		dateholder.innerHTML = formatted;		
 
-		placeholder.append(...eventDetails);
-		// console.log(eventDetails);
+		close.title = 'Fermer';
+		close.addEventListener('click', e => this.modal.hide());
 
+		placeholderEvents.append(...eventDetails);
 		this.modal.show(container);
-		// this.modal.show(`<div class="modal-events"><div>${date}</div></div>`);
 	},
 
 
 	renderEventDetails: function(evt) {
-		const container = create('div', 'modal-events__event');
+		const container = create('div', 'modal-events__placeholder__events__event');
 		container.innerHTML = evt.description;
 		return container;
 	}
 
 
 };
-
-
-
-class ModalEvent extends Modal {
-	constructor(opts = {}) {
-        super(opts);
-	}
-}
-

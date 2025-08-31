@@ -8,6 +8,10 @@
 
 html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+    // overflow-y: auto;
+    overscroll-behavior: contain;
+    // overflow-y: scroll;
     font-size: var(--font-size);
 }
 
@@ -16,6 +20,7 @@ body {
     color: var(--fg);
     background-color: var(--bg);
     overflow-x: hidden;
+    
     transition: background-color var(--scheme-transition-duration);
 
     &::before {
