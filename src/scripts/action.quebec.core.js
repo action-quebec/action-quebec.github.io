@@ -1,10 +1,12 @@
 import './librairies/helpers.js';
 import './librairies/lightswitch.js';
+import Modal from './librairies/modal.js'
 import PXCalendar from './librairies/pxcalendar.js';
 
-const TIMEZONE = 'America/Toronto';
-const MONTHS_BACK = 6;
+const MONTHS_BACK  = 6;
 const MONTHS_AHEAD = 12;
+const TIMEZONE     = 'America/Toronto';
+
 
 
 window.Quebec = {
@@ -12,6 +14,7 @@ window.Quebec = {
 	secrets: null,
 	events: null,
 
+	modal: null,
 	calendar: null,
 	prec: null,
 	suiv: null,
@@ -19,7 +22,12 @@ window.Quebec = {
 
 	unPays: async function () {
 		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: 'bt1oh97j7X.json' })]);
+		this.modal = new ModalEvent();
 		this.loadGoogleCalendar();
+// 		setTimeout(() => {
+// this.modal.show(`<div class="modal-test"></div>`);
+// 		}, 2000);
+		
 	},
 
 
@@ -46,8 +54,8 @@ window.Quebec = {
 
 
 	queryGoogleCalendar: async function() {
-		const cache = localStorage.getItem('lastItems');
-		if(cache) return this.mapGCalEvents(JSON.parse(cache));
+		// const cache = localStorage.getItem('lastItems');
+		// if(cache) return this.mapGCalEvents(JSON.parse(cache));
 		const { timeMin, timeMax } = this.getRangeBounds();
 		const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(this.secrets.CALENDAR_ID)}/events`);
 		url.searchParams.set('key', this.secrets.GOOGLE_API_KEY);
@@ -123,8 +131,34 @@ window.Quebec = {
 
 
 	clickEvent: async function(date, elm) {
-		console.log(date);
+		
+		const container = create('div', 'modal-events');
+		const placeholder = container.create('div', 'modal-events__placeholder');
+		const events = this.getEventsByDate(date);
+		const eventDetails = events.map(v => this.renderEventDetails(v));
+
+		placeholder.append(...eventDetails);
+		// console.log(eventDetails);
+
+		this.modal.show(container);
+		// this.modal.show(`<div class="modal-events"><div>${date}</div></div>`);
 	},
 
 
+	renderEventDetails: function(evt) {
+		const container = create('div', 'modal-events__event');
+		container.innerHTML = evt.description;
+		return container;
+	}
+
+
 };
+
+
+
+class ModalEvent extends Modal {
+	constructor(opts = {}) {
+        super(opts);
+	}
+}
+

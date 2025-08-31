@@ -5,7 +5,8 @@ $font-resp:   calc($font-base * 100 / $font-break);
 
 
 :root {
-	--font-family:     #{$font-family};
+	--modal-break:     768px;
+    --font-family:     #{$font-family};
     --font-size-base:  #{$font-base}px;
     --font-size-break: #{$font-break}px;
     --font-size-resp:  #{$font-resp}vw;

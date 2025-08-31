@@ -213,7 +213,6 @@
 			}
 
 			&.has-event {
-				// position: relative;
 				cursor: pointer;
 				font-weight: 700;
 
@@ -223,7 +222,6 @@
 			}
 
 			&.today {
-				// position: relative;
 				&::after {
 					content: '';
 					position: absolute;
