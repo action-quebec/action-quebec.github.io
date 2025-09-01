@@ -154,13 +154,8 @@
 
 
 			&:has(&__bgimg) > span {
-				--stroke: var(--bg);
-				text-shadow:
-					0.1rem 0 var(--stroke), -0.1rem 0 var(--stroke),
-					0 0.1rem var(--stroke),  0 -0.1rem var(--stroke),
-					0.1rem 0.1rem var(--stroke),  0.1rem -0.1rem var(--stroke),
-					-0.1rem 0.1rem var(--stroke), -0.1rem -0.1rem var(--stroke);
-				filter: drop-shadow(0 0 0.4rem var(--stroke));
+				text-shadow: var(--text-stroke);
+				filter: drop-shadow(0 0 0.4rem var(--bg));
 			}
 
 			& > span {

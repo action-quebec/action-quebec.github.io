@@ -2,7 +2,8 @@
   "dependencies": {
     "esbuild": "^0.25.9",
     "ignore": "^7.0.5",
-    "sass": "^1.91.0"
+    "sass": "^1.91.0",
+    "swiper": "^11.2.10"
   },
   "scripts": {
     "build": "node scripts/build.js",

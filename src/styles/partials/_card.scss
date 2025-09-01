@@ -1,0 +1,59 @@
+.events-swiper {
+	margin-top: 1rem;
+}
+
+.event-card {
+	--image: url(../images/foule.webp);
+	position: relative;
+    aspect-ratio: 2/3;
+	// min-height: 20px;
+	
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+	  row-gap: 1rem;
+
+	z-index: inherit;
+	padding: 1rem;
+	cursor: pointer;
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-image: var(--image);
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		opacity: 0.6;
+		z-index: -1;
+		transition: opacity 150ms;
+	}
+
+	&:hover {
+		&::before {
+			opacity: 1;
+		}
+	}
+	
+
+	&__title {
+		font-size: 2rem;
+		font-weight: 700;
+		text-shadow: var(--text-stroke);
+		filter: drop-shadow(0 0 0.4rem var(--bg));
+		flex-grow: 1;
+	}
+
+	&__date {
+		font-size: 2rem;
+		font-weight: 800;
+		text-shadow: var(--text-stroke);
+		filter: drop-shadow(0 0 0.4rem var(--bg));
+		text-align: right;
+	}
+
+}

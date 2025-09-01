@@ -2,6 +2,8 @@ import './librairies/helpers.js';
 import './librairies/lightswitch.js';
 import Modal from './librairies/modal.js'
 import PXCalendar from './librairies/pxcalendar.js';
+import Swiper from 'swiper';
+import { Autoplay } from 'swiper/modules';
 
 const MONTHS_BACK  = 6;
 const MONTHS_AHEAD = 12;
@@ -16,6 +18,7 @@ window.Quebec = {
 	secrets: null,
 	events: null,
 
+	swiper: null,
 	modal: null,
 	calendar: null,
 	prec: null,
@@ -52,6 +55,7 @@ window.Quebec = {
 			return ymd(d);
 		}));
 		this.calendar.addEvents(eventSet);
+		this.addUpcomingEvents();
 	},
 
 
@@ -108,10 +112,10 @@ window.Quebec = {
 		const regex = /<a\s+href="([^"]+\.(?:jpg|jpeg|png|webp|gif|svg))"[^>]*>(.*?)<\/a>/gi;
 		let firstImage = null;
 		const newHtml = html.replace(regex, (match, url, title) => {
-			if (!firstImage) firstImage = url;
+			if (!firstImage) { firstImage = url; return ''; }
 			return `<img src="${url}" alt="${escapeForAttr(title)}">`;
 		});
-		return { html: newHtml, firstImage };
+		return { html: newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').trimStart(), firstImage };
 	},
 
 
@@ -124,12 +128,43 @@ window.Quebec = {
 	},
 
 
+	getUpcomingEvents: function() {
+		const now = Date.now();
+		return this.events.filter(e => Date.parse(e.start) > now);
+	},
+
+
+	addUpcomingEvents: function() {
+		const events = this.getUpcomingEvents();
+		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
+
+		events.forEach(evt => {
+			const card = placeholder.create('div', 'swiper-slide');
+			card.classList.add('event-card');
+			if(evt.image) card.style.setProperty('--image', `url(${evt.image})`);
+			card.create('div', 'event-card__title', evt.title);
+			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: "America/Toronto"}).format(new Date(evt.start));
+			card.create('div', 'event-card__date', formatted);
+		})
+
+		this.swiper = new Swiper(".events-swiper", {
+			modules: [Autoplay],
+			slidesPerView: 3,
+			spaceBetween: 30,
+			autoplay: { delay: 5000, disableOnInteraction: false },
+			pagination: {
+				el: ".swiper-pagination",
+				clickable: true,
+			},
+		});
+	},
+
+
 	renderEvent: async function(date, elm) {
 		const events = this.getEventsByDate(date);
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
 		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
-		const tipcontent = events.map(e => this.renderEventTip(e)).join('<hr>');
-		evtip.innerHTML = tipcontent;
+		evtip.innerHTML = events.map(e => this.renderEventTip(e)).join('<hr>');
 
 		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
 		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
@@ -139,21 +174,20 @@ window.Quebec = {
 	renderEventTip: function(evt) {
 		const time = new Intl.DateTimeFormat('fr-CA', { timeZone: TIMEZONE, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(evt.start));
 		let str = `<h3>${evt.title}</h3>`;
-		str += `<strong>Heure:</strong> ${time}`;
 		if(evt.location) {
 			const { city, place } = this.parseGoogleAddress(evt.location);
 			if(city) {
 				let addr = city;
 				if(place) addr = `${place}, ${addr}`;
-				str += `<br><strong>Endroit:</strong> ${addr}`;
+				str += `<strong>Où:</strong> ${addr}<br>`;
 			}
 		}
+		str += `<strong>Quand:</strong> ${time}`;
 		return str;
 	},
 
 
 	clickEventDay: async function(date, elm) {
-		
 		const container = create('div', 'modal-events');
 		const placeholder = container.create('div', 'modal-events__placeholder');
 		const close = placeholder.create('div', 'modal-events__placeholder__close');
@@ -161,15 +195,12 @@ window.Quebec = {
 		const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
 		const events = this.getEventsByDate(date);
 		const eventDetails = events.map(v => this.renderEventDetails(v));
-		
 		const d = new Date(`${date}T00:00:00`);
 		const options = { weekday: "long", day: "numeric", month: "long", timeZone: "America/Toronto"};
 		const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
 		dateholder.innerHTML = formatted;		
-
 		close.title = 'Fermer';
 		close.addEventListener('click', e => this.modal.hide());
-
 		placeholderEvents.append(...eventDetails);
 		this.modal.show(container);
 	},
@@ -177,7 +208,20 @@ window.Quebec = {
 
 	renderEventDetails: function(evt) {
 		const container = create('div', 'modal-events__placeholder__events__event');
-		container.innerHTML = evt.description;
+		const time = this.formatLabel(evt.start);
+		let str = '';
+		if(evt.image) str += `<img src="${evt.image}"><br>`;
+		str += `<h1>${evt.title}</h1>`;
+		if(evt.location) {
+			const addrparts = this.parseGoogleAddress(evt.location);
+			let addr = `${addrparts.street}, ${addrparts.city}`;
+			if(addrparts.place) addr = `${addrparts.place}, ${addr}`;
+			const url = `https://www.google.com/maps/search/${encodeURI(evt.location)}`
+			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
+		}
+		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
+		str += evt.description;
+		container.innerHTML = str;
 		return container;
 	},
 
@@ -194,6 +238,16 @@ window.Quebec = {
 			postal: g.postal?.replace(/\s+/g, ' ') || null,
 			country: g.country?.trim() || null
 		};
+	},
+
+
+	formatLabel: function (iso, tz = TIMEZONE) {
+		const d = new Date(iso);
+		const datePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long'}).format(d);
+		const timePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
+		const cap = datePart.charAt(0).toUpperCase() + datePart.slice(1);
+		const time = timePart.replace(/\u202F|\u00A0/g, ' ');
+		return `${cap} ${time}`;
 	},
 
 

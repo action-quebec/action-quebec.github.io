@@ -21,4 +21,12 @@ $modal-resp:   calc($font-base * 100 / $modal-break);
     --modal-size:      min(var(--modal-resp), var(--font-size-base));
 
     --scheme-transition-duration: 400ms;
+
+    --text-stroke: 
+					0.1rem 0 var(--bg), -0.1rem 0 var(--bg),
+					0 0.1rem var(--bg),  0 -0.1rem var(--bg),
+					0.1rem 0.1rem var(--bg),  0.1rem -0.1rem var(--bg),
+					-0.1rem 0.1rem var(--bg), -0.1rem -0.1rem var(--bg);
+				filter: drop-shadow(0 0 0.4rem var(--bg));
+
 }
