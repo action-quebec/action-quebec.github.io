@@ -22,10 +22,10 @@
 
 		&__close {
 			position: absolute;
-			top: 2em;
-			right: 2em;
-			width: 2em;
-			height: 2em;
+			top: 1.7em;
+			right: 1.7em;
+			width: 1.7em;
+			height: 1.7em;
 			background-image: var(--close);
 			cursor: pointer;
 			z-index: 1;
@@ -45,12 +45,13 @@
 			align-items: center;
 			// height: 5rem;
 			// margin-bottom: 1em;
-			font-size: 2.3em;
+			font-size: 1.8em;
 			font-weight: 800;
 			min-height: 1.8em;
 			z-index: 0;
 			margin-bottom: 1rem;
 			background-color: var(--bg-part);
+			user-select: none;
 
 			// &::before {
 			// 	content: '';

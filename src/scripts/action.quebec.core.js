@@ -29,10 +29,6 @@ window.Quebec = {
 		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: 'bt1oh97j7X.json' })]);
 		this.modal = new Modal({ onlyBgClick: true });
 		this.loadGoogleCalendar();
-// 		setTimeout(() => {
-// this.modal.show(`<div class="modal-test"></div>`);
-// 		}, 2000);
-		
 	},
 
 
@@ -60,8 +56,12 @@ window.Quebec = {
 
 
 	queryGoogleCalendar: async function() {
-		// const cache = localStorage.getItem('lastItems');
-		// if(cache) return this.mapGCalEvents(JSON.parse(cache));
+		const urlParams = new URLSearchParams(window.location.search);
+		if(urlParams.get('cache') !== null) {
+			console.log('Google cache: active');
+			const cache = localStorage.getItem('lastItems');
+			if(cache) return this.mapGCalEvents(JSON.parse(cache));
+		}
 		const { timeMin, timeMax } = this.getRangeBounds();
 		const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(this.secrets.CALENDAR_ID)}/events`);
 		url.searchParams.set('key', this.secrets.GOOGLE_API_KEY);
@@ -135,7 +135,7 @@ window.Quebec = {
 
 
 	addUpcomingEvents: async function() {
-		const events = this.getUpcomingEvents();
+		const events = this.getUpcomingEvents().slice(0,10);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
 
 		events.forEach(evt => {
@@ -145,13 +145,20 @@ window.Quebec = {
 			card.create('div', 'event-card__title', evt.title);
 			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: "America/Toronto"}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
+			card.title = evt.title;
 		})
 
 		this.swiper = new Swiper(".events-swiper", {
 			modules: [Autoplay],
-			updateOnWindowResize: false,
 			slidesPerView: 3,
 			spaceBetween: rem(2),
+			autoHeight: false,
+			preloadImages: false,
+			observer: false,
+			observeParents: false,
+			observeSlideChildren: false,
+			updateOnWindowResize: false,
+			lazy: { loadPrevNext: true, loadOnTransitionStart: true },
 			autoplay: { delay: 5000, disableOnInteraction: false },
 		});
 		window.addEventListener('resize', async e => {
@@ -166,7 +173,6 @@ window.Quebec = {
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
 		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
 		evtip.innerHTML = events.map(e => this.renderEventTip(e)).join('<hr>');
-
 		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
 		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
 	},

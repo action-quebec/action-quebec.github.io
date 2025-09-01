@@ -249,6 +249,7 @@
 
 				&:hover {
 					--opacity: 0.9;
+					color: var(--fg);
 					.pxcalendar__month__day__evtip {
 						visibility: visible;
 						transform: scale(1);

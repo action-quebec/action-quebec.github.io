@@ -1,7 +1,7 @@
 export default class PXCalendar {
 
 	MONTH_NAMES = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-	WEEKDAY_NAMES = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+	WEEKDAY_NAMES = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
 
 	parent = null;
 	container = null;
@@ -33,6 +33,7 @@ export default class PXCalendar {
 
 
 	async render() {
+		const tipTranslations = [];
 		const firstOfMonth = new Date(this.current.getFullYear(), this.current.getMonth(), 1);
 		const gridStart = startOfWeek(firstOfMonth, 0);
 		const cells = [];
@@ -43,6 +44,10 @@ export default class PXCalendar {
 			const isToday = iso === ymd(new Date());
 			const hasEvent = this.events.has(iso);
 			const cell = create('div', 'pxcalendar__month__day', `<span>${d.getDate()}</span>`);
+			// cell.style.setProperty('--vwpx', String(window.innerWidth));
+
+			// console.log(i % 7);
+
 			if(isOutside) cell.classList.add('outside');
 			if(hasEvent) cell.classList.add('has-event');
 			if(isToday) cell.classList.add('today');
@@ -51,7 +56,11 @@ export default class PXCalendar {
 			cells.push(cell);
 		}
 		this.month.replaceChildren(...cells);
-		if(this.label) this.label.innerText = `${this.MONTH_NAMES[this.current.getMonth()]} ${this.current.getFullYear()}`;
+		if(this.label) {
+			const monthText = `${this.MONTH_NAMES[this.current.getMonth()]} ${this.current.getFullYear()}`;
+			this.label.innerText = monthText;
+			this.label.title = monthText;
+		}
 	}
 
 

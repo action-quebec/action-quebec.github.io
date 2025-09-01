@@ -6,9 +6,18 @@ window.LightSwitch = {
 		const theme = localStorage.getItem('theme');
 		if(theme) document.documentElement.setAttribute('data-theme', theme);
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => this.setTheme(e.matches ? 'dark' : 'light'));
-  		document.addEventListener('DOMContentLoaded', e => document.body.create('div', 'lightswitch').addEventListener('click', e => this.toogleTheme()));
 		window.addEventListener('resize', async e => document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)), { passive: true });
 		document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
+		this.createButton();
+	},
+
+
+	createButton: async function() {
+		document.addEventListener('DOMContentLoaded', async e => {
+			const button = document.body.create('div', 'lightswitch');
+			button.addEventListener('click', e => this.toogleTheme());
+			button.title = "Nuit / Jour";
+		});
 	},
 
 
