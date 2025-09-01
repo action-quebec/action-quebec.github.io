@@ -41,7 +41,7 @@
 	
 
 	&__title {
-		font-size: 2rem;
+		font-size: 1.8rem;
 		font-weight: 700;
 		text-shadow: var(--text-stroke);
 		filter: drop-shadow(0 0 0.4rem var(--bg));
@@ -49,11 +49,18 @@
 	}
 
 	&__date {
-		font-size: 2rem;
+		font-size: 1.6rem;
 		font-weight: 800;
 		text-shadow: var(--text-stroke);
 		filter: drop-shadow(0 0 0.4rem var(--bg));
 		text-align: right;
+		white-space: nowrap;
 	}
 
 }
+
+// .swiper-wrapper { gap: 1rem; }
+
+// .swiper-slide {
+//     // margin-right: 1rem; /* Your desired space in rem */
+// }

@@ -56,6 +56,9 @@ self.escapeForAttr = (str) => {
 }
 
 
+self.rem = n => n * parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+
 /******************************************************
  *                     Date Helpers                   *
  ******************************************************/

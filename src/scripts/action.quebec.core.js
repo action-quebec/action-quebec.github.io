@@ -150,12 +150,14 @@ window.Quebec = {
 		this.swiper = new Swiper(".events-swiper", {
 			modules: [Autoplay],
 			slidesPerView: 3,
-			spaceBetween: 30,
+			spaceBetween: rem(2),
 			autoplay: { delay: 5000, disableOnInteraction: false },
-			pagination: {
-				el: ".swiper-pagination",
-				clickable: true,
-			},
+			on: {
+				resize(sw) {
+					sw.params.spaceBetween = rem(2);
+					sw.update();
+				}
+			}
 		});
 	},
 
