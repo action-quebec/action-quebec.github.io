@@ -12,7 +12,6 @@ const TIMEZONE     = 'America/Toronto';
 const RX_GOOGLE_CA = /^\s*(?:(?<place>(?!\d)[^,]+?),\s*)?(?<street>[^,]+?),\s*(?<city>[^,]+?),\s*(?<province>AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|Québec|Quebec|QC\.?)(?:\s+(?<postal>[A-Z]\d[A-Z][ -]?\d[A-Z]\d))?(?:,\s*(?<country>Canada))?\s*$/iu;
 
 
-
 window.Quebec = {
 
 	secrets: null,
@@ -52,6 +51,9 @@ window.Quebec = {
 		}));
 		this.calendar.addEvents(eventSet);
 		this.addUpcomingEvents();
+		const urlParams = new URLSearchParams(window.location.search);
+		const evtId = urlParams.get('id');
+		if(evtId !== null) this.clickEventDay(evtId);
 	},
 
 
@@ -128,6 +130,11 @@ window.Quebec = {
 	},
 
 
+	getEventsById: function(id) {
+		return this.events.find(e => e.id == id);
+	},
+
+
 	getUpcomingEvents: function() {
 		const now = Date.now();
 		return this.events.filter(e => Date.parse(e.start) > now);
@@ -143,9 +150,9 @@ window.Quebec = {
 			card.classList.add('event-card');
 			if(evt.image) card.style.setProperty('--image', `url(${evt.image})`);
 			card.create('div', 'event-card__title', evt.title);
-			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: "America/Toronto"}).format(new Date(evt.start));
+			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: TIMEZONE}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
-			card.addEventListener('click', e => this.clickEventSlide(evt.id));
+			card.addEventListener('click', e => this.clickEventDay(evt.id));
 			card.title = evt.title;
 		})
 
@@ -166,11 +173,6 @@ window.Quebec = {
 			this.swiper.params.spaceBetween = rem(2);
 			this.swiper.update();
 		});
-	},
-
-
-	clickEventSlide: async function(evtId) {
-		console.log('Event ID: ' + evtId);
 	},
 
 
@@ -201,15 +203,15 @@ window.Quebec = {
 
 
 	clickEventDay: async function(date, elm) {
+		const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventsById(date)];
+		const eventDetails = events.map(v => this.renderEventDetails(v));
 		const container = create('div', 'modal-events');
 		const placeholder = container.create('div', 'modal-events__placeholder');
 		const close = placeholder.create('div', 'modal-events__placeholder__close');
 		const dateholder = placeholder.create('div', 'modal-events__placeholder__date');
 		const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
-		const events = this.getEventsByDate(date);
-		const eventDetails = events.map(v => this.renderEventDetails(v));
-		const d = new Date(`${date}T00:00:00`);
-		const options = { weekday: "long", day: "numeric", month: "long", timeZone: "America/Toronto"};
+		const d = new Date(`${/^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDate(new Date(events[0].start))}T00:00:00`);
+		const options = { weekday: "long", day: "numeric", month: "long", timeZone: TIMEZONE};
 		const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
 		dateholder.innerHTML = formatted;		
 		close.title = 'Fermer';
@@ -233,7 +235,7 @@ window.Quebec = {
 			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
 		}
 		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
-		str += evt.description;
+		str += evt.description + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
 		return container;
 	},
@@ -258,7 +260,6 @@ window.Quebec = {
 		const d = new Date(iso);
 		const datePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long'}).format(d);
 		const timePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
-		// const cap = datePart.charAt(0).toUpperCase() + datePart.slice(1);
 		const time = timePart.replace(/\u202F|\u00A0/g, ' ');
 		return `${datePart} ${time}`;
 	},

@@ -56,7 +56,12 @@ self.escapeForAttr = (str) => {
 }
 
 
-self.rem = n => n * parseFloat(getComputedStyle(document.documentElement).fontSize);
+/******************************************************
+ *             Compute root document font             *
+ ******************************************************/
+self.rem = (n) => {
+	return n * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
 
 
 /******************************************************
