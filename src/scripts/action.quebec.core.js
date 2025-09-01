@@ -134,7 +134,7 @@ window.Quebec = {
 	},
 
 
-	addUpcomingEvents: function() {
+	addUpcomingEvents: async function() {
 		const events = this.getUpcomingEvents();
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
 
@@ -149,15 +149,14 @@ window.Quebec = {
 
 		this.swiper = new Swiper(".events-swiper", {
 			modules: [Autoplay],
+			updateOnWindowResize: false,
 			slidesPerView: 3,
 			spaceBetween: rem(2),
 			autoplay: { delay: 5000, disableOnInteraction: false },
-			on: {
-				resize(sw) {
-					sw.params.spaceBetween = rem(2);
-					sw.update();
-				}
-			}
+		});
+		window.addEventListener('resize', async e => {
+			this.swiper.params.spaceBetween = rem(2);
+			this.swiper.update();
 		});
 	},
 

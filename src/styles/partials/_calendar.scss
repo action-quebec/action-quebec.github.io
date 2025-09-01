@@ -118,8 +118,10 @@
 		display: flex;
 		flex-direction: row;
 		box-sizing: content-box;
-		height: 2rem;
+		height: 2.5rem;
 		width: 100%;
+		font-size: 1.5rem;
+		font-weight: 700;
 		border-top: 0.1rem solid var(--cal-border);
 
 		& > &__name:not(:last-child) {
