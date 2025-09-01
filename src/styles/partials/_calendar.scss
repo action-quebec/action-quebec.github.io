@@ -6,6 +6,10 @@
 		box-shadow: var(--shadow);
 	}
 
+	&__container {
+		aspect-ratio: 5/4;
+	}
+
 	&__pagination {
 		background-color: var(--bg-alpha);
 		display: flex;
@@ -99,9 +103,6 @@
 
 	}
 
-	&__container {
-		aspect-ratio: 5/4;
-	}
 
 }
 
@@ -160,7 +161,7 @@
 			position: relative;
 			border-top: 0.1rem solid var(--cal-border);
 			padding: 0.5rem;
-			font-size: 1.5rem;
+			font-size: 1.4rem;
 
 
 			&:has(&__bgimg) > span {

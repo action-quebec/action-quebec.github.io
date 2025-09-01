@@ -9,9 +9,7 @@
 html {
     scroll-behavior: smooth;
     scrollbar-gutter: stable;
-    // overflow-y: auto;
     overscroll-behavior: contain;
-    // overflow-y: scroll;
     font-size: var(--font-size);
 }
 

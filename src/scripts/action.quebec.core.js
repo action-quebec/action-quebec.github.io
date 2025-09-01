@@ -145,6 +145,7 @@ window.Quebec = {
 			card.create('div', 'event-card__title', evt.title);
 			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: "America/Toronto"}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
+			card.addEventListener('click', e => this.clickEventSlide(evt.id));
 			card.title = evt.title;
 		})
 
@@ -165,6 +166,11 @@ window.Quebec = {
 			this.swiper.params.spaceBetween = rem(2);
 			this.swiper.update();
 		});
+	},
+
+
+	clickEventSlide: async function(evtId) {
+		console.log('Event ID: ' + evtId);
 	},
 
 

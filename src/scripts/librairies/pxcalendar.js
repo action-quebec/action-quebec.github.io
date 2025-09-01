@@ -44,10 +44,6 @@ export default class PXCalendar {
 			const isToday = iso === ymd(new Date());
 			const hasEvent = this.events.has(iso);
 			const cell = create('div', 'pxcalendar__month__day', `<span>${d.getDate()}</span>`);
-			// cell.style.setProperty('--vwpx', String(window.innerWidth));
-
-			// console.log(i % 7);
-
 			if(isOutside) cell.classList.add('outside');
 			if(hasEvent) cell.classList.add('has-event');
 			if(isToday) cell.classList.add('today');

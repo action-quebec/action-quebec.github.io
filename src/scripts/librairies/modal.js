@@ -16,7 +16,6 @@ export default class Modal {
 		this.placeholder = this.container.create('div', 'modal__placeholder');
 		if(this.opts.class) this.container.classList.add(this.opts.class);
 		if(!this.opts.lock) this.container.addEventListener('click', e => this.click(e));
-
 	}
 
 

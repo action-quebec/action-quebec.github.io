@@ -7,9 +7,9 @@ $light-fg:             #0f172a;
 $light-bg:             #e3ebff;
 $light-accent:         #f9d71c;
 $light-shadow:         #0e4d6433;
-$light-sky-color:      #c2eafa;
+$light-sky-color:      #86baf9;
 $light-bg-accent:      #004662;
-$light-lightswich-bg:  #c2eafa;
+$light-lightswich-bg:  $light-sky-color;
 $light-lightswich-pin: #f9d71c;
 
 
@@ -27,7 +27,7 @@ $dark-lightswich-pin:  #e5e7eb;
 
 
 // ===>>> Light theme generated colors
-$light-bg-part: color.adjust($light-sky-color, $lightness: -5%);
+$light-bg-part: color.adjust($light-sky-color, $lightness: -1%);
 $light-bg-alpha: color.adjust($light-bg, $alpha: -0.7);
 $light-fg-hex: string.unquote('#{string.slice(ie-hex-str($light-fg), 4)}');
 
