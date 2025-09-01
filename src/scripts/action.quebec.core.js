@@ -154,7 +154,7 @@ window.Quebec = {
 			card.create('div', 'event-card__date', formatted);
 			card.addEventListener('click', e => this.clickEventDay(evt.id));
 			card.title = evt.title;
-		})
+		});
 
 		this.swiper = new Swiper(".events-swiper", {
 			modules: [Autoplay],
