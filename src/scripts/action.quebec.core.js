@@ -169,9 +169,11 @@ window.Quebec = {
 			lazy: { loadPrevNext: true, loadOnTransitionStart: true },
 			autoplay: { delay: 5000, disableOnInteraction: false },
 		});
+		
 		window.addEventListener('resize', async e => {
 			this.swiper.params.spaceBetween = rem(2);
-			this.swiper.update();
+			setTimeout(e => this.swiper.update(), 1);
+			
 		});
 	},
 
