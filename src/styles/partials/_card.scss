@@ -8,14 +8,15 @@
     aspect-ratio: 2/3;
 	// min-height: 20px;
 	
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-	  row-gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	row-gap: 1rem;
 
 	z-index: inherit;
 	padding: 1rem;
 	cursor: pointer;
+	user-select: none;
 
 	&::before {
 		content: '';

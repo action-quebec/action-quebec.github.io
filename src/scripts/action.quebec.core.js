@@ -109,11 +109,11 @@ window.Quebec = {
 
 
 	replaceImageLinks: function (html) {
-		const regex = /<a\s+href="([^"]+\.(?:jpg|jpeg|png|webp|gif|svg))"[^>]*>(.*?)<\/a>/gi;
+		const regex = /<a\s+href="(.*?)"[^>]*>image<\/a>/gi;
 		let firstImage = null;
 		const newHtml = html.replace(regex, (match, url, title) => {
 			if (!firstImage) { firstImage = url; return ''; }
-			return `<img src="${url}" alt="${escapeForAttr(title)}">`;
+			return `<img src="${url}">`;
 		});
 		return { html: newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').trimStart(), firstImage };
 	},
@@ -216,8 +216,8 @@ window.Quebec = {
 		str += `<h1>${evt.title}</h1>`;
 		if(evt.location) {
 			const addrparts = this.parseGoogleAddress(evt.location);
-			let addr = `${addrparts.street}, ${addrparts.city}`;
-			if(addrparts.place) addr = `${addrparts.place}, ${addr}`;
+			if(addrparts.place) addr = `${addrparts.place}, ${addrparts.city}`;
+			else addr = `${addrparts.street}, ${addrparts.city}`;
 			const url = `https://www.google.com/maps/search/${encodeURI(evt.location)}`
 			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
 		}
@@ -247,9 +247,9 @@ window.Quebec = {
 		const d = new Date(iso);
 		const datePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long'}).format(d);
 		const timePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
-		const cap = datePart.charAt(0).toUpperCase() + datePart.slice(1);
+		// const cap = datePart.charAt(0).toUpperCase() + datePart.slice(1);
 		const time = timePart.replace(/\u202F|\u00A0/g, ' ');
-		return `${cap} ${time}`;
+		return `${datePart} ${time}`;
 	},
 
 

@@ -146,6 +146,13 @@
 			border-right: 0.1rem solid var(--cal-border);
 		}
 
+		// &__day:nth-child(7n-6) { .pxcalendar__month__day__evtip { left: 50%; } }
+		// &__day:nth-child(7n-5) { .pxcalendar__month__day__evtip { left: 25%; } }
+		// &__day:nth-child(7n-3) { .pxcalendar__month__day__evtip { left: -50%; } }
+		// &__day:nth-child(7n-2) { .pxcalendar__month__day__evtip {right: 10%; } }
+		// &__day:nth-child(7n-1) { .pxcalendar__month__day__evtip { right: 25%; } }
+		// &__day:nth-child(7n) { .pxcalendar__month__day__evtip { right: 50%; } }
+
 		&__day {
 			--opacity: 0.6;
 			position: relative;
@@ -198,13 +205,14 @@
 			}
 
 
+
 			&__evtip {
 				color: var(--fg);
 				visibility: hidden;
 				transform: scale(0);
 				position: absolute;
 				bottom: 90%;
-				left: 50%;
+				left: 15%;
 				background-color: var(--bg-part);
 				box-shadow: var(--shadow);;
 				z-index: 1000;
