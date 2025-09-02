@@ -27,6 +27,5 @@ $modal-resp:   calc($font-base * 100 / $modal-break);
 					0 0.1rem var(--bg),  0 -0.1rem var(--bg),
 					0.1rem 0.1rem var(--bg),  0.1rem -0.1rem var(--bg),
 					-0.1rem 0.1rem var(--bg), -0.1rem -0.1rem var(--bg);
-				filter: drop-shadow(0 0 0.4rem var(--bg));
 
 }

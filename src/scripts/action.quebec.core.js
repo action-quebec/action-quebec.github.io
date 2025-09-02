@@ -16,10 +16,10 @@ window.Quebec = {
 
 	secrets: null,
 	events: null,
-
+	
+	calendar: null,
 	swiper: null,
 	modal: null,
-	calendar: null,
 	prec: null,
 	suiv: null,
 

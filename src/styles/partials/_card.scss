@@ -6,7 +6,6 @@
 	--image: url(../images/foule.webp);
 	position: relative;
     aspect-ratio: 2/3;
-	// min-height: 20px;
 	
 	display: flex;
 	flex-direction: column;
@@ -39,7 +38,6 @@
 			opacity: 1;
 		}
 	}
-	
 
 	&__title {
 		font-size: 1.8rem;
@@ -59,9 +57,3 @@
 	}
 
 }
-
-// .swiper-wrapper { gap: 1rem; }
-
-// .swiper-slide {
-//     // margin-right: 1rem; /* Your desired space in rem */
-// }

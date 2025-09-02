@@ -9,6 +9,11 @@ const ROOT = process.cwd();
 const SRC = path.join(ROOT, 'src');
 const DIST = path.join(ROOT, 'dist');
 
+const CSSDIST = path.join(DIST, 'styles/action.quebec.core.min.css');
+const JSDIST = path.join(DIST, 'scripts/action.quebec.core.min.js');
+const BANNER = path.join(ROOT, 'scripts/banner.txt');
+
+
 function norm(p) {
 	// normalise en chemin POSIX pour compat .gitignore
 	return p.split(path.sep).join('/');
@@ -90,6 +95,14 @@ async function walkAndCopy(dir, ig, stats) {
 
 		const stats = { copied: 0, skipped: 0 };
 		await walkAndCopy(SRC, ig, stats);
+
+		const bannerContent = await fs.readFile(BANNER, 'utf8');
+		const cssContent = await fs.readFile(CSSDIST, 'utf8');
+		const jsContent = await fs.readFile(JSDIST, 'utf8');
+
+		await fs.writeFile(JSDIST, bannerContent + jsContent, "utf8");
+		await fs.writeFile(CSSDIST, bannerContent + cssContent, "utf8");
+
 
 		console.log(`✅ Build terminé.`);
 		console.log(`   Fichiers copiés : ${stats.copied}`);

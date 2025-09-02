@@ -35,9 +35,7 @@
 		.modal__placeholder {
 			transform: scale(1);
 		}
-
 	}
-
 
 	&__placeholder {
 		flex: 1;
@@ -49,19 +47,10 @@
 		transition-property: transform;
 		transition: transform var(--transition-duration);
 	}
-
-
 }
-
-
-
 
 
 body:has(.modal.show) {
 	overflow-y: clip;
-	// height: 100vh;
-	// width: 100vw;
-	// overscroll-behavior: contain;
 	overscroll-behavior: contain;
-	// background-color: red;
 }

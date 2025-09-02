@@ -103,7 +103,6 @@
 
 	}
 
-
 }
 
 
@@ -113,7 +112,6 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-
 
 	&__daynames {
 		display: flex;
@@ -149,20 +147,12 @@
 			border-right: 0.1rem solid var(--cal-border);
 		}
 
-		// &__day:nth-child(7n-6) { .pxcalendar__month__day__evtip { left: 50%; } }
-		// &__day:nth-child(7n-5) { .pxcalendar__month__day__evtip { left: 25%; } }
-		// &__day:nth-child(7n-3) { .pxcalendar__month__day__evtip { left: -50%; } }
-		// &__day:nth-child(7n-2) { .pxcalendar__month__day__evtip {right: 10%; } }
-		// &__day:nth-child(7n-1) { .pxcalendar__month__day__evtip { right: 25%; } }
-		// &__day:nth-child(7n) { .pxcalendar__month__day__evtip { right: 50%; } }
-
 		&__day {
 			--opacity: 0.6;
 			position: relative;
 			border-top: 0.1rem solid var(--cal-border);
 			padding: 0.5rem;
 			font-size: 1.4rem;
-
 
 			&:has(&__bgimg) > span {
 				text-shadow: var(--text-stroke);
@@ -204,10 +194,7 @@
 					background-repeat: no-repeat;
 					background-size: cover;
 				}
-
 			}
-
-
 
 			&__evtip {
 				color: var(--fg);
@@ -222,7 +209,8 @@
 				transform-origin: bottom left;
 				transition-property: transform visibility;
 				transition-duration: 100ms;
-				white-space: nowrap;
+				width: max-content;
+				max-width: 30rem;
 				padding: 0.5rem;
 				font-size: 0.65em;
 
