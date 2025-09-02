@@ -23,6 +23,9 @@ window.Quebec = {
 	prec: null,
 	suiv: null,
 
+	mutexSwiper: null,
+	mutexRem: null,
+
 
 	unPays: async function () {
 		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: 'bt1oh97j7X.json' })]);
@@ -144,7 +147,6 @@ window.Quebec = {
 	addUpcomingEvents: async function() {
 		const events = this.getUpcomingEvents().slice(0,10);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
-
 		events.forEach(evt => {
 			const card = placeholder.create('div', 'swiper-slide');
 			card.classList.add('event-card');
@@ -155,7 +157,6 @@ window.Quebec = {
 			card.addEventListener('click', e => this.clickEventDay(evt.id));
 			card.title = evt.title;
 		});
-
 		this.swiper = new Swiper(".events-swiper", {
 			modules: [Autoplay],
 			slidesPerView: 3,
@@ -170,11 +171,16 @@ window.Quebec = {
 			lazy: { loadPrevNext: true, loadOnTransitionStart: true },
 			autoplay: { delay: 5000, disableOnInteraction: false },
 		});
-		
-		window.addEventListener('resize', async e => {
-			this.swiper.params.spaceBetween = rem(2);
-			setTimeout(e => this.swiper.update(), 1);
-			
+		window.addEventListener('resize', () => {
+			if (this.mutexSwiper != null) return;
+			const mutexRem = Number(Math.round(rem(2) + 'e+2') + 'e-2');
+			if(mutexRem != this.swiper.params.spaceBetween) {
+				this.mutexSwiper = requestAnimationFrame(async () => {
+					this.swiper.params.spaceBetween = mutexRem;
+					this.swiper.update();
+					this.mutexSwiper = null;
+				});
+			}
 		});
 	},
 

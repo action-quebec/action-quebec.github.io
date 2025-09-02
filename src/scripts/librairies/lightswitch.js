@@ -1,14 +1,21 @@
 window.LightSwitch = {
 
 	switch: null,
+	mutexVwpx: null,
 
 	init: function() {
 		const theme = localStorage.getItem('theme');
 		if(theme) document.documentElement.setAttribute('data-theme', theme);
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => this.setTheme(e.matches ? 'dark' : 'light'));
-		window.addEventListener('resize', async e => setTimeout(e => document.documentElement.style.setProperty('--vwpx', String(window.innerWidth)), 10), { passive: true });
 		document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
 		this.createButton();
+		window.addEventListener('resize', () => {
+			if (this.mutexVwpx != null) return;
+			this.mutexVwpx = requestAnimationFrame(async () => {
+				document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
+				this.mutexVwpx = null;
+			});
+		});
 	},
 
 
