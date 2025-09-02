@@ -146,17 +146,17 @@ section {
         padding: 2rem;
         font-size: 1.5rem;
 
-        h2, p, ul {
+        h3, p, ul {
             margin-left: 0.5em;
             margin-right: 0.5em;
         }
 
-        h1 {
+        h2 {
             font-size: 1.4em;
             font-weight: 800;
         }
 
-        h2 {
+        h3 {
             margin-top: 0.6em;
             font-size: 1.2em;
         }
@@ -179,6 +179,7 @@ section {
 
 a {
     color: var(--fg);
+    font-weight: 600;
     text-decoration: none;
     background-image: linear-gradient(0deg, var(--bg-link), var(--bg-link));
     background-position: bottom;
