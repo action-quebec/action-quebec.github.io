@@ -97,33 +97,54 @@ window.Quebec = {
 	},
 
 
-	mapGCalEvents: function (items) {
+	mapGCalEvents: function(items) {
 		return items.filter(it => it.status !== 'cancelled').map(it => {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
-			const { html, firstImage } = this.replaceImageLinks(it.description || '');
+			let { html, tags } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte']);
+			let { newHtml, firstImage } = this.replaceImageLinks(html);
+			tags['image-couverture'] = tags['image-couverture'] || firstImage || null;
+			tags['image-calendrier'] = tags['image-calendrier'] || tags['image-couverture'];
+			tags['image-carte'] = tags['image-carte'] || tags['image-couverture'];
+			firstImage = tags['image-couverture'] || firstImage;
 			return {
 				id: it.id,
 				title: it.summary || '(Sans titre)',
 				start, end,
 				location: it.location || null,
 				raw: { htmlLink: it.htmlLink },
-				description: html,
+				description: newHtml,
 				image: firstImage,
+				images: tags
 			};
 		});
 	},
 
 
-	replaceImageLinks: function (html) {
-		const regex = /<a\s+href="(.*?)"[^>]*>image<\/a>/gi;
+	extractLink: function(html, tags = []) {
+		const escapeRegExp = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const objTags = Object.fromEntries(tags.map(t => [t, null]));
+		const newHtml = tags.reduce((str, tag) => {
+			const re = new RegExp(`<a\\s+href=(["'])(.*?)\\1[^>]*>${escapeRegExp(tag)}<\\/a>`, 'gi');
+			return str.replace(re, (_m, _q, url) => {
+				objTags[tag] = url;
+				return '';
+			});
+		}, html);
+		return { html: newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').trimStart(), tags: objTags }
+
+	},
+
+	
+	replaceImageLinks: function(html) {
+		const regex = /<a\b(?=[^>]*\bhref=(['"])([^"'<>]+)\1)[^>]*>\s*image\s*<\/a>/gi;
 		let firstImage = null;
-		const newHtml = html.replace(regex, (match, url, title) => {
-			if (!firstImage) { firstImage = url; return ''; }
+		const newHtml = html.replace(regex, (_m, _q, url) => {
+			if (!firstImage) firstImage = url;
 			return `<img src="${url}">`;
 		});
-		return { html: newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').trimStart(), firstImage };
+		return { newHtml, firstImage };
 	},
 
 
@@ -153,7 +174,7 @@ window.Quebec = {
 		events.forEach(evt => {
 			const card = placeholder.create('div', 'swiper-slide');
 			card.classList.add('event-card');
-			if(evt.image) card.style.setProperty('--image', `url(${evt.image})`);
+			if(evt.image) card.style.setProperty('--image', `url(${evt.images['image-carte']})`);
 			card.create('div', 'event-card__title', evt.title);
 			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: TIMEZONE}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
@@ -195,8 +216,8 @@ window.Quebec = {
 		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
 		const evtipCont = evtip.create('div', 'pxcalendar__month__day__evtip__cont');
 		evtipCont.innerHTML = events.map(e => this.renderEventTip(e)).join('<hr>');
-		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
-		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
+		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].images['image-calendrier']})`);
+		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 	},
 
 
