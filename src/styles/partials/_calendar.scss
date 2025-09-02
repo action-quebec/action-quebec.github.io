@@ -45,10 +45,10 @@
 				align-items: center;
 				justify-content: left;
 				cursor: pointer;
-				transition: filter 100ms;
+				transition: transform 100ms;
 
 				&:hover {
-					filter: drop-shadow(0 0 0.5rem var(--accent));
+					transform: scale(1.05);
 				}
 
 				&::before {
@@ -80,11 +80,11 @@
 				align-items: center;
 				justify-content: right;
 				cursor: pointer;
-				transition: filter 100ms;
+				transition: transform 100ms;
 
 
 				&:hover {
-					filter: drop-shadow(0 0 0.5rem var(--accent));
+					transform: scale(1.05);
 				}
 
 				&::after {
@@ -104,7 +104,6 @@
 	}
 
 }
-
 
 
 .pxcalendar {
@@ -210,9 +209,13 @@
 				transition-property: transform visibility;
 				transition-duration: 100ms;
 				width: max-content;
-				max-width: 30rem;
+				max-width: 25rem;
 				padding: 0.5rem;
 				font-size: 0.65em;
+
+				&__cont {
+  					width: fit-content;
+				}
 
 				@media (pointer: coarse) {
 					display: none;
@@ -260,11 +263,8 @@
 				}
 			}
 
-
 		}
 
-
 	}
-
 
 }

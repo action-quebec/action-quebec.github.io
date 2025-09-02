@@ -193,7 +193,8 @@ window.Quebec = {
 		const events = this.getEventsByDate(date);
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
 		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
-		evtip.innerHTML = events.map(e => this.renderEventTip(e)).join('<hr>');
+		const evtipCont = evtip.create('div', 'pxcalendar__month__day__evtip__cont');
+		evtipCont.innerHTML = events.map(e => this.renderEventTip(e)).join('<hr>');
 		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].image})`);
 		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].image})`);
 	},
