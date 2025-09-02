@@ -9,6 +9,7 @@ const ROOT = process.cwd();
 const SRC = path.join(ROOT, 'src');
 const DIST = path.join(ROOT, 'dist');
 
+const IDXDIST = path.join(DIST, 'index.html');
 const CSSDIST = path.join(DIST, 'styles/action.quebec.core.min.css');
 const JSDIST = path.join(DIST, 'scripts/action.quebec.core.min.js');
 const BANNER = path.join(ROOT, 'scripts/banner.txt');
@@ -97,12 +98,13 @@ async function walkAndCopy(dir, ig, stats) {
 		await walkAndCopy(SRC, ig, stats);
 
 		const bannerContent = await fs.readFile(BANNER, 'utf8');
+		const idxContent = await fs.readFile(IDXDIST, 'utf8');
 		const cssContent = await fs.readFile(CSSDIST, 'utf8');
 		const jsContent = await fs.readFile(JSDIST, 'utf8');
 
-		await fs.writeFile(JSDIST, bannerContent + jsContent, "utf8");
-		await fs.writeFile(CSSDIST, bannerContent + cssContent, "utf8");
-
+		await fs.writeFile(IDXDIST, "<!--\n\n" + bannerContent + "\n\-->\n" + idxContent, "utf8");
+		await fs.writeFile(CSSDIST, "/*!\n\n" + bannerContent + "\n\n*/" + cssContent, "utf8");
+		await fs.writeFile(JSDIST, "/*!\n\n" + bannerContent + "\n\n*/" + jsContent, "utf8");
 
 		console.log(`✅ Build terminé.`);
 		console.log(`   Fichiers copiés : ${stats.copied}`);
