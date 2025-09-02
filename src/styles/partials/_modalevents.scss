@@ -61,18 +61,22 @@
 				z-index: 0;
 				padding: 1em;
 				background-color: var(--bg-part);
-				font-size: 1.1em;
+				font-size: 1.2em;
 				
 				&:not(:last-child) {
 					margin-bottom: 1em;
 				}
 				
 				span.label {
-					font-size: 1.2em;
+					font-size: 1.1em;
 				}
 
 				img {
 					width: 100%;
+				}
+
+				h1 {
+					font-size: 1.3em;
 				}
 			}
 		}

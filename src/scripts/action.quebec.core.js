@@ -160,6 +160,7 @@ window.Quebec = {
 			modules: [Autoplay],
 			slidesPerView: 3,
 			spaceBetween: rem(2),
+			allowTouchMove: true,
 			autoHeight: false,
 			preloadImages: false,
 			observer: false,
