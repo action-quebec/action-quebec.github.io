@@ -1,4 +1,4 @@
-.calendrier {
+.calendar {
 	user-select: none;
 
 	& > div {
@@ -22,7 +22,7 @@
 			min-width: 0;
 		}
 
-		&__cour {
+		&__current {
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -32,7 +32,7 @@
 		}
 
 
-		&__prec {
+		&__prev {
 			display: flex;
 			align-items: center;
 			justify-content: left;
@@ -67,7 +67,7 @@
 		}
 
 
-		&__suiv {
+		&__next {
 			display: flex;
 			align-items: center;
 			justify-content: right;

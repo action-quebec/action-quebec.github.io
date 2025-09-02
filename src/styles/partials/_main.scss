@@ -140,13 +140,13 @@ section {
     padding: 2rem;
     margin-bottom: 2rem;
 
-    &:not(.calendrier) > div {
+    &:not(.calendar) > div {
 		-webkit-box-shadow: var(--shadow);
 		box-shadow: var(--shadow);
         padding: 2rem;
         font-size: 1.5rem;
 
-        h3, p, ul {
+        h3, p {
             margin-left: 0.5em;
             margin-right: 0.5em;
         }
@@ -167,6 +167,9 @@ section {
 
         ul {
             margin-left: 2em;
+            margin-right: 0.5em;
+            list-style-type: square;
+
             li {
                 margin-top: 0.5em;
             }
@@ -192,6 +195,7 @@ section {
                 background-repeat: no-repeat;
                 background-size: contain;
                 cursor: pointer;
+                transition: transform 100ms;
 
                 &:not(.swiper-button-disabled):hover {
                     transform: scaleX(var(--scale-x)) scaleY(1.2);

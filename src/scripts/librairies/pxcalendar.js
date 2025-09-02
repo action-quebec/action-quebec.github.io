@@ -77,4 +77,11 @@ export default class PXCalendar {
 	}
 
 
+	async setMonth(date) {
+		const d = new Date(date);
+		this.current = new Date(d.getFullYear(), d.getMonth(), 1);
+		this.render();
+	}
+
+
 }
