@@ -54,9 +54,9 @@
 				&::before {
 					content: '';
 					display: inline-block;
-					width: 2.2rem;
+					width: 1em;
 					aspect-ratio: 1/1;
-					background-image: var(--arrow);
+					background-image: var(--nav);
 					background-repeat: no-repeat;
 					background-size: contain;
 					background-position: center;
@@ -90,9 +90,9 @@
 				&::after {
 					content: '';
 					display: inline-block;
-					width: 2.2rem;
+					width: 1em;
 					aspect-ratio: 1/1;
-					background-image: var(--arrow);
+					background-image: var(--nav);
 					background-repeat: no-repeat;
 					background-size: contain;
 					background-position: center;
