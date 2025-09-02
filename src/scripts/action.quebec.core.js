@@ -3,7 +3,7 @@ import './librairies/lightswitch.js';
 import Modal from './librairies/modal.js'
 import PXCalendar from './librairies/pxcalendar.js';
 import Swiper from 'swiper';
-import { Autoplay } from 'swiper/modules';
+import { Autoplay, Navigation } from 'swiper/modules';
 
 const MONTHS_BACK  = 6;
 const MONTHS_AHEAD = 12;
@@ -158,7 +158,7 @@ window.Quebec = {
 			card.title = evt.title;
 		});
 		this.swiper = new Swiper(".events-swiper", {
-			modules: [Autoplay],
+			modules: [Autoplay, Navigation],
 			slidesPerView: 3,
 			spaceBetween: rem(2),
 			allowTouchMove: true,
@@ -170,6 +170,7 @@ window.Quebec = {
 			updateOnWindowResize: false,
 			lazy: { loadPrevNext: true, loadOnTransitionStart: true },
 			autoplay: { delay: 5000, disableOnInteraction: false },
+			navigation: { nextEl: '.events-swiper-next', prevEl: '.events-swiper-prev' },
 		});
 		window.addEventListener('resize', () => {
 			if (this.mutexSwiper != null) return;

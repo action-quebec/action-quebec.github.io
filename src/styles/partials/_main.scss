@@ -173,7 +173,50 @@ section {
         }
 
     }
+
+    &.upcoming {
+        h2 > div {
+            float: right;
+            user-select: none;
+
+            > span {
+                vertical-align: middle;
+            }
+
+            > div {
+                vertical-align: middle;
+                display: inline-block;
+                width: 1em;
+                aspect-ratio: 1/1;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: contain;
+                cursor: pointer;
+
+                &:not(.swiper-button-disabled):hover {
+                    transform: scaleX(var(--scale-x)) scaleY(1.2);
+                }
+            }
+
+            > div:first-child {
+                --scale-x: -1.2; 
+                background-image: var(--nav);
+                transform: scaleX(-1);
+            }
+
+            > div:last-child {
+                --scale-x: 1.2;
+                background-image: var(--nav);
+            }
+
+            .swiper-button-disabled {
+                opacity: 0.35;
+                pointer-events: none;
+            }
+        }
+    }
 }
+
 
 
 a {
