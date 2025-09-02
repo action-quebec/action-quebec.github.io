@@ -12,9 +12,9 @@ export default class PXCalendar {
 	events = null;
 
 	opts = {
-		placeholder: false,
-		onRenderDate: false,
-		onClickDate: false,
+		placeholder: null,
+		onRenderDate: null,
+		onClickDate: null,
 	};
 
 
@@ -39,16 +39,15 @@ export default class PXCalendar {
 		const cells = [];
 		for(let i = 0; i < 42; i++) {
 			const d = addDays(gridStart, i);
-			const isOutside = d.getMonth() !== this.current.getMonth();
 			const iso = ymd(d);
-			const isToday = iso === ymd(new Date());
-			const hasEvent = this.events.has(iso);
 			const cell = create('div', 'pxcalendar__month__day', `<span>${d.getDate()}</span>`);
-			if(isOutside) cell.classList.add('outside');
-			if(hasEvent) cell.classList.add('has-event');
-			if(isToday) cell.classList.add('today');
-			if(hasEvent && this.opts.onRenderDate) this.opts.onRenderDate(iso, cell);
-			if(hasEvent && this.opts.onClickDate) cell.addEventListener('click', e => this.opts.onClickDate(iso, cell));
+			if(d.getMonth() !== this.current.getMonth()) cell.classList.add('outside');
+			if(iso === ymd(new Date())) cell.classList.add('today');
+			if(this.events.has(iso)) {
+				cell.classList.add('has-event');
+				this.opts.onRenderDate?.(iso, cell);
+				cell.addEventListener('click', e => this.opts.onClickDate?.(iso, cell));
+			}
 			cells.push(cell);
 		}
 		this.month.replaceChildren(...cells);
