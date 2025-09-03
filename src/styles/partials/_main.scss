@@ -21,6 +21,11 @@ body {
     
     transition: background-color var(--scheme-transition-duration);
 
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+
     &::before {
         content: '';
         position: absolute;
@@ -28,12 +33,13 @@ body {
         left: 0;
         width: 100%;
         aspect-ratio: 3/2;
+        max-height: 100vh;
 
         background-color: var(--sky-color);
         background-image: var(--sky-image);
         background-repeat: no-repeat;
         background-position: top center;
-        background-size: contain;
+        background-size: cover;
         background-blend-mode: overlay;
 
         -webkit-mask-image: linear-gradient(to bottom, black, transparent);
@@ -106,6 +112,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
 }
 
 
@@ -238,7 +245,7 @@ a {
         background-size: 100% 100%;
     }
     
-    &::after {
+    &[target="_blank"]::after {
         content: '';
         display: inline-block;
         width: 1em;
@@ -249,4 +256,20 @@ a {
         background-repeat: no-repeat;
         margin-left: 0.1em;
     }
+
+    &[href*="mailto:"]::after {
+
+        content: '';
+        display: inline-block;
+        width: 1em;
+        aspect-ratio: 1/1;
+        background-image: var(--mail);
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        margin-left: 0.1em;
+        
+    }
 }
+
+

@@ -59,9 +59,9 @@
 			&__event {
 				position: relative;
 				z-index: 0;
-				padding: 1em;
+				padding: 1.5em;
 				background-color: var(--bg-part);
-				font-size: 1.2em;
+				font-size: 1.3em;
 				
 				&:not(:last-child) {
 					margin-bottom: 1em;
@@ -73,6 +73,7 @@
 
 				img {
 					width: 100%;
+					margin-bottom: 1rem;
 				}
 
 				h1 {

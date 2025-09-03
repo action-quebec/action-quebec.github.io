@@ -1,0 +1,180 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Crop fixe 5/4 (pan + zoom)</title>
+<style>
+  :root { --ratio-w: 5; --ratio-h: 4; }
+  body { font: 16px/1.4 system-ui, sans-serif; margin: 2rem; }
+  .frame {
+    width: 640px;            /* ajuste la taille d’édition */
+    aspect-ratio: var(--ratio-w) / var(--ratio-h);
+    border: 2px solid #ccc; border-radius: 12px;
+    position: relative; overflow: hidden; user-select: none;
+    background:
+      conic-gradient(#eee 25%, #ddd 0 50%, #eee 0 75%, #ddd 0) 0 0 / 16px 16px;
+  }
+  .frame img {
+    position: absolute; top: 0; left: 0; will-change: transform;
+    transform-origin: top left; /* important pour nos maths */
+    pointer-events: none;       /* on capte la souris sur .frame */
+  }
+  .row { display:flex; gap:.75rem; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
+  button, select, input { padding:.55rem .8rem; border:1px solid #ccc; border-radius:10px; background:#f8f8f8; }
+  output { font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="frame" id="frame">
+  <img id="img" alt="">
+</div>
+
+<div class="row">
+  <input type="file" id="file" accept="image/*">
+  <label>Largeur export (px)
+    <input type="number" id="outW" value="2000" min="200" step="100" style="width:7rem">
+  </label>
+  <label>Format
+    <select id="fmt">
+      <option value="image/jpeg">JPEG</option>
+      <option value="image/png">PNG</option>
+    </select>
+  </label>
+  <button id="btnReset">Réinitialiser</button>
+  <button id="btnExport">Exporter</button>
+  <output id="zoomInfo"></output>
+</div>
+
+<div class="row" id="resultRow" style="display:none">
+  <a id="dl" download="crop.jpg">Télécharger l’image exportée</a>
+  <img id="preview" style="max-width:320px; border:1px solid #ddd; border-radius:8px">
+</div>
+
+<script>
+const frame   = document.getElementById('frame');
+const img     = document.getElementById('img');
+const fileInp = document.getElementById('file');
+const outWInp = document.getElementById('outW');
+const fmtSel  = document.getElementById('fmt');
+const btnReset= document.getElementById('btnReset');
+const btnExp  = document.getElementById('btnExport');
+const zoomInfo= document.getElementById('zoomInfo');
+const dl      = document.getElementById('dl');
+const prev    = document.getElementById('preview');
+const resultRow = document.getElementById('resultRow');
+
+// --------- RATIO FIXE ---------
+// Change le ratio ici si tu veux (ex. 1/1, 16/9, 4/5, etc.)
+document.documentElement.style.setProperty('--ratio-w', 5);
+document.documentElement.style.setProperty('--ratio-h', 4);
+
+// État de la transformation (dans l'espace "frame")
+let imgW=0, imgH=0;         // dimensions intrinsèques de l'image
+let s=1, minS=1;            // scale courant et minimum (cover)
+let tx=0, ty=0;             // translation en px (top-left de l'image dans le cadre)
+let panning=false, startX=0, startY=0, startTx=0, startTy=0;
+
+function fitCover() {
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  const sc = Math.max(fw / imgW, fh / imgH);
+  minS = sc;
+  s = sc;
+  // centrer
+  tx = (fw - imgW * s) * 0.5;
+  ty = (fh - imgH * s) * 0.5;
+  apply();
+}
+
+function clamp() {
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  const w = imgW * s, h = imgH * s;
+  // empêcher des trous: image doit couvrir complètement le cadre
+  const minTx = fw - w, maxTx = 0;
+  const minTy = fh - h, maxTy = 0;
+  tx = Math.min(maxTx, Math.max(minTx, tx));
+  ty = Math.min(maxTy, Math.max(minTy, ty));
+}
+
+function apply() {
+  clamp();
+  img.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+  zoomInfo.value = `zoom: ${(s/minS).toFixed(2)}×`;
+}
+
+function zoomAt(deltaY, cx, cy) {
+  // zoom autour du pointeur (cx, cy) en coords du cadre
+  const prevS = s;
+  const zoom = Math.pow(1.0015, -deltaY); // wheel doux
+  s = Math.max(minS, prevS * zoom);
+  // garder le point sous le curseur stable
+  tx = cx - (s/prevS) * (cx - tx);
+  ty = cy - (s/prevS) * (cy - ty);
+  apply();
+}
+
+frame.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = frame.getBoundingClientRect();
+  const cx = e.clientX - rect.left;
+  const cy = e.clientY - rect.top;
+  zoomAt(e.deltaY, cx, cy);
+}, { passive: false });
+
+frame.addEventListener('pointerdown', e => {
+  frame.setPointerCapture(e.pointerId);
+  panning = true;
+  startX = e.clientX; startY = e.clientY;
+  startTx = tx; startTy = ty;
+});
+frame.addEventListener('pointermove', e => {
+  if (!panning) return;
+  tx = startTx + (e.clientX - startX);
+  ty = startTy + (e.clientY - startY);
+  apply();
+});
+frame.addEventListener('pointerup', () => panning = false);
+frame.addEventListener('pointercancel', () => panning = false);
+
+fileInp.addEventListener('change', () => {
+  const f = fileInp.files?.[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    imgW = img.naturalWidth; imgH = img.naturalHeight;
+    fitCover();
+  };
+  img.src = url;
+});
+
+btnReset.addEventListener('click', () => img.src && fitCover());
+
+btnExp.addEventListener('click', async () => {
+  if (!img.src) return alert('Charge une image d’abord.');
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  // Rectangle source dans l'image (en pixels image):
+  // cadre (0,0)-(fw,fh) correspond à ( -tx, -ty ) / s dans l'image
+  const sx = Math.max(0, -tx / s);
+  const sy = Math.max(0, -ty / s);
+  const sw = Math.min(imgW - sx, fw / s);
+  const sh = Math.min(imgH - sy, fh / s);
+
+  // Dimensions export (préserve le ratio 5/4)
+  const outW = Math.max(50, +outWInp.value|0);
+  const ratio = parseFloat(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--ratio-w')) /
+                parseFloat(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--ratio-h'));
+  const outH = Math.round(outW / ratio);
+
+  const cvs = document.createElement('canvas');
+  cvs.width = outW; cvs.height = outH;
+  const ctx = cvs.getContext('2d', { alpha: fmtSel.value !== 'image/jpeg' });
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  const blob = await new Promise(r => cvs.toBlob(r, fmtSel.value, 0.92));
+  const url = URL.createObjectURL(blob);
+  prev.src = url;
+  dl.href = url;
+  dl.download = `crop.${fmtSel.value === 'image/png' ? 'png' : 'jpg'}`;
+  resultRow.style.display = '';
+});
+</script>

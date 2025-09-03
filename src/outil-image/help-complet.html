@@ -1,0 +1,272 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Crop ratio + zoom + upload Catbox</title>
+<style>
+  :root { --ratio-w: 5; --ratio-h: 4; }
+  body { font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; color: #111; }
+  h1 { font-size: 18px; margin: 0 0 12px; }
+  .controls { display:flex; flex-wrap:wrap; gap:.6rem 1rem; align-items:center; margin: 10px 0 14px; }
+  .drop {
+    border: 2px dashed #bbb; border-radius: 12px; padding: 14px; text-align:center; cursor:pointer; user-select:none;
+  }
+  .drop.drag { border-color:#333; }
+  .frame {
+    width: 640px; max-width: 95vw; aspect-ratio: var(--ratio-w) / var(--ratio-h);
+    border: 2px solid #ddd; border-radius: 12px; position: relative; overflow: hidden; margin: 12px 0;
+    background: conic-gradient(#eee 25%, #e7e7e7 0 50%, #eee 0 75%, #e7e7e7 0) 0 0/16px 16px;
+    touch-action: none; /* on gère le drag */
+  }
+  .frame img { position:absolute; top:0; left:0; transform-origin: top left; will-change: transform; pointer-events:none; }
+  label { display:flex; align-items:center; gap:.4rem; }
+  select, input, button {
+    padding:.55rem .75rem; border:1px solid #ccc; border-radius:10px; background:#f8f8f8; font:inherit;
+  }
+  input[type="number"] { width:7.2rem; }
+  button.primary { background:#111; color:#fff; border-color:#111; }
+  .row { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; margin-top:8px; }
+  .muted { color:#666; font-size:.92rem; }
+  .result { display:none; align-items:center; gap:.6rem; margin-top:.6rem; }
+  .result input { width: 420px; max-width: 70vw; }
+  .spinner { display:none; width:16px; height:16px; border:2px solid #aaa; border-top-color:transparent; border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(1turn); } }
+</style>
+
+<h1>Recadrage à ratio fixe + upload Catbox</h1>
+
+<div class="controls">
+  <div class="drop" id="drop">Glissez une image ici… ou cliquez pour choisir</div>
+  <input id="file" type="file" accept="image/*" hidden>
+</div>
+
+<div class="controls">
+  <label>Ratio
+    <select id="ratio">
+      <option value="5/4" selected>5:4</option>
+      <option value="4/5">4:5 (portrait)</option>
+      <option value="1/1">1:1</option>
+      <option value="3/2">3:2</option>
+      <option value="16/9">16:9</option>
+    </select>
+  </label>
+  <label>Largeur export (px)
+    <input type="number" id="outW" value="1800" min="200" step="100">
+  </label>
+  <label>Format
+    <select id="fmt">
+      <option value="image/jpeg">JPEG</option>
+      <option value="image/png">PNG</option>
+    </select>
+  </label>
+  <output id="zoomInfo" class="muted">zoom: 1.00×</output>
+</div>
+
+<div class="frame" id="frame">
+  <img id="img" alt="">
+</div>
+
+<div class="row">
+  <button id="btnReset">Réinitialiser vue</button>
+  <button id="btnExport">Exporter (local)</button>
+  <button id="btnUpload" class="primary">Exporter & envoyer → Catbox</button>
+  <span class="spinner" id="spin"></span>
+</div>
+
+<div class="row muted">Astuce : molette pour zoomer (au pointeur), glisser pour déplacer. Le cadre = zone recadrée.</div>
+
+<div class="row result" id="resultRow">
+  <strong>URL Catbox:</strong>
+  <input id="url" type="text" readonly />
+  <button id="btnCopy">Copier</button>
+  <a id="openUrl" target="_blank" rel="noopener">Ouvrir</a>
+</div>
+
+<script>
+const PROXY_BASE = 'https://catbox-proxy.action-quebec.workers.dev'; // ← ton Worker Cloudflare
+
+// --- DOM
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const frame = document.getElementById('frame');
+const img = document.getElementById('img');
+const ratioSel = document.getElementById('ratio');
+const outWInp = document.getElementById('outW');
+const fmtSel = document.getElementById('fmt');
+const zoomInfo = document.getElementById('zoomInfo');
+const btnReset = document.getElementById('btnReset');
+const btnExport = document.getElementById('btnExport');
+const btnUpload = document.getElementById('btnUpload');
+const spin = document.getElementById('spin');
+const resRow = document.getElementById('resultRow');
+const urlOut = document.getElementById('url');
+const btnCopy = document.getElementById('btnCopy');
+const openUrl = document.getElementById('openUrl');
+
+// --- État de la transformation
+let imgW=0, imgH=0, s=1, minS=1, tx=0, ty=0;
+let panning=false, startX=0, startY=0, startTx=0, startTy=0;
+
+// Helpers ratio
+function setRatio(rstr) {
+  const [w, h] = rstr.split('/').map(Number);
+  if (!w || !h) return;
+  document.documentElement.style.setProperty('--ratio-w', w);
+  document.documentElement.style.setProperty('--ratio-h', h);
+  // refit pour le nouveau cadre
+  if (img.src) fitCover();
+}
+ratioSel.addEventListener('change', e => setRatio(e.target.value));
+
+// Charger un fichier image
+function loadFile(file){
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    imgW = img.naturalWidth; imgH = img.naturalHeight;
+    fitCover();
+  };
+  img.src = url;
+}
+
+// Ajuster pour couvrir le cadre (comme object-fit: cover)
+function fitCover() {
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  minS = s = Math.max(fw / imgW, fh / imgH);
+  tx = (fw - imgW * s) * 0.5;
+  ty = (fh - imgH * s) * 0.5;
+  apply();
+}
+
+function clamp() {
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  const w = imgW * s, h = imgH * s;
+  tx = Math.min(0, Math.max(fw - w, tx));
+  ty = Math.min(0, Math.max(fh - h, ty));
+}
+
+function apply() {
+  clamp();
+  img.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+  zoomInfo.value = `zoom: ${(s/minS).toFixed(2)}×`;
+}
+
+function zoomAt(deltaY, cx, cy) {
+  const prevS = s;
+  const zoom = Math.pow(1.0015, -deltaY); // molette douce
+  s = Math.max(minS, prevS * zoom);
+  // conserver le point sous le curseur
+  tx = cx - (s/prevS) * (cx - tx);
+  ty = cy - (s/prevS) * (cy - ty);
+  apply();
+}
+
+// DnD + input
+drop.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => e.target.files[0] && loadFile(e.target.files[0]));
+;['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e=>{
+  e.preventDefault(); drop.classList.add('drag'); e.dataTransfer.dropEffect='copy';
+}));
+;['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e=>{
+  e.preventDefault(); drop.classList.remove('drag');
+}));
+drop.addEventListener('drop', e => {
+  const f = e.dataTransfer.files?.[0];
+  if (f && f.type.startsWith('image/')) loadFile(f);
+});
+
+// Interactions pan/zoom
+frame.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = frame.getBoundingClientRect();
+  zoomAt(e.deltaY, e.clientX - r.left, e.clientY - r.top);
+}, { passive:false });
+
+frame.addEventListener('pointerdown', e => {
+  frame.setPointerCapture(e.pointerId);
+  panning = true; startX=e.clientX; startY=e.clientY; startTx=tx; startTy=ty;
+});
+frame.addEventListener('pointermove', e => {
+  if (!panning) return;
+  tx = startTx + (e.clientX - startX);
+  ty = startTy + (e.clientY - startY);
+  apply();
+});
+frame.addEventListener('pointerup', () => panning=false);
+frame.addEventListener('pointercancel', () => panning=false);
+
+btnReset.addEventListener('click', () => img.src && fitCover());
+
+// Calcul du crop → Canvas → Blob
+async function exportBlob() {
+  if (!img.src) throw new Error('Aucune image chargée.');
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  const sx = Math.max(0, -tx / s);
+  const sy = Math.max(0, -ty / s);
+  const sw = Math.min(imgW - sx, fw / s);
+  const sh = Math.min(imgH - sy, fh / s);
+
+  const desiredOutW = Math.max(50, +outWInp.value|0);
+  const rw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ratio-w'));
+  const rh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ratio-h'));
+  const ratio = rw / rh;
+
+  // Anti-upscale : ne pas dépasser la résolution source dispo
+  const outW = Math.min(desiredOutW, Math.floor(sw));
+  const outH = Math.round(outW / ratio);
+
+  const cvs = document.createElement('canvas');
+  cvs.width = outW; cvs.height = outH;
+  const ctx = cvs.getContext('2d', { alpha: fmtSel.value !== 'image/jpeg' });
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  return new Promise((res, rej) => {
+    cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), fmtSel.value, 0.92);
+  });
+}
+
+// Export local (test)
+btnExport.addEventListener('click', async () => {
+  try {
+    const blob = await exportBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `crop.${fmtSel.value === 'image/png' ? 'png' : 'jpg'}`;
+    a.click(); setTimeout(() => URL.revokeObjectURL(url), 3000);
+  } catch (err) {
+    alert(err.message || err);
+  }
+});
+
+// Upload Catbox via Worker
+btnUpload.addEventListener('click', async () => {
+  try {
+    spin.style.display = 'inline-block';
+    resRow.style.display = 'none';
+
+    const blob = await exportBlob();
+    const fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('fileToUpload', new File([blob], `crop.${fmtSel.value==='image/png'?'png':'jpg'}`, { type: blob.type }));
+
+    const resp = await fetch(`${PROXY_BASE}/api/catbox`, { method: 'POST', body: fd });
+    const text = (await resp.text()).trim();
+    if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Upload Catbox échoué');
+
+    urlOut.value = text; openUrl.href = text;
+    resRow.style.display = 'flex';
+  } catch (err) {
+    alert(err.message || err);
+  } finally {
+    spin.style.display = 'none';
+  }
+});
+
+// Copie
+btnCopy.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(urlOut.value); btnCopy.textContent='Copié!'; setTimeout(()=>btnCopy.textContent='Copier', 900); } catch {}
+});
+
+// Init ratio (au cas où le navigateur ne lit pas bien les :root)
+setRatio(ratioSel.value);
+</script>

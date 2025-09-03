@@ -1,0 +1,82 @@
+.croper {
+	position: relative;
+	margin-top: 2rem;
+
+
+	&__images {
+		display: flex;
+		width: 100%;
+		gap: 2rem;
+
+
+		&__box {
+			position: relative;
+			flex-basis: 0;
+			min-width: 0;
+			background-color: var(--bg-part);
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				// background-color: red;
+				box-sizing: border-box;
+				border: 0.3rem dashed var(--fg-alpha);
+			}
+
+			&.box--2-3 {
+				aspect-ratio: 2 / 3;
+				flex: 8 1 0;
+			}
+
+			&.box--5-4 {
+				aspect-ratio: 5 / 4;
+				flex: 15 1 0;
+			}
+
+		}
+
+
+
+	}
+
+	&__button {
+		margin-top: 2rem;
+
+		& > button {
+			appearance: none;
+			-webkit-appearance: none;
+			font-size: 2rem;
+			font-weight: 700;
+			width: 100%;
+			height: 4rem;
+			background-color: var(--bg-part);
+			color: var(--fg);
+			border: none;
+			cursor: pointer;
+			transition: filter 0.3s ease, transform 0.1s ease;
+
+			&:hover {
+				filter: saturate(200%);
+  				transform: translateY(-0.3rem);
+			}
+
+			&:active {
+				transform: translateY(0);
+			}
+
+			&:disabled {
+				color: grey;
+				pointer-events: none;
+			}
+		}
+	}
+
+
+}
+
+
+

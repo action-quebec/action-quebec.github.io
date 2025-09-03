@@ -1,5 +1,6 @@
 import './librairies/helpers.js';
 import './librairies/lightswitch.js';
+import Croper from './librairies/croper.js'
 import Modal from './librairies/modal.js'
 import PXCalendar from './librairies/pxcalendar.js';
 import Swiper from 'swiper';
@@ -27,11 +28,14 @@ window.Quebec = {
 	mutexRem: null,
 
 
-	unPays: async function () {
-		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: 'bt1oh97j7X.json' })]);
+	unPays: async function() {
+		await Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' })]);
 		this.modal = new Modal({ onlyBgClick: true });
 		this.loadGoogleCalendar();
 	},
+
+
+	independant: async () => new Croper('.croper'),
 
 
 	initCalendar: async function() {
@@ -73,7 +77,6 @@ window.Quebec = {
 		const { timeMin, timeMax } = this.getRangeBounds();
 		const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(this.secrets.CALENDAR_ID)}/events`);
 		url.searchParams.set('key', this.secrets.GOOGLE_API_KEY);
-		url.searchParams.set('supportsAttachments', 'true');
 		url.searchParams.set('singleEvents', 'true');
 		url.searchParams.set('orderBy', 'startTime');
 		url.searchParams.set('timeMin', timeMin);
