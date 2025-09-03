@@ -44,6 +44,19 @@ self.loadJsonProperties = async function(target, files = {}) {
 
 
 /******************************************************
+ *                     Browse File                    *
+ ******************************************************/
+self.browse = async (accept, clb=null) => {
+    let inputElement = document.createElement("input");
+    inputElement.type = "file";
+    inputElement.accept = accept;
+    if(clb) inputElement.addEventListener("change", clb)
+    inputElement.dispatchEvent(new MouseEvent("click"));
+	delete inputElement;
+}
+
+
+/******************************************************
  *            Escape String for Attributes            *
  ******************************************************/
 self.escapeForAttr = (str) => {

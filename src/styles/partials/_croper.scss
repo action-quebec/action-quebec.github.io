@@ -3,6 +3,14 @@
 	margin-top: 2rem;
 
 
+	--show: flex;
+	--opacity: 0;
+
+	&:hover:has(:not(.croper__splash.show)) {
+		--show: none;
+	}
+
+
 	&__images {
 		
 		display: flex;
@@ -11,35 +19,11 @@
 
 
 		&__box {
-			--click-add: none;
 			position: relative;
 			flex-basis: 0;
 			min-width: 0;
 			background-color: var(--bg-part);
 
-			&:not(:has(img)) {
-				--click-add: flex;
-			}
-
-
-			&::before {
-				content: '+';
-				display: var(--click-add);
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				// background-color: red;
-				box-sizing: border-box;
-				// border: 0.3rem dashed var(--fg-alpha);
-				// display: flex;
-				align-items: center;
-				justify-content: center;
-				font-size: 10rem;
-				color: var(--fg-alpha);
-				cursor: pointer;
-			}
 
 			&.box--2-3 {
 				aspect-ratio: 2 / 3;
@@ -88,6 +72,42 @@
 			}
 		}
 	}
+
+
+	&__splash {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: var(--bg-part);
+		border: 0.4rem dashed var(--fg-alpha);
+		color: var(--fg-alpha);
+		display: var(--show);
+		opacity: var(--opacity);
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		font-size: 2.3rem;
+		font-weight: 700;
+		cursor: pointer;
+
+		&:hover,
+		&.dragover {
+			color: var(--fg);
+			border-color: var(--fg);
+			opacity: 1;
+		}
+
+		&.show {
+			--show: flex;
+			--opacity: 1;
+		}
+
+
+	}
+
+
 
 
 }

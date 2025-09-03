@@ -1,24 +1,78 @@
+import DNDZone from "../librairies/dndzone";
+
+
 export default class Croper {
 
+	container = null;
+	imagegroup = null;
+	imageL = null;
+	imageR = null;
 
-	opts = {
-
-	};
+	btngroup = null;
+	uploadbtn = null;
+	
+	splash = null;
+	splashdnd = null;
 
 	
-	constructor(opts = {}) {
-		this.opts = { ...this.opts, ...opts };
-		console.log('Hello croper!');
+	constructor() {
 
-		// this.copyLabeledLink('image-couverture', 'https://ssjb.com/files/uploads/2025/04/00d7f9add1943e0d81fab7adb379adfc.jpg');
+		this.container = document.querySelector('.croper');
+		this.imagegroup = create('div', 'croper__images');
+		this.imageL = this.imagegroup.create('div', 'croper__images__box box--2-3');
+		this.imageR = this.imagegroup.create('div', 'croper__images__box box--5-4');
 
-		// this.copyLabeledLinks([
-		// 	{ label: 'Affiche (1200x675)', url: 'https://exemple.com/affiche.jpg' },
-		// 	{ label: 'Carré (1080x1080)', url: 'https://exemple.com/carre.jpg' },
-		// 	{ label: 'Bannière',          url: 'https://exemple.com/banner.jpg' }
-		// ]);
+		this.btngroup = create('div', 'croper__button');
+		this.uploadbtn = this.btngroup.create('button', null, 'Téléverser');
+		// this.uploadbtn.disabled = true;
+
+		this.splash = create('div', 'croper__splash show', `Glissez-déposez votre image ici ou<br> cliquez ici pour choisir un fichier.`);
+
+		this.container.replaceChildren(this.imagegroup, this.btngroup, this.splash);
+
+		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.handleFile(file) });
+		this.splash.addEventListener('click', e => this.browseFile(e));
+
+
 	}
 
+
+	async handleFile(dropFile) {
+        if(dropFile.type.startsWith('image/') && dropFile.size <= 5242880) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                this.loadImage({
+                    name: dropFile.name,
+                    size: dropFile.size,
+                    type: dropFile.type,
+                    contents: e.target.result
+                });
+            };
+            reader.readAsDataURL(dropFile);
+        }
+    }
+
+
+	async browseFile(e) {
+		browse('image/*', evt => {
+			if (evt.target.files.length > 0) {
+				this.handleFile(evt.target.files[0]);
+			}
+		});
+	}
+
+
+	async loadImage({ name, size, type, contents}) {
+		console.log(name);
+
+
+
+
+
+
+
+		this.splash.classList.remove('show');
+	}
 
 
 	async copyLabeledLinks(links) {

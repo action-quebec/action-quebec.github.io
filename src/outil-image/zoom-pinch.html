@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Zoom & Pan (ratio obligatoire + fit cover)</title>
+  <style>
+    :root { --bg:#0b1220; --fg:#e5e7eb; --muted:#94a3b8; --accent:#60a5fa; --border:#1f2937; }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--fg);
+      background: radial-gradient(1200px 600px at 70% -20%, #12223f 0, transparent 60%), var(--bg);
+      display: grid; place-items: center;
+    }
+    .wrap { width: min(96vw, 980px); display: grid; gap: 12px; }
+    .title { display:flex; gap:.75rem; align-items:baseline;}
+    .title h1 { font-size: 18px; margin: 0; }
+    .hint { color: var(--muted); font-size: 12px; }
+
+    /* Cadre de cadrage: ratio obligatoire via aspect-ratio */
+    .frame {
+      position: relative; width: 100%; aspect-ratio: 5 / 4; /* sera mis à jour en JS */
+      border-radius: 16px; overflow: hidden;
+      background: conic-gradient(from 90deg at 2px 2px, #0000 25%, #111827 0) 0 0/12px 12px, #0f172a;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.06) inset;
+      touch-action: none; user-select: none; -webkit-user-drag: none;
+    }
+    .frame img { position:absolute; top:0; left:0; transform-origin:0 0; will-change: transform; max-width:none; pointer-events:none; -webkit-user-drag:none; }
+
+    .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:space-between; background:#0f172a; border:1px solid var(--border); padding:10px; border-radius:12px; }
+    .group { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .btn { appearance:none; border:1px solid var(--border); background:#0b1220; color:var(--fg); border-radius:10px; padding:8px 12px; cursor:pointer; }
+    .btn:active{ transform: translateY(1px); }
+    .zoom-label { color: var(--muted); min-width:4ch; text-align:right; }
+    .file { color: var(--muted); }
+    select { background:#0b1220; color:var(--fg); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <h1>Zoom & Pan (pinch) — Ratio obligatoire</h1>
+      <div class="hint">Le cadre est un viewport de crop à ratio fixe. Fit par défaut : <b>cover</b> (jamais de bord vide).</div>
+    </div>
+
+    <!-- data-aspect contrôle le ratio; format "W/H". Ex.: 2/3, 5/4, 1/1 -->
+    <div class="frame" id="frame" data-aspect="5/4" aria-label="Zone de cadrage">
+      <img id="img" alt="Aperçu" src="https://images.unsplash.com/photo-1535905496755-26ae35d0ae54?q=80&w=1600&auto=format&fit=crop" />
+    </div>
+
+    <div class="toolbar">
+      <div class="group">
+        <label>Ratio
+          <select id="aspect">
+            <option value="2/3">2/3</option>
+            <option value="5/4" selected>5/4</option>
+            <option value="1/1">1/1</option>
+            <option value="16/9">16/9</option>
+          </select>
+        </label>
+      </div>
+      <div class="group">
+        <button class="btn" id="zoomOut" type="button">−</button>
+        <span class="zoom-label" id="zoomLabel">100%</span>
+        <button class="btn" id="zoomIn" type="button">+</button>
+        <button class="btn" id="reset" type="button">Réinitialiser</button>
+      </div>
+      <div class="group">
+        <label class="file">Charger une image… <input id="file" type="file" accept="image/*" style="display:none" /></label>
+      </div>
+    </div>
+
+    <div class="hint">Gestes : pincer pour zoomer · glisser pour déplacer · double‑tap pour reset · molette = zoom sous le curseur</div>
+  </div>
+
+  <script>
+  (function() {
+    const frame = document.getElementById('frame');
+    const img   = document.getElementById('img');
+
+    const aspectSel = document.getElementById('aspect');
+    const zoomLabel = document.getElementById('zoomLabel');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const resetBtn = document.getElementById('reset');
+    const fileInput = document.getElementById('file');
+
+    const state = { scale:1, minScale:1, maxScale:8, tx:0, ty:0, imgW:0, imgH:0, frameW:0, frameH:0 };
+    const pointers = new Map();
+    let pinchStart = null;
+    let lastTapTime = 0;
+
+    // Ratio ---------------------------------------------------------------
+    function parseAspect(v){
+      const m = String(v).replace(/\s+/g,'').match(/^(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+      if(!m) return {w:5, h:4};
+      return { w: parseFloat(m[1]), h: parseFloat(m[2]) };
+    }
+    function applyAspect(v){
+      const {w,h} = parseAspect(v);
+      frame.style.aspectRatio = `${w} / ${h}`;
+      // Refit au nouveau ratio
+      fitCover();
+    }
+
+    // Helpers -------------------------------------------------------------
+    const clamp = (v,min,max)=> Math.min(max, Math.max(min,v));
+    const rectOf = (el)=> el.getBoundingClientRect();
+
+    function updateZoomLabel(){ zoomLabel.textContent = Math.round((state.scale/state.minScale)*100)+'%'; }
+
+    function applyTransform(){
+      const scaledW = state.imgW * state.scale;
+      const scaledH = state.imgH * state.scale;
+
+      // Contraintes pour ne jamais laisser apparaître le fond (ratio obligatoire)
+      const minTx = state.frameW - scaledW; // bord droit
+      const maxTx = 0;                      // bord gauche
+      const minTy = state.frameH - scaledH; // bas
+      const maxTy = 0;                      // haut
+
+      state.tx = clamp(state.tx, minTx, maxTx);
+      state.ty = clamp(state.ty, minTy, maxTy);
+
+      img.style.transform = `translate3d(${state.tx}px, ${state.ty}px, 0) scale(${state.scale})`;
+      updateZoomLabel();
+    }
+
+    // Zoom autour d'un point (frame coords)
+    function zoomAt(frameX, frameY, nextScale){
+      const r = rectOf(frame);
+      const fx = frameX - r.left; const fy = frameY - r.top;
+      const prev = state.scale;
+      const s = clamp(nextScale, state.minScale, state.maxScale);
+      if (s === state.scale) return;
+      state.tx = fx - (fx - state.tx) * (s/prev);
+      state.ty = fy - (fy - state.ty) * (s/prev);
+      state.scale = s;
+      applyTransform();
+    }
+
+    // Fit "cover": couvre entièrement le cadre (pas de bord vide) -> ratio obligatoire
+    function fitCover(){
+      const r = rectOf(frame); state.frameW = r.width; state.frameH = r.height;
+      const w = state.imgW || img.naturalWidth || 1; const h = state.imgH || img.naturalHeight || 1;
+      state.imgW = w; state.imgH = h;
+      // Cover = max, Contain = min. Ici on veut cover (ratio obligatoire)
+      const s = Math.max(state.frameW / w, state.frameH / h) || 1;
+      state.minScale = s; // on ne pourra jamais zommer en deçà -> pas de lettres
+      state.maxScale = s * 8;
+      state.scale = s;
+      // Centrer l'image couverte
+      const scaledW = w * s, scaledH = h * s;
+      state.tx = (state.frameW - scaledW) / 2;
+      state.ty = (state.frameH - scaledH) / 2;
+      applyTransform();
+    }
+
+    function onResize(){ fitCover(); }
+
+    // Pointeurs -----------------------------------------------------------
+    function setPointer(e){ pointers.set(e.pointerId, {x:e.clientX, y:e.clientY}); }
+    function delPointer(e){ pointers.delete(e.pointerId); }
+    const distance = (a,b)=> Math.hypot(a.x-b.x, a.y-b.y);
+    const midpoint = (a,b)=> ({ x:(a.x+b.x)/2, y:(a.y+b.y)/2 });
+
+    frame.addEventListener('pointerdown', (e)=>{
+      frame.setPointerCapture(e.pointerId); setPointer(e);
+      const now = performance.now();
+      if(now - lastTapTime < 280 && pointers.size === 1){ resetView(); lastTapTime = 0; } else { lastTapTime = now; }
+    });
+    frame.addEventListener('pointermove', (e)=>{
+      if(!pointers.has(e.pointerId)) return;
+      const prev = pointers.get(e.pointerId); setPointer(e);
+      if(pointers.size === 2){
+        const [p1,p2] = [...pointers.values()];
+        const mid = midpoint(p1,p2); const dist = distance(p1,p2);
+        if(!pinchStart){
+          pinchStart = { dist, scale:state.scale, tx:state.tx, ty:state.ty };
+        } else {
+          const factor = dist / (pinchStart.dist || 1);
+          zoomAt(mid.x, mid.y, clamp(pinchStart.scale * factor, state.minScale, state.maxScale));
+        }
+      } else if(pointers.size === 1){
+        state.tx += e.clientX - prev.x; state.ty += e.clientY - prev.y; applyTransform();
+      }
+    });
+    function endPointer(e){ delPointer(e); if(pointers.size < 2) pinchStart = null; }
+    frame.addEventListener('pointerup', endPointer);
+    frame.addEventListener('pointercancel', endPointer);
+    frame.addEventListener('pointerleave', (e)=>{ if(pointers.has(e.pointerId)) endPointer(e); });
+
+    // Molette = zoom à l'endroit du curseur
+    frame.addEventListener('wheel', (e)=>{
+      e.preventDefault();
+      const next = state.scale * Math.exp(-e.deltaY * 0.0015);
+      zoomAt(e.clientX, e.clientY, next);
+    }, { passive:false });
+
+    // UI ------------------------------------------------------------------
+    function resetView(){ fitCover(); }
+    zoomInBtn.addEventListener('click', ()=>{ const r = rectOf(frame); zoomAt(r.left+r.width/2, r.top+r.height/2, state.scale*1.25); });
+    zoomOutBtn.addEventListener('click', ()=>{ const r = rectOf(frame); zoomAt(r.left+r.width/2, r.top+r.height/2, state.scale/1.25); });
+    resetBtn.addEventListener('click', resetView);
+
+    // Ratio selector
+    aspectSel.addEventListener('change', (e)=>{ applyAspect(e.target.value); });
+
+    // Charger une image locale
+    fileInput.addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0]; if(!file) return;
+      const url = URL.createObjectURL(file);
+      img.onload = ()=>{ state.imgW = img.naturalWidth; state.imgH = img.naturalHeight; URL.revokeObjectURL(url); fitCover(); };
+      img.src = url;
+    });
+
+    // Init ---------------------------------------------------------------
+    // Appliquer le ratio provenant du data-aspect, sinon garder 5/4
+    applyAspect(frame.getAttribute('data-aspect') || '5/4');
+
+    // Si l'image est déjà en cache
+    if(img.complete && img.naturalWidth){ state.imgW = img.naturalWidth; state.imgH = img.naturalHeight; fitCover(); }
+    else img.addEventListener('load', fitCover, { once:true });
+
+    window.addEventListener('resize', onResize);
+  })();
+  </script>
+</body>
+</html>

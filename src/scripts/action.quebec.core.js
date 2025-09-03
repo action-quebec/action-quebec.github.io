@@ -1,7 +1,7 @@
-import './librairies/helpers.js';
-import './librairies/lightswitch.js';
-import Modal from './librairies/modal.js'
-import PXCalendar from './librairies/pxcalendar.js';
+import './librairies/helpers';
+import './librairies/lightswitch';
+import Modal from './librairies/modal'
+import PXCalendar from './librairies/pxcalendar';
 import Swiper from 'swiper';
 import { Autoplay, Navigation } from 'swiper/modules';
 
