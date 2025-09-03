@@ -63,6 +63,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg-accent: #{$light-bg-accent};
 	--bg-part: #{$light-bg-part};
 	--bg-link: #{$light-bg-link};
+	--bg-modal: var(--bg);
 
 	--sky-color: #{$light-sky-color};
 	--sky-image: url(../images/ciel-jour.webp);
@@ -104,6 +105,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg-accent: #{$dark-bg-accent};
 	--bg-part: #{$dark-bg-part};
 	--bg-link: #{$dark-bg-link};
+	--bg-modal: #000000;
 
 	--sky-color: #{$dark-sky-color};
 	--sky-image: url(../images/ciel-nuit.webp);
