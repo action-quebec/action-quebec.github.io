@@ -1,10 +1,11 @@
 import './librairies/helpers.js';
 import './librairies/lightswitch.js';
-import Croper from './librairies/croper.js'
 import Modal from './librairies/modal.js'
 import PXCalendar from './librairies/pxcalendar.js';
 import Swiper from 'swiper';
 import { Autoplay, Navigation } from 'swiper/modules';
+
+import Croper from './includes/croper.js'
 
 const MONTHS_BACK  = 6;
 const MONTHS_AHEAD = 12;
@@ -35,7 +36,7 @@ window.Quebec = {
 	},
 
 
-	independant: async () => new Croper('.croper'),
+	independant: async () => new Croper,
 
 
 	initCalendar: async function() {
