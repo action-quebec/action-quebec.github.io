@@ -19,8 +19,8 @@
 
 		&__close {
 			position: absolute;
-			top: 1.7em;
-			right: 1.7em;
+			top: 2em;
+			right: 2em;
 			width: 1.7em;
 			height: 1.7em;
 			background-image: var(--close);
@@ -41,7 +41,7 @@
 			align-items: center;
 			font-size: 1.8em;
 			font-weight: 800;
-			min-height: 1.8em;
+			min-height: 2em;
 			z-index: 0;
 			margin-bottom: 1rem;
 			background-color: var(--bg-part);
