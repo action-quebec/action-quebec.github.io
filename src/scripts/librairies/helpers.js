@@ -80,11 +80,11 @@ self.rem = (n) => {
 /******************************************************
  *                     Date Helpers                   *
  ******************************************************/
-self.pad = (n)=>String(n).padStart(2,'0');
-self.fmtDate = (d)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-self.isoLocal = (d)=>new Date(d).toISOString();
+self.pad = (n) => String(n).padStart(2, '0');
+self.fmtDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+self.isoLocal = (d) => new Date(d).toISOString();
 self.addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-self.inTZ = (iso, tz='America/Toronto') => new Date(iso).toLocaleDateString('fr-CA', { timeZone: tz });
+self.inTZ = (iso, tz = 'America/Toronto') => new Date(iso).toLocaleDateString('fr-CA', { timeZone: tz });
 self.ymd = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0, 10);
 self.startOfWeek = (d, start = 0) => {
 	const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -92,3 +92,12 @@ self.startOfWeek = (d, start = 0) => {
 	x.setDate(x.getDate() - diff);
 	return x;
 };
+
+
+/******************************************************
+ *                     Math Helpers                   *
+ ******************************************************/
+self.rectOf = (el) => el.getBoundingClientRect();
+self.clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+self.distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+self.midpoint = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });

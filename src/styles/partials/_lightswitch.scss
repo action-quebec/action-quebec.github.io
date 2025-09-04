@@ -30,6 +30,7 @@ $dark-bg-link:         #d39f01;
 $light-bg-part: color.adjust($light-sky-color, $lightness: -1%);
 $light-bg-alpha: color.adjust($light-bg, $alpha: -0.7);
 $light-fg-alpha: color.adjust($light-fg, $alpha: -0.7);
+$light-bg-link-alpha: color.adjust($light-bg-link, $alpha: -0.6);
 $light-fg-hex: string.unquote('#{string.slice(ie-hex-str($light-fg), 4)}');
 
 $light-cal-text: $light-fg;
@@ -41,6 +42,7 @@ $light-cal-border: color.adjust($light-cal-text, $alpha: -0.8);
 $dark-bg-part: color.adjust($dark-bg, $lightness: 6%);
 $dark-bg-alpha:  color.adjust($dark-bg, $alpha: -0.7);
 $dark-fg-alpha:  color.adjust($dark-fg, $alpha: -0.7);
+$dark-bg-link-alpha: color.adjust($dark-bg-link, $alpha: -0.6);
 $dark-fg-hex: string.unquote('#{string.slice(ie-hex-str($dark-fg), 4)}');
 
 $dark-cal-text: $dark-fg;
@@ -63,6 +65,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg-accent: #{$light-bg-accent};
 	--bg-part: #{$light-bg-part};
 	--bg-link: #{$light-bg-link};
+	--bg-link-alpha: #{$light-bg-link-alpha};
 	--bg-modal: var(--bg);
 
 	--sky-color: #{$light-sky-color};
@@ -105,6 +108,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg-accent: #{$dark-bg-accent};
 	--bg-part: #{$dark-bg-part};
 	--bg-link: #{$dark-bg-link};
+	--bg-link-alpha: #{$dark-bg-link-alpha};
 	--bg-modal: #000000;
 
 	--sky-color: #{$dark-sky-color};

@@ -1,0 +1,89 @@
+@property --deg-in {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+
+@property --deg-out {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+
+.loading-double-circular {
+    --color: #ff6347cc;
+    --size: 50vmin;
+    --border: 5;
+    --duration: 3s;
+    --steps: 4;
+    --state: running;
+    
+    position: absolute;
+    margin: calc((100vh - var(--size)) / 2) calc((100vw - var(--size)) / 2);
+
+    width: var(--size);
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    animation: loading-double-circular calc(var(--duration) * var(--steps)) steps(var(--steps)) 0s infinite forwards var(--state);
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-image: conic-gradient(from var(--deg-out) at 50% 50%, var(--color) var(--deg-in), #0000 0deg);
+        --mask-size: calc(var(--size) * (0.5 - (var(--border) / 100)));
+        -webkit-mask: radial-gradient(circle var(--mask-size), #0000 99%, #fff);
+                mask: radial-gradient(circle var(--mask-size), #0000 99%, #fff);
+        animation: loading-double-circular-element var(--duration) ease-in-out 0s infinite forwards var(--state);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: calc((100 - (var(--border) * 3)) * 1%);
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        transform: translate(-50%, -50%) rotate(180deg);
+        background-image: conic-gradient(from var(--deg-out) at 50% 50%, var(--color) var(--deg-in), #0000 0deg);
+        --mask-size: calc(var(--size) * (0.5 - ((var(--border) / 100)) * 2.5));
+        -webkit-mask: radial-gradient(circle var(--mask-size), #0000 99%, #fff);
+                mask: radial-gradient(circle var(--mask-size), #0000 99%, #fff);
+        animation: loading-double-circular-element var(--duration) ease-in-out 0s infinite forwards var(--state);
+    }
+}
+
+
+@keyframes loading-double-circular {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes loading-double-circular-element {
+    0% {
+        --deg-in: 0deg;
+        --deg-out: 0deg;
+    }
+    50% {
+        --deg-in: 360deg;
+        --deg-out: 0deg;
+    }
+    100% {
+        --deg-in: 0deg;
+        --deg-out: 360deg;
+    }
+}
+
+

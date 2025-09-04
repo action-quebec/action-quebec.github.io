@@ -6,9 +6,7 @@
 	--show: flex;
 	--opacity: 0;
 
-	&:hover:has(:not(.croper__splash.show)) {
-		--show: none;
-	}
+
 
 
 	&__images {
@@ -23,7 +21,22 @@
 			flex-basis: 0;
 			min-width: 0;
 			background-color: var(--bg-part);
+			box-shadow: var(--shadow);
+			overflow: hidden;
+			touch-action: none;
+			user-select: none;
+			-webkit-user-drag: none;
+			cursor: grab;
+			cursor: -webkit-grab;
 
+			&:active,
+			&:has(*:active) {
+				cursor: grabbing;
+				cursor: -webkit-grabbing;
+			}
+
+			&.zooming-in  { cursor: zoom-in; }
+			&.zooming-out { cursor: zoom-out; }
 
 			&.box--2-3 {
 				aspect-ratio: 2 / 3;
@@ -35,14 +48,25 @@
 				flex: 15 1 0;
 			}
 
+			> img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				transform-origin: 0 0;
+				will-change: transform;
+				max-width: none;
+				pointer-events: none;
+				-webkit-user-drag: none;
+			}
+
 		}
-
-
 
 	}
 
+
 	&__button {
 		margin-top: 2rem;
+		box-shadow: var(--shadow);
 
 		& > button {
 			appearance: none;
@@ -55,11 +79,10 @@
 			color: var(--fg);
 			border: none;
 			cursor: pointer;
-			transition: filter 0.3s ease, transform 0.1s ease;
+			transition: transform 100ms;
 
 			&:hover {
-				filter: saturate(200%);
-  				transform: translateY(-0.3rem);
+				transform: scale(1.01) translateY(-0.1rem);
 			}
 
 			&:active {
@@ -73,6 +96,9 @@
 		}
 	}
 
+	&:hover:has(:not(.croper__splash.show)) {
+		--show: none;
+	}
 
 	&__splash {
 		position: absolute;
@@ -103,14 +129,46 @@
 			--show: flex;
 			--opacity: 1;
 		}
-
-
 	}
 
+	&__loader {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: none;
+		align-items: center;
+		justify-content: center;
 
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: var(--bg-modal);;
+			opacity: 0.8;
+		}
 
+		&.show {
+			display: flex;
+			.loading-double-circular {
+				--state: running;
+			}
+		}
+
+		.loading-double-circular {
+			--color: var(--bg-link-alpha);
+			--size: 10rem;
+			--border: 5;
+			--duration: 2.5s;
+			--steps: 2;
+			--state: paused;
+			position: relative;
+			margin: 0;
+		}
+	}
 
 }
-
-
-
