@@ -1,5 +1,3 @@
-import '../librairies/helpers';
-
 export default class ImageFrame {
 
 	state = { scale: 1, minScale: 1, maxScale: 8, tx: 0, ty: 0, imgW: 0, imgH: 0, frameW: 0, frameH: 0 };
@@ -17,13 +15,7 @@ export default class ImageFrame {
 	url = null;
 
 
-	opts = {
-
-	};
-	
-	
-	constructor(frame, ratio, opts = {}) {
-		this.opts = { ...this.opts, ...opts };
+	constructor(frame, ratio) {
 		if(typeof frame == 'string') this.frame = document.querySelector(frame);
 		else this.frame = frame;
 		this.ratio = this.parseAspect(ratio);
