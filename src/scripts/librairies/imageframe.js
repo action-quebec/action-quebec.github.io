@@ -31,13 +31,13 @@ export default class ImageFrame {
 		this.img = this.frame.create('img');
 		this.img.onload = () => this.onLoadImage();
 		
+		this.frame.addEventListener('wheel',         e => this.onWheel(e), { passive: false });
+		this.frame.addEventListener('pointerdown',   e => this.onPointerDown(e));
+		this.frame.addEventListener('pointermove',   e => this.onPointerMove(e));
+		this.frame.addEventListener('pointerup',     e => this.endPointer(e));
+		this.frame.addEventListener('pointercancel', e => this.endPointer(e));
+		this.frame.addEventListener('pointerleave',  e => { if(this.pointers.has(e.pointerId)) this.endPointer(e); });
 		window.addEventListener('resize', () => this.onResize());
-		this.frame.addEventListener('wheel', e => this.onWheel(e), { passive: false });
-		this.frame.addEventListener('pointerdown', e => this.onPointerDown(e));
-		this.frame.addEventListener('pointermove', e => this.onPointerMove(e));
-		this.frame.addEventListener('pointerup', e  => this.endPointer(e));
-		this.frame.addEventListener('pointercancel', e  => this.endPointer(e));
-		this.frame.addEventListener('pointerleave', e  => { if(this.pointers.has(e.pointerId)) this.endPointer(e); });
 	}
 
 

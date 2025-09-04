@@ -14,6 +14,7 @@ export default class Croper {
 
 	btngroup = null;
 	uploadbtn = null;
+	browsebtn = null;
 	
 	splash = null;
 	splashdnd = null;
@@ -22,16 +23,19 @@ export default class Croper {
 
 	
 	constructor() {
-
 		this.container = document.querySelector('.croper');
 		this.imagegroup = create('div', 'croper__images');
 		this.imageL = this.imagegroup.create('div', 'croper__images__box box--2-3');
 		this.imageR = this.imagegroup.create('div', 'croper__images__box box--5-4');
 		this.btngroup = create('div', 'croper__button');
 		this.uploadbtn = this.btngroup.create('button', null, 'Téléverser');
+		this.uploadbtn.addEventListener('click', e => this.uploadFiles());
+		this.browsebtn = this.btngroup.create('button', null, 'Parcourir');
+		this.browsebtn.addEventListener('click', e => this.browseFile(e));
+
 		this.splash = create('div', 'croper__splash show', `Glissez-déposez votre image ici ou<br> cliquez ici pour choisir un fichier.`);
-		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.handleFile(file) });
 		this.splash.addEventListener('click', e => this.browseFile(e));
+		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.handleFile(file) });
 
 		this.loader = create('div', 'croper__loader');
 		this.loader.create('div', 'loading-double-circular');
@@ -64,6 +68,11 @@ export default class Croper {
 		this.frameL.loadImage(file);
 		this.frameR.loadImage(file);
 		this.splash.classList.remove('show');
+	}
+
+
+	async uploadFiles() {
+		this.loader.classList.add('show');
 	}
 
 
