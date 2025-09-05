@@ -250,8 +250,9 @@ export default class Calendar {
 
 
 	async clickEventDay(date, elm) {
+		document.documentElement.classList.add('is-busy');
 		const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
-		const eventDetails = events.map(v => this.renderEventDetails(v));
+		const eventDetails = await Promise.all(events.map(v => this.renderEventDetails(v)));
 		const container = create('div', 'modal-events');
 		const placeholder = container.create('div', 'modal-events__placeholder');
 		const close = placeholder.create('div', 'modal-events__placeholder__close');
@@ -264,11 +265,12 @@ export default class Calendar {
 		close.title = 'Fermer';
 		close.addEventListener('click', e => this.modal.hide());
 		placeholderEvents.append(...eventDetails);
+		document.documentElement.classList.remove('is-busy');
 		this.modal.show(container);
 	}
 
 
-	renderEventDetails(evt) {
+	async renderEventDetails(evt) {
 		const container = create('div', 'modal-events__placeholder__events__event');
 		const time = this.formatLabel(evt.start);
 		let str = '';
@@ -285,7 +287,12 @@ export default class Calendar {
 		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
 		str += evt.description + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
-		return container;
+		if(!evt.image) return container;
+		return new Promise((res) => {
+			const img = create('img');
+			img.onload = async () => res(container);
+			img.src = evt.image;
+		});
 	}
 
 

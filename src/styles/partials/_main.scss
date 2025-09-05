@@ -11,6 +11,16 @@ html {
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
     font-size: var(--font-size);
+
+    &.is-busy,
+    &.is-busy * {
+        cursor: wait !important;
+    }
+
+    &.is-working,
+    &.is-working * {
+        cursor: progress !important;
+    }
 }
 
 
@@ -18,7 +28,7 @@ body {
     color: var(--fg);
     background-color: var(--bg);
     overflow-x: hidden;
-    
+
     transition: background-color var(--scheme-transition-duration);
 
     display: flex;
@@ -102,7 +112,6 @@ header {
             }
         }
 
-
     }
 
 }
@@ -126,7 +135,7 @@ footer {
     margin-bottom: 2rem;
     opacity: 0.4;
     user-select: none;
-    
+
     &::before {
         content: '';
         width: 1.7em;
@@ -137,7 +146,6 @@ footer {
         background-repeat: no-repeat;
         margin-right: 0.5em;
     }
-    
 }
 
 
@@ -210,7 +218,7 @@ section {
             }
 
             > div:first-child {
-                --scale-x: -1.2; 
+                --scale-x: -1.2;
                 background-image: var(--nav);
                 transform: scaleX(-1);
             }
@@ -229,7 +237,6 @@ section {
 }
 
 
-
 a {
     color: var(--fg);
     font-weight: 600;
@@ -244,7 +251,7 @@ a {
         transition-duration: 200ms;
         background-size: 100% 100%;
     }
-    
+
     &[target="_blank"]::after {
         content: '';
         display: inline-block;
@@ -258,7 +265,6 @@ a {
     }
 
     &[href*="mailto:"]::after {
-
         content: '';
         display: inline-block;
         width: 1em;
@@ -268,7 +274,6 @@ a {
         background-size: contain;
         background-repeat: no-repeat;
         margin-left: 0.1em;
-        
     }
 }
 

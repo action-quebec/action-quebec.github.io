@@ -21,8 +21,6 @@ export default class ImageFrame {
 		this.ratio = this.parseAspect(ratio);
       	this.frame.style.aspectRatio = `${this.ratio.w} / ${this.ratio.h}`;
 		this.img = this.frame.create('img');
-		this.img.onload = () => this.onLoadImage();
-		
 		this.frame.addEventListener('wheel',         e => this.onWheel(e), { passive: false });
 		this.frame.addEventListener('pointerdown',   e => this.onPointerDown(e));
 		this.frame.addEventListener('pointermove',   e => this.onPointerMove(e));
@@ -34,27 +32,23 @@ export default class ImageFrame {
 
 
 	async loadImage(file) {
-		this.url = URL.createObjectURL(file);
-		this.img.src = this.url;
+		return new Promise((res) => {
+			this.url = URL.createObjectURL(file);
+			this.img.onload = async () => {
+				this.state.imgW = this.img.naturalWidth;
+				this.state.imgH = this.img.naturalHeight;
+				URL.revokeObjectURL(this.url);
+				await this.fitCover();
+				res(true);
+			}
+			this.img.src = this.url;
+		});
 	}
 
 
-	async onLoadImage() {
-		this.state.imgW = this.img.naturalWidth;
-		this.state.imgH = this.img.naturalHeight;
-		URL.revokeObjectURL(this.url);
-		this.fitCover();
-	}
-
-	
-	async onResize() {
+	onResize() {
 		if(this.mutex != null) return;
-		if(this.img) {
-			this.mutex = requestAnimationFrame(async () => {
-				this.fitCover();
-				this.mutex = null;
-			});
-		}
+		if(this.img) this.mutex = requestAnimationFrame(() => this.fitCover().then(() => this.mutex = null));
 	}
 
 
@@ -94,12 +88,12 @@ export default class ImageFrame {
 				this.pinchStart = { dist, scale: this.state.scale, tx: this.state.tx, ty: this.state.ty };
 			} else {
 				const factor = dist / (this.pinchStart.dist || 1);
-				this.zoomAt(mid.x, mid.y, clamp(this.pinchStart.scale * factor, this.state.minScale, this.state.maxScale));
+				await this.zoomAt(mid.x, mid.y, clamp(this.pinchStart.scale * factor, this.state.minScale, this.state.maxScale));
 			}
 		} else if (this.pointers.size === 1) {
 			this.state.tx += e.clientX - prev.x;
 			this.state.ty += e.clientY - prev.y;
-			this.applyTransform();
+			await this.applyTransform();
 		}
 	}
 
@@ -123,7 +117,7 @@ export default class ImageFrame {
 		const scaledW = w * s, scaledH = h * s;
 		this.state.tx = (this.state.frameW - scaledW) / 2;
 		this.state.ty = (this.state.frameH - scaledH) / 2;
-		this.applyTransform();
+		await this.applyTransform();
 	}
 
 
@@ -154,7 +148,7 @@ export default class ImageFrame {
 		this.state.tx = fx - (fx - this.state.tx) * (s / prev);
 		this.state.ty = fy - (fy - this.state.ty) * (s / prev);
 		this.state.scale = s;
-		this.applyTransform();
+		await this.applyTransform();
 	}
 
 
@@ -200,9 +194,7 @@ export default class ImageFrame {
 		ctx.imageSmoothingQuality = 'high';
 		ctx.drawImage(this.img, sx, sy, sw, sh, 0, 0, outW, outH);
 
-		return new Promise((res, rej) => {
-			cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/${format}`, 0.92);
-		});
+		return new Promise((res, rej) => cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/${format}`, 0.92));
 	}
 
 }

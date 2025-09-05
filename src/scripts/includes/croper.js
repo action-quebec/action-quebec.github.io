@@ -1,5 +1,6 @@
 import DNDZone from "../librairies/dndzone";
 import ImageFrame from "../librairies/imageframe";
+import Notification from "../librairies/notification";
 
 
 export default class Croper {
@@ -21,12 +22,15 @@ export default class Croper {
 
 	results = null;
 	copybtn = null;
+	browse2btn = null;
 	links = null;
 	
 	splash = null;
 	splashdnd = null;
 
 	loader = null;
+
+	notif = null;
 
 	
 	constructor() {
@@ -35,20 +39,28 @@ export default class Croper {
 		this.image = create('img');
 		this.imageL = this.imagegroup.create('div', 'croper__images__box box--2-3');
 		this.imageR = this.imagegroup.create('div', 'croper__images__box box--5-4');
+		this.imageL.title = `Utilisez la molette pour zoomer`;
+		this.imageR.title = `Utilisez la molette pour zoomer`;
+
 		this.btngroup = create('div', 'croper__button');
 		this.uploadbtn = this.btngroup.create('button', null, 'Téléverser');
 		this.uploadbtn.addEventListener('click', e => this.uploadFiles());
 		this.browsebtn = this.btngroup.create('button', null, 'Parcourir');
 		this.browsebtn.addEventListener('click', e => this.browseFile(e));
 
-		this.results = create('div', 'croper__results show');
+		this.results = create('div', 'croper__results');
 		this.results.create('div', 'croper__results__winner').title = `Tu veux-tu une médaille?`;
-		this.results.create('div', 'croper__results__congrats', `Félicitation!`);
+		this.results.create('div', 'croper__results__congrats', `Félicitations!`);
 		this.results.create('div', 'croper__results__text', `Image téléversée avec succès. Il ne reste qu’à Copier les liens et les coller dans le calendrier Google.`);
-		this.copybtn = this.results.create('button', 'croper__results__copy', `Copier les liens`);
+		const btncont = this.results.create('div', 'croper__results__btn');
+		
+		this.copybtn = btncont.create('button', 'croper__results__copy', `Copier les liens`);
 		this.copybtn.addEventListener('click', e => this.copyLinks());
 
-		this.splash = create('div', 'croper__splash', `Glissez-déposez votre image ici ou<br> cliquez ici pour choisir un fichier.`);
+		this.browse2btn = btncont.create('button', 'croper__results__browse', `Parcourir`);
+		this.browse2btn.addEventListener('click', e => this.browseFile(e));
+
+		this.splash = create('div', 'croper__splash show', `Glissez-déposez votre image ici ou<br> cliquez ici pour choisir un fichier.`);
 		this.splash.addEventListener('click', e => this.browseFile(e));
 		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.handleFile(file) });
 
@@ -58,21 +70,23 @@ export default class Croper {
 		this.frameL = new ImageFrame(this.imageL, '2/3');
 		this.frameR = new ImageFrame(this.imageR, '5:4');
 
+		this.notif = new Notification;
+
 		this.container.replaceChildren(this.imagegroup, this.btngroup, this.results, this.splash, this.loader);
 	}
 
 
 	async handleFile(dropFile) {
         if(dropFile.type.startsWith('image/') && dropFile.size <= 5242880) {
-			this.loadImage(dropFile);
+			await this.loadImage(dropFile);
         }
     }
 
 
 	async browseFile(e) {
-		browse('image/*', evt => {
+		browse('image/*', async evt => {
 			if (evt.target.files.length > 0) {
-				this.handleFile(evt.target.files[0]);
+				await this.handleFile(evt.target.files[0]);
 			}
 		});
 	}
@@ -80,43 +94,44 @@ export default class Croper {
 
 	async loadImage(file) {
 		this.image.src = URL.createObjectURL(file);
-		this.frameL.loadImage(file);
-		this.frameR.loadImage(file);
+		await Promise.all([
+			this.frameL.loadImage(file),
+			this.frameR.loadImage(file)
+		]);
 		this.splash.classList.remove('show');
+		this.results.classList.remove('show');
 	}
 
 
 	async uploadFiles() {
 		this.loader.classList.add('show');
-		try {
-			// const blobs = await Promise.all([
-			// 	this.exportBlob(640),
-			// 	this.frameR.exportBlob(140, 'webp'),	
-			// 	this.frameL.exportBlob(280, 'webp'),
-			// ]);
-
-			// const links = await Promise.all([
-			// 	this.uploadBlob(blobs[0]),
-			// 	this.uploadBlob(blobs[1]),
-			// 	this.uploadBlob(blobs[2]),
-			// ]);
-			await sleep(1000)
+		const urlParams = new URLSearchParams(window.location.search);
+		if(urlParams.get('cache') !== null) {
+			console.log('Google cache: active');
 			this.links = [
 				"https://files.catbox.moe/zi3o0j.webp",
 				"https://files.catbox.moe/71fg0x.webp",
-				"https://files.catbox.moe/g3hwgs.webp",
+				"https://files.catbox.moe/g3hwgs.webp"
 			];
-
-
-
-			console.log(links);
-			// console.log(blobs);
-
-			// this.uploadBlob(blobs[0]);
-					
-		} catch (err) {
-			console.error(err.message || err);
+		} else {
+			try {
+				const blobs = await Promise.all([
+					this.exportBlob(640),
+					this.frameR.exportBlob(140, 'webp'),	
+					this.frameL.exportBlob(280, 'webp'),
+				]);
+				this.links = await Promise.all([
+					this.uploadBlob(blobs[0]),
+					this.uploadBlob(blobs[1]),
+					this.uploadBlob(blobs[2]),
+				]);
+			} catch (err) {
+				console.error(err.message || err);
+			}
 		}
+		await sleep(1000);
+		this.results.classList.add('show');
+		this.loader.classList.remove('show');
 	}
 
 
@@ -128,9 +143,7 @@ export default class Croper {
 		const ctx = cvs.getContext('2d', { alpha: true });
 		ctx.imageSmoothingQuality = 'high';
 		ctx.drawImage(this.image, 0, 0, this.image.naturalWidth, this.image.naturalHeight, 0, 0, outW, outH);
-		return new Promise((res, rej) => {
-			cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/webp`, 0.92);
-		});
+		return new Promise((res, rej) => cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/webp`, 0.92));
 	}
 
 
@@ -146,7 +159,12 @@ export default class Croper {
 
 
 	async copyLinks() {
-		console.log(this.links);
+		await this.copyLabeledLinks([
+			{ label: `image-couverture`, url: this.links[0] },
+			{ label: `image-calendrier`, url: this.links[1] },
+			{ label: `image-carte`,      url: this.links[2] },
+		]);
+		this.notif.thumbsUp('Liens copiés!');
 	}
 
 
