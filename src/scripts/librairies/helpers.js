@@ -86,6 +86,18 @@ self.sleep = ms => {
 
 
 /******************************************************
+ *                    Preload image                   *
+ ******************************************************/
+self.preloadImage = async url => {
+	return new Promise((res) => {
+		const img = create('img');
+		img.onload = async () => res(true);
+		img.src = url;
+	});
+}
+
+
+/******************************************************
  *                     Date Helpers                   *
  ******************************************************/
 self.pad = (n) => String(n).padStart(2, '0');

@@ -37,6 +37,7 @@ export default class PXCalendar {
 		const firstOfMonth = new Date(this.current.getFullYear(), this.current.getMonth(), 1);
 		const gridStart = startOfWeek(firstOfMonth, 0);
 		const cells = [];
+		const preloads = [];
 		for(let i = 0; i < 42; i++) {
 			const d = addDays(gridStart, i);
 			const iso = ymd(d);
@@ -45,7 +46,7 @@ export default class PXCalendar {
 			if(iso === ymd(new Date())) cell.classList.add('today');
 			if(this.events.has(iso)) {
 				cell.classList.add('has-event');
-				this.opts.onRenderDate?.(iso, cell);
+				preloads.push(this.opts.onRenderDate?.(iso, cell));
 				cell.addEventListener('click', e => this.opts.onClickDate?.(iso, cell));
 			}
 			cells.push(cell);
@@ -56,31 +57,32 @@ export default class PXCalendar {
 			this.label.innerText = monthText;
 			this.label.title = monthText;
 		}
+		await Promise.all(preloads);
 	}
 
 
 	async addEvents(events) {
 		this.events = new Set([...this.events, ...events]);
-		this.render();
+		return this.render();
 	}
 
 
 	async next() {
 		this.current = new Date(this.current.getFullYear(), this.current.getMonth() + 1, 1);
-		this.render();
+		return this.render();
 	}
 
 
 	async previous() {
 		this.current = new Date(this.current.getFullYear(), this.current.getMonth() - 1, 1);
-		this.render();
+		return this.render();
 	}
 
 
 	async setMonth(date) {
 		const d = new Date(date);
 		this.current = new Date(d.getFullYear(), d.getMonth(), 1);
-		this.render();
+		return this.render();
 	}
 
 

@@ -73,7 +73,15 @@ header {
     max-width: var(--font-size-break);
     margin: 4rem auto 2rem auto;
 
-    & > :first-child {
+    a {
+        background: none;
+        display: block;
+        display: flex;
+        flex-direction: row;
+
+    }
+
+    h1 {
         width: 100%;
         max-width: var(--font-size-break);
         margin: 0 2rem;

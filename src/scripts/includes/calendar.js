@@ -26,10 +26,31 @@ export default class Calendar {
 
 
 	constructor() {
-		Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' })]).then(() => {
+		this.busy(new Promise(res => {
 			this.modal = new Modal({ onlyBgClick: true });
-			this.loadGoogleCalendar();
-		});
+			Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' })]).then(async () => {
+				const eventSet = await this.loadGoogleCalendar();
+				await Promise.all([
+					this.calendar.addEvents(eventSet),
+					this.addUpcomingEvents()
+				]);
+				const urlParams = new URLSearchParams(window.location.search);
+				const event = this.getEventById(urlParams.get('id'));
+				if(event) {
+					await this.calendar.setMonth(ymd(new Date(event.start)));
+					await this.clickEventDay(event.id);
+				}
+				res(true);
+			});
+		}));
+	}
+
+
+	async busy(promise) {
+		document.documentElement.classList.add('is-busy');	
+		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
+		document.documentElement.classList.remove('is-busy');
+		return results;
 	}
 
 
@@ -39,26 +60,19 @@ export default class Calendar {
 			onRenderDate: (date, elm) => this.renderEvent(date, elm),
 			onClickDate: (date, elm) => this.clickEventDay(date, elm)
 		});
-		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', e => this.calendar.previous());
-		document.querySelector('.calendar__pagination__next > span').addEventListener('click', e => this.calendar.next());
+		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', e => this.previousMonth());
+		document.querySelector('.calendar__pagination__next > span').addEventListener('click', e => this.nextMonth());
 	}
 
 
 	async loadGoogleCalendar() {
 		this.events = await this.queryGoogleCalendar();
-		const eventSet = new Set(this.events.map(v => {
+		const eventSet = new Set(await Promise.all(this.events.map(async v => {
 			const s = new Date(v.start);
 			const d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
 			return ymd(d);
-		}));
-		this.calendar.addEvents(eventSet);
-		this.addUpcomingEvents();
-		const urlParams = new URLSearchParams(window.location.search);
-		const event = this.getEventById(urlParams.get('id'));
-		if(event) {
-			this.calendar.setMonth(ymd(new Date(event.start)));
-			this.clickEventDay(event.id);
-		}
+		})));
+		return eventSet;
 	}
 
 
@@ -96,7 +110,7 @@ export default class Calendar {
 
 
 	mapGCalEvents(items) {
-		return items.filter(it => it.status !== 'cancelled').map(it => {
+		return Promise.all(items.filter(it => it.status !== 'cancelled').map(async it => {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
@@ -116,7 +130,7 @@ export default class Calendar {
 				image: firstImage,
 				images: tags
 			};
-		});
+		}));
 	}
 
 
@@ -150,9 +164,17 @@ export default class Calendar {
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
 		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
 		const evtipCont = evtip.create('div', 'pxcalendar__month__day__evtip__cont');
-		evtipCont.innerHTML = events.map(e => this.renderEventTip(e)).join('<hr>');
-		if(events[0].image) bgimg.style.setProperty('--image-1', `url(${events[0].images['image-calendrier']})`);
-		if(events.length > 1 && events[1].image) bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
+		evtipCont.innerHTML = (await Promise.all(events.map(e => this.renderEventTip(e)))).join('<hr>');
+		const imgs = [];
+		if(events[0].image) {
+			imgs.push(preloadImage(events[0].images['image-calendrier']));
+			bgimg.style.setProperty('--image-1', `url(${events[0].images['image-calendrier']})`);
+		}
+		if(events.length > 1 && events[1].image) {
+			imgs.push(preloadImage(events[1].images['image-calendrier']));
+			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
+		}
+		return new Promise(res => Promise.all(imgs).then(() => res(true)));
 	}
 
 
@@ -176,7 +198,7 @@ export default class Calendar {
 	}
 
 
-	renderEventTip(evt) {
+	async renderEventTip(evt) {
 		const time = new Intl.DateTimeFormat('fr-CA', { timeZone: this.IMEZONE, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(evt.start));
 		let str = `<h3>${evt.title}</h3>`;
 		if(evt.location) {
@@ -210,30 +232,37 @@ export default class Calendar {
 	async addUpcomingEvents() {
 		const events = this.getUpcomingEvents().slice(0,10);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
-		events.forEach(evt => {
+		const preloads = [];
+		const evtRenders = Promise.all(events.map(async evt => {
 			const card = placeholder.create('div', 'swiper-slide');
 			card.classList.add('event-card');
-			if(evt.image) card.style.setProperty('--image', `url(${evt.images['image-carte']})`);
+			if(evt.image) {
+				preloads.push(preloadImage(evt.images['image-carte']));
+				card.style.setProperty('--image', `url(${evt.images['image-carte']})`);
+			}
 			card.create('div', 'event-card__title', evt.title);
 			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: this.TIMEZONE}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
 			card.addEventListener('click', e => this.clickEventDay(evt.id));
 			card.title = evt.title;
-		});
-		this.swiper = new Swiper(".events-swiper", {
-			modules: [Autoplay, Navigation],
-			slidesPerView: 3,
-			spaceBetween: rem(2),
-			allowTouchMove: true,
-			autoHeight: false,
-			preloadImages: false,
-			observer: false,
-			observeParents: false,
-			observeSlideChildren: false,
-			updateOnWindowResize: false,
-			lazy: { loadPrevNext: true, loadOnTransitionStart: true },
-			autoplay: { delay: 5000, disableOnInteraction: false },
-			navigation: { nextEl: '.events-swiper-next', prevEl: '.events-swiper-prev' },
+		}));
+		const swipRender = new Promise(res => {
+			this.swiper = new Swiper('.events-swiper', {
+				modules: [Autoplay, Navigation],
+				slidesPerView: 3,
+				spaceBetween: rem(2),
+				allowTouchMove: true,
+				autoHeight: false,
+				preloadImages: false,
+				observer: false,
+				observeParents: false,
+				observeSlideChildren: false,
+				updateOnWindowResize: false,
+				lazy: { loadPrevNext: true, loadOnTransitionStart: true },
+				autoplay: { delay: 5000, disableOnInteraction: false },
+				navigation: { nextEl: '.events-swiper-next', prevEl: '.events-swiper-prev' },
+			});
+			res(true);
 		});
 		window.addEventListener('resize', () => {
 			if (this.mutexSwiper != null) return;
@@ -246,27 +275,31 @@ export default class Calendar {
 				});
 			}
 		});
+		return Promise.all([swipRender, evtRenders, ...preloads]);
 	}
 
 
 	async clickEventDay(date, elm) {
-		document.documentElement.classList.add('is-busy');
-		const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
-		const eventDetails = await Promise.all(events.map(v => this.renderEventDetails(v)));
-		const container = create('div', 'modal-events');
-		const placeholder = container.create('div', 'modal-events__placeholder');
-		const close = placeholder.create('div', 'modal-events__placeholder__close');
-		const dateholder = placeholder.create('div', 'modal-events__placeholder__date');
-		const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
-		const d = new Date(`${/^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDate(new Date(events[0].start))}T00:00:00`);
-		const options = { weekday: "long", day: "numeric", month: "long", timeZone: this.TIMEZONE};
-		const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
-		dateholder.innerHTML = formatted;
-		close.title = 'Fermer';
-		close.addEventListener('click', e => this.modal.hide());
-		placeholderEvents.append(...eventDetails);
-		document.documentElement.classList.remove('is-busy');
-		this.modal.show(container);
+		this.busy(new Promise(async res => {
+			document.documentElement.classList.add('is-busy');
+			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
+			const eventDetails = await Promise.all(events.map(v => this.renderEventDetails(v)));
+			const container = create('div', 'modal-events');
+			const placeholder = container.create('div', 'modal-events__placeholder');
+			const close = placeholder.create('div', 'modal-events__placeholder__close');
+			const dateholder = placeholder.create('div', 'modal-events__placeholder__date');
+			const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
+			const d = new Date(`${/^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDate(new Date(events[0].start))}T00:00:00`);
+			const options = { weekday: "long", day: "numeric", month: "long", timeZone: this.TIMEZONE};
+			const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
+			dateholder.innerHTML = formatted;
+			close.title = 'Fermer';
+			close.addEventListener('click', e => this.modal.hide());
+			placeholderEvents.append(...eventDetails);
+			document.documentElement.classList.remove('is-busy');
+			this.modal.show(container);
+			res(true);
+		}));
 	}
 
 
@@ -288,11 +321,7 @@ export default class Calendar {
 		str += evt.description + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
 		if(!evt.image) return container;
-		return new Promise((res) => {
-			const img = create('img');
-			img.onload = async () => res(container);
-			img.src = evt.image;
-		});
+		return new Promise(res => preloadImage(evt.image).then(() => res(container)));
 	}
 
 
@@ -302,6 +331,16 @@ export default class Calendar {
 		const timePart = new Intl.DateTimeFormat('fr-CA', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
 		const time = timePart.replace(/\u202F|\u00A0/g, ' ');
 		return `${datePart} ${time}`;
+	}
+
+
+	async nextMonth() {
+		return this.busy(this.calendar.next());
+	}
+
+
+	async previousMonth() {
+		return this.busy(this.calendar.previous());
 	}
 
 }
