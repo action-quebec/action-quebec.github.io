@@ -5,7 +5,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 
 
 export default class Calendar {
-	
+
 	MONTHS_BACK  = 6;
 	MONTHS_AHEAD = 12;
 	TIMEZONE     = 'America/Toronto';
@@ -14,7 +14,7 @@ export default class Calendar {
 
 	secrets = null;
 	events = null;
-	
+
 	calendar = null;
 	swiper = null;
 	modal = null;
@@ -23,7 +23,7 @@ export default class Calendar {
 
 	mutexSwiper = null;
 	mutexRem = null;
-	
+
 
 	constructor() {
 		Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' })]).then(() => {
@@ -207,7 +207,6 @@ export default class Calendar {
 	}
 
 
-
 	async addUpcomingEvents() {
 		const events = this.getUpcomingEvents().slice(0,10);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
@@ -261,13 +260,13 @@ export default class Calendar {
 		const d = new Date(`${/^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDate(new Date(events[0].start))}T00:00:00`);
 		const options = { weekday: "long", day: "numeric", month: "long", timeZone: this.TIMEZONE};
 		const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
-		dateholder.innerHTML = formatted;		
+		dateholder.innerHTML = formatted;
 		close.title = 'Fermer';
 		close.addEventListener('click', e => this.modal.hide());
 		placeholderEvents.append(...eventDetails);
 		this.modal.show(container);
 	}
-	
+
 
 	renderEventDetails(evt) {
 		const container = create('div', 'modal-events__placeholder__events__event');

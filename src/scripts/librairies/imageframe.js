@@ -29,7 +29,7 @@ export default class ImageFrame {
 		this.frame.addEventListener('pointerup',     e => this.endPointer(e));
 		this.frame.addEventListener('pointercancel', e => this.endPointer(e));
 		this.frame.addEventListener('pointerleave',  e => { if(this.pointers.has(e.pointerId)) this.endPointer(e); });
-		window.addEventListener('resize', () => this.onResize());
+		window.addEventListener('resize', e => this.onResize());
 	}
 
 
@@ -60,12 +60,10 @@ export default class ImageFrame {
 
 	async onWheel(e) {
 		e.preventDefault();
-
 		clearTimeout(this.zoomTimer);
 		this.frame.classList.toggle('zooming-in',  e.deltaY < 0);
 		this.frame.classList.toggle('zooming-out', e.deltaY > 0);
 		this.zoomTimer = setTimeout(() => this.frame.classList.remove('zooming-in', 'zooming-out'), 200);
-
 		const next = this.state.scale * Math.exp(-e.deltaY * 0.0015);
 		this.zoomAt(e.clientX, e.clientY, next);
 	}
@@ -182,4 +180,29 @@ export default class ImageFrame {
       return { w: parseFloat(m[1]), h: parseFloat(m[2]) };
     }
 	
+
+	async exportBlob(outW, format = 'jpeg') {
+		if(!this.img.src) throw new Error('Aucune image chargée.');
+		const fw = this.frame.clientWidth;
+		const fh = this.frame.clientHeight;
+		const sx = Math.max(0, -this.state.tx / this.state.scale);
+		const sy = Math.max(0, -this.state.ty / this.state.scale);
+		const sw = Math.min(this.state.imgW - sx, fw / this.state.scale);
+		const sh = Math.min(this.state.imgH - sy, fh / this.state.scale);
+		const ratio = this.ratio.w / this.ratio.h;
+  		const outH = Math.round(outW / ratio);
+
+		const cvs = document.createElement('canvas');
+		cvs.width = outW;
+		cvs.height = outH;
+
+		const ctx = cvs.getContext('2d', { alpha: format !== 'jpeg' });
+		ctx.imageSmoothingQuality = 'high';
+		ctx.drawImage(this.img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+		return new Promise((res, rej) => {
+			cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/${format}`, 0.92);
+		});
+	}
+
 }
