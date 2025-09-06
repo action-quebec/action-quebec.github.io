@@ -18,24 +18,24 @@ export default class DNDZone {
 	}
 
 
-	dragEnter(e) {
+	async dragEnter(e) {
 		e.preventDefault();
 		this.container.classList.add('dragover');
 	}
 
 
-	dragLeave(e) {
+	async dragLeave(e) {
 		this.container.classList.remove('dragover');
 	}
 
 
-	dragOver(e) {
+	async dragOver(e) {
 		e.preventDefault();
 		e.dataTransfer.dropEffect = 'copy';
 	}
 
 
-	drop(e) {
+	async drop(e) {
 		e.preventDefault();
 		this.container.classList.remove('dragover');
 		const files = e.dataTransfer.files;

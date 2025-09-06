@@ -38,8 +38,7 @@ export default class ImageFrame {
 				this.state.imgW = this.img.naturalWidth;
 				this.state.imgH = this.img.naturalHeight;
 				URL.revokeObjectURL(this.url);
-				await this.fitCover();
-				res(true);
+				res(this.fitCover());
 			}
 			this.img.src = this.url;
 		});
@@ -68,7 +67,7 @@ export default class ImageFrame {
 		this.setPointer(e);
 		const now = performance.now();
 		if (now - this.lastTapTime < 280 && this.pointers.size === 1) {
-			this.fitCover();
+			await this.fitCover();
 			this.lastTapTime = 0;
 		} else {
 			this.lastTapTime = now;
@@ -88,12 +87,12 @@ export default class ImageFrame {
 				this.pinchStart = { dist, scale: this.state.scale, tx: this.state.tx, ty: this.state.ty };
 			} else {
 				const factor = dist / (this.pinchStart.dist || 1);
-				await this.zoomAt(mid.x, mid.y, clamp(this.pinchStart.scale * factor, this.state.minScale, this.state.maxScale));
+				this.zoomAt(mid.x, mid.y, clamp(this.pinchStart.scale * factor, this.state.minScale, this.state.maxScale));
 			}
 		} else if (this.pointers.size === 1) {
 			this.state.tx += e.clientX - prev.x;
 			this.state.ty += e.clientY - prev.y;
-			await this.applyTransform();
+			this.applyTransform();
 		}
 	}
 
@@ -117,7 +116,7 @@ export default class ImageFrame {
 		const scaledW = w * s, scaledH = h * s;
 		this.state.tx = (this.state.frameW - scaledW) / 2;
 		this.state.ty = (this.state.frameH - scaledH) / 2;
-		await this.applyTransform();
+		return this.applyTransform();
 	}
 
 
@@ -148,7 +147,7 @@ export default class ImageFrame {
 		this.state.tx = fx - (fx - this.state.tx) * (s / prev);
 		this.state.ty = fy - (fy - this.state.ty) * (s / prev);
 		this.state.scale = s;
-		await this.applyTransform();
+		return this.applyTransform();
 	}
 
 

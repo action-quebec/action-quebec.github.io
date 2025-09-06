@@ -11,7 +11,7 @@ window.LightSwitch = {
 		this.createButton();
 		window.addEventListener('resize', () => {
 			if (this.mutexVwpx != null) return;
-			this.mutexVwpx = requestAnimationFrame(async () => {
+			this.mutexVwpx = requestAnimationFrame(() => {
 				document.documentElement.style.setProperty('--vwpx', String(window.innerWidth));
 				this.mutexVwpx = null;
 			});

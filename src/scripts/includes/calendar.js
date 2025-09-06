@@ -30,10 +30,7 @@ export default class Calendar {
 			this.modal = new Modal({ onlyBgClick: true });
 			Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' })]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
-				await Promise.all([
-					this.calendar.addEvents(eventSet),
-					this.addUpcomingEvents()
-				]);
+				await Promise.all([this.calendar.addEvents(eventSet), this.addUpcomingEvents()]);
 				const urlParams = new URLSearchParams(window.location.search);
 				const event = this.getEventById(urlParams.get('id'));
 				if(event) {
@@ -50,7 +47,7 @@ export default class Calendar {
 		document.documentElement.classList.add('is-busy');	
 		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-busy');
-		return results;
+		return typeof promise == 'array' ? results : results[0];
 	}
 
 
@@ -67,12 +64,11 @@ export default class Calendar {
 
 	async loadGoogleCalendar() {
 		this.events = await this.queryGoogleCalendar();
-		const eventSet = new Set(await Promise.all(this.events.map(async v => {
+		return new Set(await Promise.all(this.events.map(async v => {
 			const s = new Date(v.start);
 			const d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
 			return ymd(d);
 		})));
-		return eventSet;
 	}
 
 
@@ -281,7 +277,6 @@ export default class Calendar {
 
 	async clickEventDay(date, elm) {
 		this.busy(new Promise(async res => {
-			document.documentElement.classList.add('is-busy');
 			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
 			const eventDetails = await Promise.all(events.map(v => this.renderEventDetails(v)));
 			const container = create('div', 'modal-events');
@@ -296,7 +291,6 @@ export default class Calendar {
 			close.title = 'Fermer';
 			close.addEventListener('click', e => this.modal.hide());
 			placeholderEvents.append(...eventDetails);
-			document.documentElement.classList.remove('is-busy');
 			this.modal.show(container);
 			res(true);
 		}));
@@ -334,12 +328,12 @@ export default class Calendar {
 	}
 
 
-	async nextMonth() {
+	nextMonth() {
 		return this.busy(this.calendar.next());
 	}
 
 
-	async previousMonth() {
+	previousMonth() {
 		return this.busy(this.calendar.previous());
 	}
 

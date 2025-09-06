@@ -78,16 +78,18 @@ export default class Croper {
 
 	async handleFile(dropFile) {
         if(dropFile.type.startsWith('image/') && dropFile.size <= 5242880) {
-			await this.loadImage(dropFile);
+			return this.loadImage(dropFile);
         }
     }
 
 
 	async browseFile(e) {
-		browse('image/*', async evt => {
-			if (evt.target.files.length > 0) {
-				await this.handleFile(evt.target.files[0]);
-			}
+		return new Promise(res => {
+			browse('image/*', async evt => {
+				if (evt.target.files.length > 0) {
+					res(this.handleFile(evt.target.files[0]));
+				}
+			});
 		});
 	}
 
