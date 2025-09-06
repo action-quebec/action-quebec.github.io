@@ -8,6 +8,7 @@ import Calendar from './includes/calendar'
 window.Quebec = {
 
 	unPays: async () => new Calendar,
+
 	independant: async () => new Croper,
-	
+
 };

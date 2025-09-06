@@ -37,7 +37,7 @@ export default class Calendar {
 					await this.calendar.setMonth(ymd(new Date(event.start)));
 					await this.clickEventDay(event.id);
 				}
-				res(true);
+				res();
 			});
 		}));
 	}
@@ -47,6 +47,14 @@ export default class Calendar {
 		document.documentElement.classList.add('is-busy');	
 		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-busy');
+		return typeof promise == 'array' ? results : results[0];
+	}
+
+
+	async working(promise) {
+		document.documentElement.classList.add('is-working');	
+		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
+		document.documentElement.classList.remove('is-working');
 		return typeof promise == 'array' ? results : results[0];
 	}
 
@@ -160,7 +168,7 @@ export default class Calendar {
 		const bgimg = elm.create('div', 'pxcalendar__month__day__bgimg');
 		const evtip = elm.create('div', 'pxcalendar__month__day__evtip');
 		const evtipCont = evtip.create('div', 'pxcalendar__month__day__evtip__cont');
-		evtipCont.innerHTML = (await Promise.all(events.map(e => this.renderEventTip(e)))).join('<hr>');
+		evtipCont.innerHTML = (await Promise.all(events.map(async e => this.renderEventTip(e)))).join('<hr>');
 		const imgs = [];
 		if(events[0].image) {
 			imgs.push(preloadImage(events[0].images['image-calendrier']));
@@ -170,7 +178,7 @@ export default class Calendar {
 			imgs.push(preloadImage(events[1].images['image-calendrier']));
 			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 		}
-		return new Promise(res => Promise.all(imgs).then(() => res(true)));
+		return Promise.all(imgs);
 	}
 
 
@@ -194,7 +202,7 @@ export default class Calendar {
 	}
 
 
-	async renderEventTip(evt) {
+	renderEventTip(evt) {
 		const time = new Intl.DateTimeFormat('fr-CA', { timeZone: this.IMEZONE, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(evt.start));
 		let str = `<h3>${evt.title}</h3>`;
 		if(evt.location) {
@@ -225,11 +233,11 @@ export default class Calendar {
 	}
 
 
-	async addUpcomingEvents() {
+	addUpcomingEvents() {
+		const preloads = [];
 		const events = this.getUpcomingEvents().slice(0,10);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
-		const preloads = [];
-		const evtRenders = Promise.all(events.map(async evt => {
+		const evtRender = Promise.all(events.map(async evt => {
 			const card = placeholder.create('div', 'swiper-slide');
 			card.classList.add('event-card');
 			if(evt.image) {
@@ -258,7 +266,7 @@ export default class Calendar {
 				autoplay: { delay: 5000, disableOnInteraction: false },
 				navigation: { nextEl: '.events-swiper-next', prevEl: '.events-swiper-prev' },
 			});
-			res(true);
+			res();
 		});
 		window.addEventListener('resize', () => {
 			if (this.mutexSwiper != null) return;
@@ -271,12 +279,12 @@ export default class Calendar {
 				});
 			}
 		});
-		return Promise.all([swipRender, evtRenders, ...preloads]);
+		return Promise.all([swipRender, evtRender, ...preloads]);
 	}
 
 
-	async clickEventDay(date, elm) {
-		this.busy(new Promise(async res => {
+	clickEventDay(date) {
+		return this.working(new Promise(async res => {
 			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
 			const eventDetails = await Promise.all(events.map(v => this.renderEventDetails(v)));
 			const container = create('div', 'modal-events');
@@ -292,7 +300,7 @@ export default class Calendar {
 			close.addEventListener('click', e => this.modal.hide());
 			placeholderEvents.append(...eventDetails);
 			this.modal.show(container);
-			res(true);
+			res();
 		}));
 	}
 
@@ -329,12 +337,12 @@ export default class Calendar {
 
 
 	nextMonth() {
-		return this.busy(this.calendar.next());
+		return this.working(this.calendar.next());
 	}
 
 
 	previousMonth() {
-		return this.busy(this.calendar.previous());
+		return this.working(this.calendar.previous());
 	}
 
 }
