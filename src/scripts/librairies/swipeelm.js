@@ -1,5 +1,5 @@
 // const stop = installSwipe(div, { axis:'x', onSwipeLeft(){...}, onSwipeRight(){...} });
-export default function swipe(el, {
+export default function swipeElm(el, {
 	threshold = 40,
 	maxTime = 600,
 	pressSlop = 8,

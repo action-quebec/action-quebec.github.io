@@ -89,10 +89,14 @@ self.sleep = ms => {
  *                    Preload image                   *
  ******************************************************/
 self.preloadImage = url => {
-	return new Promise((res) => {
-		const img = create('img');
-		img.onload = async () => res(true);
+	return new Promise((res, rej) => {
+		const img = new Image();
+		img.decoding = 'async';
+		img.loading = 'eager';
+		img.onload = () => res('preloaded');
+		img.onerror = rej;
 		img.src = url;
+		if (img.complete && img.naturalWidth > 0) res('memory-cache');
 	});
 }
 

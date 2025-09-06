@@ -1,4 +1,4 @@
-import swipe from '../librairies/swipe';
+import swipeElm from '../librairies/swipeelm';
 import Modal from '../librairies/modal'
 import PXCalendar from '../librairies/pxcalendar';
 import Swiper from 'swiper';
@@ -45,7 +45,7 @@ export default class Calendar {
 
 	async busy(promise) {
 		document.documentElement.classList.add('is-busy');	
-		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
+		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-busy');
 		return typeof promise == 'array' ? results : results[0];
 	}
@@ -53,7 +53,7 @@ export default class Calendar {
 
 	async working(promise) {
 		document.documentElement.classList.add('is-working');	
-		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
+		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-working');
 		return typeof promise == 'array' ? results : results[0];
 	}
@@ -80,7 +80,7 @@ export default class Calendar {
 		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', () => this.previousMonth());
 		document.querySelector('.calendar__pagination__next > span').addEventListener('click', () => this.nextMonth());
 		const elm = document.querySelector('.calendar__container');
-		swipe(elm, {
+		swipeElm(elm, {
 			threshold: Math.min(40, Math.max(10, elm.clientWidth * 0.01)),
 			maxTime: 500,
 			onSwipeLeft:  () => this.nextMonth(),
@@ -197,7 +197,7 @@ export default class Calendar {
 			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 		}
 		events.forEach(e => this.payload.push(e.images['image-couverture']));
-		return Promise.all(imgs);
+		return Promise.allSettled(imgs);
 	}
 
 
@@ -308,7 +308,7 @@ export default class Calendar {
 	clickEventDay(date) {
 		return this.working(new Promise(async res => {
 			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
-			const eventDetails = await Promise.all(events.map(async v => this.renderEventDetails(v)));
+			const eventDetails = (await Promise.allSettled(events.map(async v => this.renderEventDetails(v)))).filter(r => r.status === 'fulfilled').map(r => r.value);
 			const container = create('div', 'modal-events');
 			const placeholder = container.create('div', 'modal-events__placeholder');
 			const close = placeholder.create('div', 'modal-events__placeholder__close');
@@ -371,7 +371,7 @@ export default class Calendar {
 	processPayload() {
 		const payload = this.payload.filter(v => v != null).map(v => preloadImage(v));
 		this.payload = [];
-		return Promise.all(payload);
+		return Promise.allSettled(payload);
 	}
 
 }
