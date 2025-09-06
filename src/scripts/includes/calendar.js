@@ -30,14 +30,11 @@ export default class Calendar {
 			this.modal = new Modal({ onlyBgClick: true });
 			Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: '/bt1oh97j7X.json' })]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
-				await Promise.all([this.calendar.addEvents(eventSet), this.addUpcomingEvents()]);
-				const urlParams = new URLSearchParams(window.location.search);
-				const event = this.getEventById(urlParams.get('id'));
-				if(event) {
-					await this.calendar.setMonth(ymd(new Date(event.start)));
-					await this.clickEventDay(event.id);
-				}
-				res();
+				Promise.all([
+					this.calendar.addEvents(eventSet),
+					this.addUpcomingEvents(),
+					this.initParams()
+				]).then(() => res());
 			});
 		}));
 	}
@@ -56,6 +53,18 @@ export default class Calendar {
 		const results = await Promise.all(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-working');
 		return typeof promise == 'array' ? results : results[0];
+	}
+
+
+	async initParams() {
+		const evtId = (new URLSearchParams(window.location.search))?.get('id');
+		if(evtId) {
+			const event = this.getEventById(evtId);
+			if(event) {
+				await this.calendar.setMonth(ymd(new Date(event.start)));
+				await this.clickEventDay(event.id);
+			}
+		}
 	}
 
 
@@ -81,8 +90,7 @@ export default class Calendar {
 
 
 	async queryGoogleCalendar() {
-		const urlParams = new URLSearchParams(window.location.search);
-		if(urlParams.get('cache') !== null) {
+		if((new URLSearchParams(window.location.search)).get('cache') !== null) {
 			console.log('Google cache: active');
 			const cache = localStorage.getItem('lastItems');
 			if(cache) return this.mapGCalEvents(JSON.parse(cache));
@@ -294,12 +302,11 @@ export default class Calendar {
 			const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
 			const d = new Date(`${/^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDate(new Date(events[0].start))}T00:00:00`);
 			const options = { weekday: "long", day: "numeric", month: "long", timeZone: this.TIMEZONE};
-			const formatted = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");;
-			dateholder.innerHTML = formatted;
+			dateholder.innerHTML = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");
 			close.title = 'Fermer';
 			close.addEventListener('click', e => this.modal.hide());
 			placeholderEvents.append(...eventDetails);
-			this.modal.show(container);
+			await this.modal.show(container);
 			res();
 		}));
 	}

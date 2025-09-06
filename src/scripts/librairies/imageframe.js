@@ -32,7 +32,7 @@ export default class ImageFrame {
 
 
 	loadImage(file) {
-		return new Promise((res) => {
+		return new Promise(res => {
 			this.url = URL.createObjectURL(file);
 			this.img.onload = () => {
 				this.state.imgW = this.img.naturalWidth;
@@ -46,12 +46,13 @@ export default class ImageFrame {
 
 
 	onResize() {
-		if(this.mutex != null) return;
-		if(this.img) this.mutex = requestAnimationFrame(() => this.fitCover().then(() => this.mutex = null));
+		if(!this.mutex && this.img) {
+			this.mutex = requestAnimationFrame(() => this.fitCover().then(() => this.mutex = null));
+		}
 	}
 
 
-	async onWheel(e) {
+	onWheel(e) {
 		e.preventDefault();
 		clearTimeout(this.zoomTimer);
 		this.frame.classList.toggle('zooming-in',  e.deltaY < 0);

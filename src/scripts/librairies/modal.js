@@ -2,6 +2,9 @@ export default class Modal {
 
 	container = null;
 	placeholder = null;
+	duration = null;
+
+	opened = false;
 
 	opts = {
 		class: false,
@@ -13,34 +16,40 @@ export default class Modal {
 	constructor(opts = {}) {
 		this.opts = { ...this.opts, ...opts };
 		this.container = document.body.create('div', 'modal');
+		this.duration = parseInt(getComputedStyle(this.container).getPropertyValue('--transition-duration').replace(/^[^\d]*(\d+).*$/, '$1'));
 		this.placeholder = this.container.create('div', 'modal__placeholder');
 		if(this.opts.class) this.container.classList.add(this.opts.class);
 		if(!this.opts.lock) this.container.addEventListener('click', e => this.click(e));
+		document.addEventListener('keydown', evt => { if(this.opened && (evt.key === 'Escape' && !(evt.ctrlKey || evt.altKey || evt.shiftKey))) this.hide(); });
 	}
 
 
-	async click(evt) {
+	click(evt) {
 		if(!this.opts.onlyBgClick || evt.target.classList.contains('modal') || evt.target.classList.contains('modal__placeholder')) {
 			this.hide();
 		}
 	}
 
 
-	async show(elm) {
-		switch(typeof elm) {
-			case 'string': this.placeholder.innerHTML = elm; break;
-			case 'object': this.placeholder.replaceChildren(elm); break;
-			case 'array': this.placeholder.replaceChildren(...elm); break;
-			default: return false;
-		}
-		this.container.classList.add('show');
-		return true;
+	show(elm) {
+		return new Promise(res => {
+			switch(typeof elm) {
+				case 'string': this.placeholder.innerHTML = elm; break;
+				case 'object': this.placeholder.replaceChildren(elm); break;
+				case 'array': this.placeholder.replaceChildren(...elm); break;
+				default: return res(false);
+			}
+			this.container.classList.add('show');
+			setTimeout(() => res(this.opened = true), this.duration);
+		});
 	}
 
 
-	async hide() {
-		this.container.classList.remove('show');
+	hide() {
+		return new Promise(res => {
+			this.container.classList.remove('show');
+			setTimeout(() => res(!(this.opened = false)), this.duration);
+		});
 	}
-
 
 }
