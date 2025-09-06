@@ -5,5 +5,6 @@
      ╚████╔╝ ███████╗╚██████╔╝███████╗██╗
       ╚═══╝  ╚══════╝ ╚══▀▀═╝ ╚══════╝╚═╝
 
-    Auteur: Maxime Larrivée-Roy <mlroy@ssjb.com>
+    Généré: ###DATE###
+    Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/action-quebec/action-quebec.github.io

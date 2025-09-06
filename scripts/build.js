@@ -11,6 +11,24 @@ const DIST = path.join(ROOT, 'dist');
 const BANNER = path.join(ROOT, 'scripts/banner.txt');
 
 
+
+function formatFrDate(dateInput = new Date(), timeZone = 'America/Toronto') {
+	const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+	const fmt = new Intl.DateTimeFormat('fr-CA', {
+		weekday: 'long',
+		day: 'numeric',
+		month: 'long',
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: false,
+		timeZone
+	});
+	const parts = Object.fromEntries(fmt.formatToParts(d).map(p => [p.type, p.value]));
+	const weekday = parts.weekday.charAt(0).toUpperCase() + parts.weekday.slice(1); // "Samedi"
+	return `${weekday} le ${parts.day} ${parts.month} à ${parts.hour} h ${parts.minute}`;
+}
+
+
 function norm(p) {
 	// normalise en chemin POSIX pour compat .gitignore
 	return p.split(path.sep).join('/');
@@ -60,7 +78,7 @@ async function copyFilePreserveTree(absSrc, ig) {
 
 async function walkAndCopy(dir, ig, stats) {
 	const entries = await fs.readdir(dir, { withFileTypes: true });
-	const bannerContent = await fs.readFile(BANNER, 'utf8');
+	const bannerContent = (await fs.readFile(BANNER, 'utf8')).replace(/###DATE###/, formatFrDate());
 
 	for (const de of entries) {
 		const abs = path.join(dir, de.name);
