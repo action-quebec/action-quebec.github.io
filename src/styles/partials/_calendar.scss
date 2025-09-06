@@ -145,7 +145,7 @@
 		}
 
 		&__day {
-			--opacity: 0.6;
+			--opacity: 0.8;
 			position: relative;
 			border-top: 0.1rem solid var(--cal-border);
 			padding: 0.5rem;
@@ -164,7 +164,7 @@
 
 			
 			&__bgimg {
-				--image-1: url(../images/foule.webp);
+				--image-1: var(--default-image);
 				--image-2: none;
 				position: absolute;
 				top: 0;
@@ -239,7 +239,7 @@
 				font-weight: 700;
 
 				&:hover {
-					--opacity: 0.9;
+					--opacity: 1;
 					color: var(--fg);
 					.pxcalendar__month__day__evtip {
 						visibility: visible;

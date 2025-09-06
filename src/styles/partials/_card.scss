@@ -3,7 +3,7 @@
 }
 
 .event-card {
-	--image: url(../images/foule.webp);
+	--image: var(--default-image);
 	position: relative;
     aspect-ratio: 2/3;
 	
@@ -28,7 +28,7 @@
 		background-repeat: no-repeat;
 		background-position: center;
 		background-size: cover;
-		opacity: 0.6;
+		opacity: 0.8;
 		z-index: -1;
 		transition: opacity 150ms;
 	}

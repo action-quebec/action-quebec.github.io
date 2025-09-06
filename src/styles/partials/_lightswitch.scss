@@ -145,6 +145,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 // ===>>> Thème par défaut
 :root {
 	@include theme-light;
+	--default-image: url(../images/foule.webp);
 }
 
 
