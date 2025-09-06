@@ -31,10 +31,10 @@ export default class ImageFrame {
 	}
 
 
-	async loadImage(file) {
+	loadImage(file) {
 		return new Promise((res) => {
 			this.url = URL.createObjectURL(file);
-			this.img.onload = async () => {
+			this.img.onload = () => {
 				this.state.imgW = this.img.naturalWidth;
 				this.state.imgH = this.img.naturalHeight;
 				URL.revokeObjectURL(this.url);
