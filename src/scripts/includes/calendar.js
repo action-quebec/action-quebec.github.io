@@ -92,7 +92,7 @@ export default class Calendar {
 
 
 	async queryGoogleCalendar() {
-		if((new URLSearchParams(window.location.search)).get('cache') !== null) {
+		if((new URLSearchParams(window.location.search))?.get('cache') !== null) {
 			console.log('Google cache: active');
 			const cache = localStorage.getItem('lastItems');
 			if(cache) return this.mapGCalEvents(JSON.parse(cache));
@@ -188,9 +188,7 @@ export default class Calendar {
 			imgs.push(preloadImage(events[1].images['image-calendrier']));
 			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 		}
-
 		events.forEach(e => this.payload.push(e.images['image-couverture']));
-
 		return Promise.all(imgs);
 	}
 
@@ -314,8 +312,7 @@ export default class Calendar {
 			close.title = 'Fermer';
 			close.addEventListener('click', e => this.modal.hide());
 			placeholderEvents.append(...eventDetails);
-			await this.modal.show(container);
-			res();
+			this.modal.show(container).then(res);
 		}));
 	}
 
