@@ -50,12 +50,13 @@ export default class PXCalendar {
 			return cell;
 		}));
 		const render = new Promise(res => {
-			this.month.replaceChildren(...cells);
 			if(this.label) {
 				const monthText = `${this.MONTH_NAMES[this.current.getMonth()]} ${this.current.getFullYear()}`;
 				this.label.innerText = monthText;
 				this.label.title = monthText;
 			}
+			this.month.replaceChildren(...cells);
+			void this.month.offsetHeight;
 			res();
 		});
 		return Promise.all([render, ...preloads]);
