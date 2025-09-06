@@ -44,9 +44,9 @@ export default class Croper {
 
 		this.btngroup = create('div', 'croper__button');
 		this.uploadbtn = this.btngroup.create('button', null, 'Téléverser');
-		this.uploadbtn.addEventListener('click', e => this.uploadFiles());
+		this.uploadbtn.addEventListener('click', async () => this.uploadFiles());
 		this.browsebtn = this.btngroup.create('button', null, 'Parcourir');
-		this.browsebtn.addEventListener('click', e => this.browseFile(e));
+		this.browsebtn.addEventListener('click', () => this.browseFile());
 
 		this.results = create('div', 'croper__results');
 		this.results.create('div', 'croper__results__winner').title = `Tu veux-tu une médaille?`;
@@ -55,13 +55,13 @@ export default class Croper {
 		const btncont = this.results.create('div', 'croper__results__btn');
 		
 		this.copybtn = btncont.create('button', 'croper__results__copy', `Copier les liens`);
-		this.copybtn.addEventListener('click', e => this.copyLinks());
+		this.copybtn.addEventListener('click', () => this.copyLinks());
 
 		this.browse2btn = btncont.create('button', 'croper__results__browse', `Parcourir`);
-		this.browse2btn.addEventListener('click', e => this.browseFile(e));
+		this.browse2btn.addEventListener('click', () => this.browseFile());
 
 		this.splash = create('div', 'croper__splash show', `Glissez-déposez votre image ici ou<br> cliquez ici pour choisir un fichier.`);
-		this.splash.addEventListener('click', e => this.browseFile(e));
+		this.splash.addEventListener('click', () => this.browseFile());
 		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.handleFile(file) });
 
 		this.loader = create('div', 'croper__loader');
@@ -83,7 +83,7 @@ export default class Croper {
     }
 
 
-	browseFile(e) {
+	browseFile() {
 		return new Promise(res => {
 			browse('image/*', async evt => {
 				if (evt.target.files.length > 0) {
@@ -174,7 +174,7 @@ export default class Croper {
 		const esc = s => s.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 		const html = links.map(({ label, url }) => `<a href="${esc(url)}">${esc(label)}</a>`).join('<br>') + '<br>';
 		const text = links.map(({ label, url }) => `${label} — ${url}`).join("\n");
-		await navigator.clipboard.write([
+		return navigator.clipboard.write([
 			new ClipboardItem({
 				'text/html': new Blob([html], { type: 'text/html' }),
 				'text/plain': new Blob([text], { type: 'text/plain' })

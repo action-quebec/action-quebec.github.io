@@ -63,10 +63,10 @@ export default class Calendar {
 		this.calendar = new PXCalendar('.calendar__container', {
 			placeholder: '.calendar__pagination__current',
 			onRenderDate: (date, elm) => this.renderEvent(date, elm),
-			onClickDate: (date, elm) => this.clickEventDay(date, elm)
+			onClickDate: (date) => this.clickEventDay(date)
 		});
-		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', e => this.previousMonth());
-		document.querySelector('.calendar__pagination__next > span').addEventListener('click', e => this.nextMonth());
+		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', () => this.previousMonth());
+		document.querySelector('.calendar__pagination__next > span').addEventListener('click', () => this.nextMonth());
 	}
 
 
@@ -286,7 +286,7 @@ export default class Calendar {
 	clickEventDay(date) {
 		return this.working(new Promise(async res => {
 			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
-			const eventDetails = await Promise.all(events.map(v => this.renderEventDetails(v)));
+			const eventDetails = await Promise.all(events.map(async v => this.renderEventDetails(v)));
 			const container = create('div', 'modal-events');
 			const placeholder = container.create('div', 'modal-events__placeholder');
 			const close = placeholder.create('div', 'modal-events__placeholder__close');
@@ -305,7 +305,7 @@ export default class Calendar {
 	}
 
 
-	async renderEventDetails(evt) {
+	renderEventDetails(evt) {
 		const container = create('div', 'modal-events__placeholder__events__event');
 		const time = this.formatLabel(evt.start);
 		let str = '';
