@@ -1,3 +1,4 @@
+import swipe from '../librairies/swipe';
 import Modal from '../librairies/modal'
 import PXCalendar from '../librairies/pxcalendar';
 import Swiper from 'swiper';
@@ -78,6 +79,13 @@ export default class Calendar {
 		});
 		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', () => this.previousMonth());
 		document.querySelector('.calendar__pagination__next > span').addEventListener('click', () => this.nextMonth());
+		const elm = document.querySelector('.calendar__container');
+		swipe(elm, {
+			threshold: Math.min(40, Math.max(10, elm.clientWidth * 0.01)),
+			maxTime: 500,
+			onSwipeLeft:  () => this.nextMonth(),
+			onSwipeRight: () => this.previousMonth(),
+		});
 	}
 
 
