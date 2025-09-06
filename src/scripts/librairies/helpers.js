@@ -88,7 +88,7 @@ self.sleep = ms => {
 /******************************************************
  *                    Preload image                   *
  ******************************************************/
-self.preloadImage = async url => {
+self.preloadImage = url => {
 	return new Promise((res) => {
 		const img = create('img');
 		img.onload = async () => res(true);

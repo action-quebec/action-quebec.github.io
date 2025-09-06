@@ -24,6 +24,8 @@ export default class Calendar {
 	mutexSwiper = null;
 	mutexRem = null;
 
+	payload = [];
+
 
 	constructor() {
 		this.busy(new Promise(res => {
@@ -34,9 +36,9 @@ export default class Calendar {
 					this.calendar.addEvents(eventSet),
 					this.addUpcomingEvents(),
 					this.initParams()
-				]).then(() => res());
+				]).then(res);
 			});
-		}));
+		})).then(() => this.processPayload());
 	}
 
 
@@ -186,6 +188,9 @@ export default class Calendar {
 			imgs.push(preloadImage(events[1].images['image-calendrier']));
 			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 		}
+
+		events.forEach(e => this.payload.push(e.images['image-couverture']));
+
 		return Promise.all(imgs);
 	}
 
@@ -249,6 +254,7 @@ export default class Calendar {
 			const card = placeholder.create('div', 'swiper-slide');
 			card.classList.add('event-card');
 			if(evt.image) {
+				this.payload.push(evt.images['image-couverture']);
 				preloads.push(preloadImage(evt.images['image-carte']));
 				card.style.setProperty('--image', `url(${evt.images['image-carte']})`);
 			}
@@ -270,6 +276,8 @@ export default class Calendar {
 				observeParents: false,
 				observeSlideChildren: false,
 				updateOnWindowResize: false,
+				preventClicks: true,
+      			preventClicksPropagation: true,
 				lazy: { loadPrevNext: true, loadOnTransitionStart: true },
 				autoplay: { delay: 5000, disableOnInteraction: false },
 				navigation: { nextEl: '.events-swiper-next', prevEl: '.events-swiper-prev' },
@@ -280,7 +288,7 @@ export default class Calendar {
 			if (this.mutexSwiper != null) return;
 			const mutexRem = Number(Math.round(rem(2) + 'e+2') + 'e-2');
 			if(mutexRem != this.swiper.params.spaceBetween) {
-				this.mutexSwiper = requestAnimationFrame(async () => {
+				this.mutexSwiper = requestAnimationFrame(() => {
 					this.swiper.params.spaceBetween = mutexRem;
 					this.swiper.update();
 					this.mutexSwiper = null;
@@ -343,13 +351,22 @@ export default class Calendar {
 	}
 
 
-	nextMonth() {
-		return this.working(this.calendar.next());
+	async nextMonth() {
+		await this.working(this.calendar.next());
+		return this.processPayload();
 	}
 
 
-	previousMonth() {
-		return this.working(this.calendar.previous());
+	async previousMonth() {
+		await this.working(this.calendar.previous());
+		return this.processPayload();
+	}
+
+
+	processPayload() {
+		const payload = this.payload.filter(v => v != null).map(v => preloadImage(v));
+		this.payload = [];
+		return Promise.all(payload);
 	}
 
 }
