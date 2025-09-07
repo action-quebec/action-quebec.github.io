@@ -58,7 +58,7 @@ export default class ImageFrame {
 		this.frame.classList.toggle('zooming-in',  e.deltaY < 0);
 		this.frame.classList.toggle('zooming-out', e.deltaY > 0);
 		this.zoomTimer = setTimeout(() => this.frame.classList.remove('zooming-in', 'zooming-out'), 200);
-		const next = this.state.scale * Math.exp(-e.deltaY * 0.0015);
+		const next = this.state.scale * Math.exp(-e.deltaY * 0.001);
 		this.zoomAt(e.clientX, e.clientY, next);
 	}
 

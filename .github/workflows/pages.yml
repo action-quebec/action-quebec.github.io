@@ -41,7 +41,8 @@ jobs:
           cat > dist/bt1oh97j7X.json <<'JSON'
           {
             "GOOGLE_API_KEY": "${{ secrets.GOOGLE_API_KEY }}",
-            "CALENDAR_ID": "${{ secrets.CALENDAR_ID }}"
+            "CALENDAR_ID": "${{ secrets.CALENDAR_ID }}",
+            "IMAGE_API_KEY": "${{ secrets.IMAGE_API_KEY }}"
           }
           JSON
 

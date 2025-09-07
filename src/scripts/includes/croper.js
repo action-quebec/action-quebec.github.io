@@ -123,16 +123,16 @@ export default class Croper {
 					this.frameL.exportBlob(280, 'webp'),
 				]);
 				this.links = await Promise.all([
-					this.uploadBlob(blobs[0]),
-					this.uploadBlob(blobs[1]),
-					this.uploadBlob(blobs[2]),
+					this.uploadBlob2(blobs[0]),
+					// this.uploadBlob(blobs[1]),
+					// this.uploadBlob(blobs[2]),
 				]);
 			} catch (err) {
 				console.error(err.message || err);
 			}
 		}
 		await sleep(1000);
-		this.results.classList.add('show');
+		// this.results.classList.add('show');
 		this.loader.classList.remove('show');
 	}
 
@@ -146,6 +146,21 @@ export default class Croper {
 		ctx.imageSmoothingQuality = 'high';
 		ctx.drawImage(this.image, 0, 0, this.image.naturalWidth, this.image.naturalHeight, 0, 0, outW, outH);
 		return new Promise((res, rej) => cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/webp`, 0.92));
+	}
+
+
+	async uploadBlob2(blob) {
+
+		const fd = new FormData();
+		fd.append('reqtype', 'fileupload');
+		fd.append('fileToUpload', new File([blob], `blob.webp`, { type: blob.type }));
+		const resp = await fetch('http://images.action.quebec', { headers: {'Authorization': 'Basic ' + btoa('admin:Vji.4Zd6qQ>jYq!9YDu9P35WFxvW')}, method: 'POST', body: fd });
+		const text = (await resp.text()).trim();
+		// if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Upload Catbox échoué');
+		console.log(text);
+		return text;
+
+
 	}
 
 
