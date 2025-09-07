@@ -7,6 +7,8 @@ export default class Croper {
 
 	PROXY_BASE = 'https://catbox-proxy.action-quebec.workers.dev';
 
+	secrets = null;
+
 	container = null;
 	imagegroup = null;
 	imageL = null;
@@ -34,6 +36,7 @@ export default class Croper {
 
 	
 	constructor() {
+		loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==') });
 		this.container = document.querySelector('.croper');
 		this.imagegroup = create('div', 'croper__images');
 		this.image = create('img');
@@ -106,6 +109,7 @@ export default class Croper {
 
 
 	async uploadFiles() {
+		await new Promise(requestAnimationFrame);
 		this.loader.classList.add('show');
 		const urlParams = new URLSearchParams(window.location.search);
 		if(urlParams.get('cache') !== null) {
@@ -123,16 +127,16 @@ export default class Croper {
 					this.frameL.exportBlob(280, 'webp'),
 				]);
 				this.links = await Promise.all([
-					this.uploadBlob2(blobs[0]),
-					// this.uploadBlob(blobs[1]),
-					// this.uploadBlob(blobs[2]),
+					this._uploadBlob(blobs[0]),
+					this._uploadBlob(blobs[1]),
+					this._uploadBlob(blobs[2]),
 				]);
 			} catch (err) {
 				console.error(err.message || err);
 			}
 		}
 		await sleep(1000);
-		// this.results.classList.add('show');
+		this.results.classList.add('show');
 		this.loader.classList.remove('show');
 	}
 
@@ -149,22 +153,17 @@ export default class Croper {
 	}
 
 
-	async uploadBlob2(blob) {
-
+	async uploadBlob(blob) { 	
 		const fd = new FormData();
-		fd.append('reqtype', 'fileupload');
-		fd.append('fileToUpload', new File([blob], `blob.webp`, { type: blob.type }));
-		const resp = await fetch('http://images.action.quebec', { headers: {'Authorization': 'Basic ' + btoa('admin:Vji.4Zd6qQ>jYq!9YDu9P35WFxvW')}, method: 'POST', body: fd });
+		fd.append('image', new File([blob], `image.webp`, { type: blob.type }));
+		const resp = await fetch('http://images.action.quebec', { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: fd });
 		const text = (await resp.text()).trim();
-		// if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Upload Catbox échoué');
-		console.log(text);
+		if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Téléversement échoué');
 		return text;
-
-
 	}
 
 
-	async uploadBlob(blob) {
+	async _uploadBlob(blob) {
 		const fd = new FormData();
 		fd.append('reqtype', 'fileupload');
 		fd.append('fileToUpload', new File([blob], `blob.webp`, { type: blob.type }));
