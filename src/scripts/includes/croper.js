@@ -105,11 +105,9 @@ export default class Croper {
 
 	browseFile() {
 		return new Promise(res => {
-			browse('image/*', async evt => {
-				if (evt.target.files.length > 0) {
-					res(this.handleFile(evt.target.files[0]));
-				}
-			});
+			browse('image/*').then(file => {
+				res(this.handleFile(file));
+			}).catch(() => {});
 		});
 	}
 

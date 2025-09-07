@@ -56,7 +56,7 @@ export default class PXCalendar {
 			this.label.innerText = monthText;
 			this.label.title = monthText;
 		}
-		return preloads;
+		return Promise.all([...preloads]);
 	}
 
 

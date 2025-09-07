@@ -46,14 +46,31 @@ self.loadJsonProperties = async function(target, files = {}) {
 /******************************************************
  *                     Browse File                    *
  ******************************************************/
-self.browse = async (accept, clb=null) => {
-    let inputElement = document.createElement("input");
-    inputElement.type = "file";
-    inputElement.accept = accept;
-    if(clb) inputElement.addEventListener("change", clb);
-    inputElement.dispatchEvent(new MouseEvent("click"));
-	delete inputElement;
-}
+self.browse = (accept) => {
+    return new Promise((resolve, reject) => {
+        let inputElement = document.createElement("input");
+        inputElement.type = "file";
+        inputElement.accept = accept;
+        inputElement.addEventListener("change", () => {
+            if (inputElement.files.length > 0) {
+                resolve(inputElement.files[0]);
+            } else {
+                reject("cancelled");
+            }
+        });
+        const onFocus = () => {
+            setTimeout(() => {
+                if (!inputElement.files.length) {
+                    reject("cancelled");
+                }
+                window.removeEventListener("focus", onFocus);
+            }, 200);
+        };
+        window.addEventListener("focus", onFocus);
+        inputElement.click();
+    });
+};
+
 
 
 /******************************************************

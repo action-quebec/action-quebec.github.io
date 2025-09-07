@@ -1,6 +1,6 @@
-import swipeElm from '../librairies/swipeelm';
 import Modal from '../librairies/modal'
 import PXCalendar from '../librairies/pxcalendar';
+import SwipeDetector from '../librairies/swipedetector';
 import Swiper from 'swiper';
 import { Autoplay, Navigation } from 'swiper/modules';
 
@@ -18,6 +18,7 @@ export default class Calendar {
 	events = null;
 
 	calendar = null;
+	swipedetector = null;
 	swiper = null;
 	modal = null;
 	prec = null;
@@ -81,7 +82,7 @@ export default class Calendar {
 		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', () => this.previousMonth());
 		document.querySelector('.calendar__pagination__next > span').addEventListener('click', () => this.nextMonth());
 		const elm = document.querySelector('.calendar__container');
-		swipeElm(elm, {
+		this.swipedetector = new SwipeDetector(elm, {
 			threshold: Math.min(40, Math.max(10, elm.clientWidth * 0.01)),
 			maxTime: 500,
 			axis: 'x',
