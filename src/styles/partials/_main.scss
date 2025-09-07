@@ -15,11 +15,13 @@ html {
     &.is-busy,
     &.is-busy * {
         cursor: wait !important;
+        pointer-events: none !important;
     }
 
     &.is-working,
     &.is-working * {
         cursor: progress !important;
+        pointer-events: none !important;
     }
 }
 

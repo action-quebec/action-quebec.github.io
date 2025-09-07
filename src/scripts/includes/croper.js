@@ -138,7 +138,7 @@ export default class Croper {
 			} catch(err) {
 				rej(new Error(err.message || err));
 			}
-			await sleep(2000);
+			await sleep(3000);
 			await new Promise(requestAnimationFrame);
 			this.results.classList.add('show');
 			this.loader.classList.remove('show');

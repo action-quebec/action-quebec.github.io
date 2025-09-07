@@ -45,21 +45,18 @@ export default class PXCalendar {
 			if(this.events.has(iso)) {
 				cell.classList.add('has-event');
 				preloads.push(this.opts.onRenderDate?.(iso, cell));
-				cell.addEventListener('click', e => this.opts.onClickDate?.(iso, cell));
+				cell.addEventListener('click', () => this.opts.onClickDate?.(iso, cell));
 			}
 			return cell;
 		}));
-		const render = new Promise(res => {
-			if(this.label) {
-				const monthText = `${this.MONTH_NAMES[this.current.getMonth()]} ${this.current.getFullYear()}`;
-				this.label.innerText = monthText;
-				this.label.title = monthText;
-			}
-			this.month.replaceChildren(...cells);
-			void this.month.offsetHeight;
-			res();
-		});
-		return Promise.all([render, ...preloads]);
+		this.month.replaceChildren(...cells);
+		void this.month.offsetHeight;
+		if(this.label) {
+			const monthText = `${this.MONTH_NAMES[this.current.getMonth()]} ${this.current.getFullYear()}`;
+			this.label.innerText = monthText;
+			this.label.title = monthText;
+		}
+		return preloads;
 	}
 
 

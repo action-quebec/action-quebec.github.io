@@ -358,28 +358,32 @@ export default class Calendar {
 	}
 
 
-	async nextMonth() {
+	nextMonth() {
 		return this.working(new Promise(async res => {
+			await new Promise(requestAnimationFrame);
+			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
 			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(-100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
 			const render = this.calendar.next();
 			await this.calendar.parent.animate([{ transform: "translateX(100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
-			this.calendar.parent.parentElement.style.overflow = '';
+			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
 			res(render);
 		}));
 	}
 
 
-	async previousMonth() {
+	previousMonth() {
 		return this.working(new Promise(async res => {
+			await new Promise(requestAnimationFrame);
+			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
 			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
 			const render = this.calendar.previous();
 			await this.calendar.parent.animate([{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
-			this.calendar.parent.parentElement.style.overflow = '';
+			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
-			res(Promise.all([render]));
+			res(render);
 		}));
 	}
 
