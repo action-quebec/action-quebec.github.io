@@ -1,4 +1,5 @@
 export default class SwipeDetector {
+
 	opts = {
 		threshold: 40,
 		maxTime: 600,
@@ -15,19 +16,19 @@ export default class SwipeDetector {
 		onSwipeUp: null,
 		onSwipeDown: null
 	};
-
-	elm = null;
-
-	id = null;
+	
 	startX = 0;
 	startY = 0;
 	startT = 0;
 	lastX = 0;
 	lastY = 0;
+	id = null;
+	elm = null;
 	axisLock = null;
 	swiping = false;
 	lastSwipe = null;
 	touchId = null;
+
 
 	constructor(elm, opts = {}) {
 		this.opts = { ...this.opts, ...opts};

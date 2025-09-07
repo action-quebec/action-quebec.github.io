@@ -19,11 +19,12 @@
 
 		&__close {
 			position: absolute;
-			top: 1.95em;
-			right: 1.95em;
-			width: 1.7em;
-			height: 1.7em;
+			top: 1.65rem;
+			right: 1.65rem;
+			width: 2.8rem;
+			aspect-ratio: 1 / 1;
 			background-image: var(--close);
+			background-repeat: no-repeat;
 			cursor: pointer;
 			z-index: 1;
 			transition: transform;
@@ -39,9 +40,9 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			font-size: 1.8em;
+			font-size: 2.3rem;
 			font-weight: 800;
-			min-height: 2em;
+			min-height: 4rem;
 			z-index: 0;
 			margin-bottom: 1rem;
 			background-color: var(--bg-part);
