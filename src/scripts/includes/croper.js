@@ -55,7 +55,7 @@ export default class Croper {
 		this.results = create('div', 'croper__results');
 		this.results.create('div', 'croper__results__winner').title = `Tu veux-tu une médaille?`;
 		this.results.create('div', 'croper__results__congrats', `Félicitations!`);
-		this.results.create('div', 'croper__results__text', `Image téléversée avec succès. Il ne reste qu’à Copier les liens et les coller dans le calendrier Google.`);
+		this.results.create('div', 'croper__results__text', `Image téléversée avec succès. Il ne reste qu’à copier les liens et les coller dans la description de votre événement.`);
 		const btncont = this.results.create('div', 'croper__results__btn');
 		
 		this.copybtn = btncont.create('button', 'croper__results__copy', `Copier les liens`);
@@ -77,6 +77,22 @@ export default class Croper {
 		this.notif = new Notification;
 
 		this.container.replaceChildren(this.imagegroup, this.btngroup, this.results, this.splash, this.loader);
+	}
+
+
+	async busy(promise) {
+		document.documentElement.classList.add('is-busy');	
+		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
+		document.documentElement.classList.remove('is-busy');
+		return typeof promise == 'array' ? results : results[0];
+	}
+
+
+	async working(promise) {
+		document.documentElement.classList.add('is-working');	
+		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
+		document.documentElement.classList.remove('is-working');
+		return typeof promise == 'array' ? results : results[0];
 	}
 
 
@@ -110,21 +126,24 @@ export default class Croper {
 
 
 	async uploadFiles() {
-		await new Promise(requestAnimationFrame);
-		this.loader.classList.add('show');
-		try {
-			this.links = await Promise.all([
-				this.uploadBlob(this.exportBlob(640)),
-				this.uploadBlob(this.frameR.exportBlob(140)),
-				this.uploadBlob(this.frameL.exportBlob(280)),
-			]);
-		} catch(err) {
-			console.error(err.message || err);
-		}
-		await sleep(500);
-		await new Promise(requestAnimationFrame);
-		this.results.classList.add('show');
-		this.loader.classList.remove('show');
+		return this.working(new Promise(async (res, rej) => {
+			await new Promise(requestAnimationFrame);
+			this.loader.classList.add('show');
+			try {
+				this.links = await Promise.all([
+					this.uploadBlob(this.exportBlob(640)),
+					this.uploadBlob(this.frameR.exportBlob(140)),
+					this.uploadBlob(this.frameL.exportBlob(280)),
+				]);
+			} catch(err) {
+				rej(new Error(err.message || err));
+			}
+			await sleep(2000);
+			await new Promise(requestAnimationFrame);
+			this.results.classList.add('show');
+			this.loader.classList.remove('show');
+			res();
+		}));
 	}
 
 
@@ -140,11 +159,10 @@ export default class Croper {
 	}
 
 
-	async uploadBlob(blobPromise) {
-		const blob = await blobPromise;
-		const fd = new FormData();
-		fd.append('image', new File([blob], `image.webp`, { type: blob.type }));
-		const options = { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: fd };
+	async _uploadBlob(blobPromise) {
+		const form = new FormData();
+		form.append('image', new File([await blobPromise], `image.webp`, { type: 'image/webp' }));
+		const options = { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: form };
 		const resp = await fetch(this.API_ENDPOINT, options);
 		const text = (await resp.text()).trim();
 		if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Téléversement échoué');
@@ -152,7 +170,7 @@ export default class Croper {
 	}
 
 
-	async _uploadBlob(blobPromise) {
+	async uploadBlob(blobPromise) {
 		const blob = await blobPromise;
 		const fd = new FormData();
 		fd.append('reqtype', 'fileupload');

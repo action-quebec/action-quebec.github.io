@@ -10,6 +10,7 @@ export default class Calendar {
 	MONTHS_BACK  = 6;
 	MONTHS_AHEAD = 12;
 	TIMEZONE     = 'America/Toronto';
+	TRANSITION   = 150;
 
 	RX_GOOGLE_CA = /^\s*(?:(?<place>(?!\d)[^,]+?),\s*)?(?<street>[^,]+?),\s*(?<city>[^,]+?),\s*(?<province>AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|Québec|Quebec|QC\.?)(?:\s+(?<postal>[A-Z]\d[A-Z][ -]?\d[A-Z]\d))?(?:,\s*(?<country>Canada))?\s*$/iu;
 
@@ -358,14 +359,28 @@ export default class Calendar {
 
 
 	async nextMonth() {
-		await this.working(this.calendar.next());
-		return this.processPayload();
+		return this.working(new Promise(async res => {
+			this.calendar.parent.parentElement.style.overflow = 'hidden';
+			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(-100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
+			const render = this.calendar.next();
+			await this.calendar.parent.animate([{ transform: "translateX(100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
+			this.calendar.parent.parentElement.style.overflow = '';
+			this.processPayload();
+			res(render);
+		}));
 	}
 
 
 	async previousMonth() {
-		await this.working(this.calendar.previous());
-		return this.processPayload();
+		return this.working(new Promise(async res => {
+			this.calendar.parent.parentElement.style.overflow = 'hidden';
+			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
+			const render = this.calendar.previous();
+			await this.calendar.parent.animate([{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
+			this.calendar.parent.parentElement.style.overflow = '';
+			this.processPayload();
+			res(Promise.all([render]));
+		}));
 	}
 
 
