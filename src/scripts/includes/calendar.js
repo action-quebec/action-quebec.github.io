@@ -83,6 +83,7 @@ export default class Calendar {
 		swipeElm(elm, {
 			threshold: Math.min(40, Math.max(10, elm.clientWidth * 0.01)),
 			maxTime: 500,
+			axis: 'x',
 			onSwipeLeft:  () => this.nextMonth(),
 			onSwipeRight: () => this.previousMonth(),
 		});

@@ -6,6 +6,7 @@ import Notification from "../librairies/notification";
 export default class Croper {
 
 	PROXY_BASE = 'https://catbox-proxy.action-quebec.workers.dev';
+	API_ENDPOINT = 'http://images.action.quebec';
 
 	secrets = null;
 
@@ -111,37 +112,23 @@ export default class Croper {
 	async uploadFiles() {
 		await new Promise(requestAnimationFrame);
 		this.loader.classList.add('show');
-		const urlParams = new URLSearchParams(window.location.search);
-		if(urlParams.get('cache') !== null) {
-			console.log('Google cache: active');
-			this.links = [
-				"https://files.catbox.moe/zi3o0j.webp",
-				"https://files.catbox.moe/71fg0x.webp",
-				"https://files.catbox.moe/g3hwgs.webp"
-			];
-		} else {
-			try {
-				const blobs = await Promise.all([
-					this.exportBlob(640),
-					this.frameR.exportBlob(140, 'webp'),	
-					this.frameL.exportBlob(280, 'webp'),
-				]);
-				this.links = await Promise.all([
-					this._uploadBlob(blobs[0]),
-					this._uploadBlob(blobs[1]),
-					this._uploadBlob(blobs[2]),
-				]);
-			} catch (err) {
-				console.error(err.message || err);
-			}
+		try {
+			this.links = await Promise.all([
+				this.uploadBlob(this.exportBlob(640)),
+				this.uploadBlob(this.frameR.exportBlob(140)),
+				this.uploadBlob(this.frameL.exportBlob(280)),
+			]);
+		} catch(err) {
+			console.error(err.message || err);
 		}
-		await sleep(1000);
+		await sleep(500);
+		await new Promise(requestAnimationFrame);
 		this.results.classList.add('show');
 		this.loader.classList.remove('show');
 	}
 
 
-	async exportBlob(outW) {
+	exportBlob(outW) {
 		const outH = outW * this.image.naturalHeight / this.image.naturalWidth;
 		const cvs = document.createElement('canvas');
 		cvs.width = outW;
@@ -153,20 +140,23 @@ export default class Croper {
 	}
 
 
-	async uploadBlob(blob) { 	
+	async uploadBlob(blobPromise) {
+		const blob = await blobPromise;
 		const fd = new FormData();
 		fd.append('image', new File([blob], `image.webp`, { type: blob.type }));
-		const resp = await fetch('http://images.action.quebec', { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: fd });
+		const options = { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: fd };
+		const resp = await fetch(this.API_ENDPOINT, options);
 		const text = (await resp.text()).trim();
 		if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Téléversement échoué');
 		return text;
 	}
 
 
-	async _uploadBlob(blob) {
+	async _uploadBlob(blobPromise) {
+		const blob = await blobPromise;
 		const fd = new FormData();
 		fd.append('reqtype', 'fileupload');
-		fd.append('fileToUpload', new File([blob], `blob.webp`, { type: blob.type }));
+		fd.append('fileToUpload', new File([blob], `image.webp`, { type: blob.type }));
 		const resp = await fetch(`${this.PROXY_BASE}/api/catbox`, { method: 'POST', body: fd });
 		const text = (await resp.text()).trim();
 		if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Upload Catbox échoué');
@@ -174,17 +164,16 @@ export default class Croper {
 	}
 
 
-	async copyLinks() {
-		await this.copyLabeledLinks([
+	copyLinks() {
+		this.copyLabeledLinks([
 			{ label: `image-couverture`, url: this.links[0] },
 			{ label: `image-calendrier`, url: this.links[1] },
 			{ label: `image-carte`,      url: this.links[2] },
-		]);
-		this.notif.thumbsUp('Liens copiés!');
+		]).then(() => this.notif.thumbsUp('Liens copiés!'));
 	}
 
 
-	async copyLabeledLinks(links) {
+	copyLabeledLinks(links) {
 		const esc = s => s.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 		const html = links.map(({ label, url }) => `<a href="${esc(url)}">${esc(label)}</a>`).join('<br>') + '<br>';
 		const text = links.map(({ label, url }) => `${label} — ${url}`).join("\n");

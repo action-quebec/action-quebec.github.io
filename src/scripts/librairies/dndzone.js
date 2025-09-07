@@ -9,8 +9,8 @@ export default class DNDZone {
 	
 	constructor(container, opts = {}) {
 		this.opts = { ...this.opts, ...opts };
-		if(typeof container == 'string') this.container = document.querySelector(container);
-		else this.container = container;
+		if(typeof container != 'string') this.container = container;
+		else this.container = document.querySelector(container);
 		this.container.addEventListener('dragover',  e => e.preventDefault());
 		this.container.addEventListener('dragenter', e => this.dragEnter(e));
 		this.container.addEventListener('dragleave', e => this.dragLeave(e));

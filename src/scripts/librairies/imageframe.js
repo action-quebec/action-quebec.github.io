@@ -16,8 +16,8 @@ export default class ImageFrame {
 
 
 	constructor(frame, ratio) {
-		if(typeof frame == 'string') this.frame = document.querySelector(frame);
-		else this.frame = frame;
+		if(typeof frame != 'string') this.frame = frame;
+		else this.frame = document.querySelector(frame);
 		this.ratio = this.parseAspect(ratio);
       	this.frame.style.aspectRatio = `${this.ratio.w} / ${this.ratio.h}`;
 		this.img = this.frame.create('img');
@@ -27,7 +27,7 @@ export default class ImageFrame {
 		this.frame.addEventListener('pointerup',     e => this.endPointer(e));
 		this.frame.addEventListener('pointercancel', e => this.endPointer(e));
 		this.frame.addEventListener('pointerleave',  e => { if(this.pointers.has(e.pointerId)) this.endPointer(e); });
-		window.addEventListener('resize', e => this.onResize());
+		window.addEventListener('resize', () => this.onResize());
 	}
 
 
@@ -63,20 +63,19 @@ export default class ImageFrame {
 	}
 
 
-	async onPointerDown(e) {
+	onPointerDown(e) {
 		this.frame.setPointerCapture(e.pointerId);
 		this.setPointer(e);
 		const now = performance.now();
 		if (now - this.lastTapTime < 280 && this.pointers.size === 1) {
-			await this.fitCover();
-			this.lastTapTime = 0;
+			this.fitCover().then(() => this.lastTapTime = 0);
 		} else {
 			this.lastTapTime = now;
 		}
 	}
 
 
-	async onPointerMove(e) {
+	onPointerMove(e) {
 		if (!this.pointers.has(e.pointerId)) return;
 		const prev = this.pointers.get(e.pointerId);
 		this.setPointer(e);
@@ -98,7 +97,7 @@ export default class ImageFrame {
 	}
 
 
-	async fitCover() {
+	fitCover() {
 		const r = rectOf(this.frame);
 		this.state.frameW = r.width;
 		this.state.frameH = r.height;
@@ -121,7 +120,7 @@ export default class ImageFrame {
 	}
 
 
-	async applyTransform() {
+	applyTransform() {
 		const scaledW = this.state.imgW * this.state.scale;
 		const scaledH = this.state.imgH * this.state.scale;
 
@@ -134,11 +133,12 @@ export default class ImageFrame {
 		this.state.tx = clamp(this.state.tx, minTx, maxTx);
 		this.state.ty = clamp(this.state.ty, minTy, maxTy);
 
-		this.img.style.transform = `translate3d(${this.state.tx}px, ${this.state.ty}px, 0) scale(${this.state.scale})`;
+		return new Promise((res) => res(this.img.style.transform = `translate3d(${this.state.tx}px, ${this.state.ty}px, 0) scale(${this.state.scale})`));
+		
 	}
 
 
-	async zoomAt(frameX, frameY, nextScale) {
+	zoomAt(frameX, frameY, nextScale) {
 		const r = rectOf(this.frame);
 		const fx = frameX - r.left;
 		const fy = frameY - r.top;
@@ -175,7 +175,7 @@ export default class ImageFrame {
     }
 	
 
-	async exportBlob(outW, format = 'jpeg') {
+	exportBlob(outW, format = 'webp') {
 		if(!this.img.src) throw new Error('Aucune image chargée.');
 		const fw = this.frame.clientWidth;
 		const fh = this.frame.clientHeight;
