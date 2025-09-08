@@ -56,5 +56,11 @@
 		}
 	}
 
+	&.error {
+		&::before {
+			background-image: var(--error);
+		}
+	}
+
 
 }

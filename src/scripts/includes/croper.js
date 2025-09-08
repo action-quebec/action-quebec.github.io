@@ -5,8 +5,9 @@ import Notification from "../librairies/notification";
 
 export default class Croper {
 
-	PROXY_BASE = 'https://catbox-proxy.action-quebec.workers.dev';
-	API_ENDPOINT = 'http://images.action.quebec';
+	PROXY_BASE   = 'https://catbox-proxy.action-quebec.workers.dev';
+	// API_ENDPOINT = 'http://images.action.quebec';
+	API_ENDPOINT = 'https://phpstack-1276154-4854420.cloudwaysapps.com';
 
 	secrets = null;
 
@@ -48,7 +49,7 @@ export default class Croper {
 
 		this.btngroup = create('div', 'croper__button');
 		this.uploadbtn = this.btngroup.create('button', null, 'Téléverser');
-		this.uploadbtn.addEventListener('click', async () => this.uploadFiles());
+		this.uploadbtn.addEventListener('click', () => this.uploadFiles());
 		this.browsebtn = this.btngroup.create('button', null, 'Parcourir');
 		this.browsebtn.addEventListener('click', () => this.browseFile());
 
@@ -66,7 +67,7 @@ export default class Croper {
 
 		this.splash = create('div', 'croper__splash show', `Glissez-déposez votre image ici ou<br> cliquez ici pour choisir un fichier.`);
 		this.splash.addEventListener('click', () => this.browseFile());
-		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.handleFile(file) });
+		this.splashdnd = new DNDZone(this.splash, { onFileDrop: file => this.drop(file) });
 
 		this.loader = create('div', 'croper__loader');
 		this.loader.create('div', 'loading-double-circular');
@@ -97,18 +98,22 @@ export default class Croper {
 
 
 	handleFile(dropFile) {
-        if(dropFile.type.startsWith('image/') && dropFile.size <= 5242880) {
-			return this.loadImage(dropFile);
-        }
+		return new Promise((res, rej) => {
+			if(dropFile.type.startsWith('image/') && dropFile.size <= 5242880) res(this.loadImage(dropFile));
+			else rej("Fichier rejeté");
+		});
     }
 
 
-	browseFile() {
-		return new Promise(res => {
-			browse('image/*').then(file => {
-				res(this.handleFile(file));
-			}).catch(() => {});
-		});
+	async browseFile() {
+		browse('image/*').then(async file => {
+			await this.handleFile(file);
+		}).catch(e => this.notif.error("Fichier rejeté"));
+	}
+
+
+	drop(file) {
+		this.handleFile(file).catch(e => this.notif.error(e)); 
 	}
 
 
@@ -133,19 +138,24 @@ export default class Croper {
 					this.uploadBlob(this.frameR.exportBlob(140)),
 					this.uploadBlob(this.frameL.exportBlob(280)),
 				]);
+				await sleep(2000);
+				await new Promise(requestAnimationFrame);
+				this.results.classList.add('show');
+				this.loader.classList.remove('show');
+				res();
 			} catch(err) {
-				rej(new Error(err.message || err));
+				await sleep(1000);
+				await new Promise(requestAnimationFrame);
+				this.loader.classList.remove('show');
+				this.notif.error("Échec de téléversement");
+				rej();
 			}
-			await sleep(3000);
-			await new Promise(requestAnimationFrame);
-			this.results.classList.add('show');
-			this.loader.classList.remove('show');
-			res();
+
 		}));
 	}
 
 
-	exportBlob(outW) {
+	async exportBlob(outW) {
 		const outH = outW * this.image.naturalHeight / this.image.naturalWidth;
 		const cvs = document.createElement('canvas');
 		cvs.width = outW;
@@ -157,7 +167,7 @@ export default class Croper {
 	}
 
 
-	async _uploadBlob(blobPromise) {
+	async uploadBlob(blobPromise) {
 		const form = new FormData();
 		form.append('image', new File([await blobPromise], `image.webp`, { type: 'image/webp' }));
 		const options = { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: form };
@@ -168,7 +178,7 @@ export default class Croper {
 	}
 
 
-	async uploadBlob(blobPromise) {
+	async _uploadBlob(blobPromise) {
 		const blob = await blobPromise;
 		const fd = new FormData();
 		fd.append('reqtype', 'fileupload');

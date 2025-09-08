@@ -2,6 +2,8 @@ export default class Notification {
 
 	elm = null;
 	timeout = null;
+	duration = 3000;
+
 
 	constructor() {
 		this.elm = document.body.create('div', 'notification');
@@ -13,6 +15,11 @@ export default class Notification {
 	}
 
 
+	error(text) {
+		this.show(text, 'error');
+	}
+
+
 	show(text, className) {
 		this.elm.innerHTML = text;
 		this.elm.className = `notification ${className} show`;
@@ -20,7 +27,7 @@ export default class Notification {
 		this.timeout = setTimeout(() => {
 			this.elm.className = `notification`;
 			this.timeout = null;
-		}, 3000);
+		}, this.duration);
 	}
 
 }
