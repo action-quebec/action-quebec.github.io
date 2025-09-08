@@ -9,8 +9,9 @@ export default class Calendar {
 
 	MONTHS_BACK  = 6;
 	MONTHS_AHEAD = 12;
-	TIMEZONE     = 'America/Toronto';
 	TRANSITION   = 150;
+	UPCOMINGS    = 12;
+	TIMEZONE     = 'America/Toronto';
 
 	RX_GOOGLE_CA = /^\s*(?:(?<place>(?!\d)[^,]+?),\s*)?(?<street>[^,]+?),\s*(?<city>[^,]+?),\s*(?<province>AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|Québec|Quebec|QC\.?)(?:\s+(?<postal>[A-Z]\d[A-Z][ -]?\d[A-Z]\d))?(?:,\s*(?<country>Canada))?\s*$/iu;
 
@@ -33,7 +34,10 @@ export default class Calendar {
 	constructor() {
 		this.busy(new Promise(res => {
 			this.modal = new Modal({ onlyBgClick: true });
-			Promise.all([this.initCalendar(), loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==') })]).then(async () => {
+			Promise.all([
+				this.initCalendar(),
+				loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==')
+			})]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
 				Promise.all([
 					this.calendar.addEvents(eventSet),
@@ -257,7 +261,7 @@ export default class Calendar {
 
 	addUpcomingEvents() {
 		const preloads = [];
-		const events = this.getUpcomingEvents().slice(0,10);
+		const events = this.getUpcomingEvents().slice(0, this.UPCOMINGS);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
 		const evtRender = Promise.all(events.map(async evt => {
 			const card = placeholder.create('div', 'swiper-slide');
@@ -270,7 +274,7 @@ export default class Calendar {
 			card.create('div', 'event-card__title', evt.title);
 			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: this.TIMEZONE}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
-			card.addEventListener('click', e => this.clickEventDay(evt.id));
+			card.addEventListener('click', () => this.clickEventDay(evt.id));
 			card.title = evt.title;
 		}));
 		const swipRender = new Promise(res => {

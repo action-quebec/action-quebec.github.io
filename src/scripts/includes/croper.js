@@ -6,8 +6,8 @@ import Notification from "../librairies/notification";
 export default class Croper {
 
 	PROXY_BASE   = 'https://catbox-proxy.action-quebec.workers.dev';
-	// API_ENDPOINT = 'http://images.action.quebec';
 	API_ENDPOINT = 'https://phpstack-1276154-4854420.cloudwaysapps.com';
+	// API_ENDPOINT = 'http://images.action.quebec';
 
 	secrets = null;
 
@@ -150,7 +150,6 @@ export default class Croper {
 				this.notif.error("Échec de téléversement");
 				rej();
 			}
-
 		}));
 	}
 
