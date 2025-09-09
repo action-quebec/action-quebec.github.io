@@ -142,3 +142,4 @@ self.rectOf = (el) => el.getBoundingClientRect();
 self.clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 self.distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 self.midpoint = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+self.hcd = (a, b) => { do var r = a; while ((b = r % (a = b)) > 0); return a; };
