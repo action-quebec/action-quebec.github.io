@@ -1,11 +1,13 @@
-import Youtube from "../librairies/youtube";
+import YoutubeReplacer from "../librairies/youtubereplacer";
 
 export default class Help {
 
-	youtubeObserver = null;
+	youtubeReplacer = null;
 
 	constructor() {
-		this.youtubeObserver = new Youtube;
+		this.youtubeReplacer = new YoutubeReplacer;
+
+
 	}
 
 
