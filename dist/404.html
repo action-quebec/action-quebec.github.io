@@ -7,7 +7,7 @@
      ╚████╔╝ ███████╗╚██████╔╝███████╗██╗
       ╚═══╝  ╚══════╝ ╚══▀▀═╝ ╚══════╝╚═╝
 
-    Généré: Mercredi le 10 septembre à 13 h 16
+    Généré: Mercredi le 10 septembre à 16 h 02
     Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/action-quebec/action-quebec.github.io
 

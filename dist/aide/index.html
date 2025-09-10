@@ -7,7 +7,7 @@
      ╚████╔╝ ███████╗╚██████╔╝███████╗██╗
       ╚═══╝  ╚══════╝ ╚══▀▀═╝ ╚══════╝╚═╝
 
-    Généré: Mercredi le 10 septembre à 13 h 16
+    Généré: Mercredi le 10 septembre à 16 h 02
     Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/action-quebec/action-quebec.github.io
 
@@ -27,6 +27,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="/styles/action.quebec.core.min.css">
     <script src="/scripts/action.quebec.core.min.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5J9PDKQG2J"></script>
     <title>aide | action.quebec</title>
 </head>
 <body>
@@ -38,13 +39,6 @@
         "name": "action.quebec | calendrier indépendantiste",
         "description": "Calendrier collectif des événements indépendantistes au Québec."
     }
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5J9PDKQG2J"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-5J9PDKQG2J');
     </script>
     <header>
         <a href="/">
@@ -69,6 +63,10 @@
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', e => Quebec.libre());
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-5J9PDKQG2J');
     </script>
 </body>
 </html>
