@@ -39,11 +39,11 @@ export default class Calendar {
 				loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==')
 			})]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
-				Promise.all([
+				Promise.allSettled([
 					this.calendar.addEvents(eventSet),
 					this.addUpcomingEvents(),
 					this.initParams()
-				]).then(res);
+				]).then(res).catch(() => {});
 			});
 		})).then(() => this.processPayload());
 	}
