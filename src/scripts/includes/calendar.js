@@ -71,7 +71,7 @@ export default class Calendar {
 			const event = this.getEventById(evtId);
 			if(event) {
 				await this.calendar.setMonth(ymd(new Date(event.start)));
-				await this.clickEventDay(event.id);
+				await this.clickEventDay(event.id, 'onload');
 			}
 		}
 	}
@@ -81,7 +81,7 @@ export default class Calendar {
 		this.calendar = new PXCalendar('.calendar__container', {
 			placeholder: '.calendar__pagination__current',
 			onRenderDate: (date, elm) => this.renderEvent(date, elm),
-			onClickDate: (date) => this.clickEventDay(date)
+			onClickDate: (date) => this.clickEventDay(date, 'calendar')
 		});
 		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', () => this.previousMonth());
 		document.querySelector('.calendar__pagination__next > span').addEventListener('click', () => this.nextMonth());
@@ -274,7 +274,7 @@ export default class Calendar {
 			card.create('div', 'event-card__title', evt.title);
 			const formatted = new Intl.DateTimeFormat("fr-CA", { day: "numeric", month: "long", timeZone: this.TIMEZONE}).format(new Date(evt.start));
 			card.create('div', 'event-card__date', formatted);
-			card.addEventListener('click', () => this.clickEventDay(evt.id));
+			card.addEventListener('click', () => this.clickEventDay(evt.id, 'upcoming'));
 			card.title = evt.title;
 		}));
 		const swipRender = new Promise(res => {
@@ -312,7 +312,7 @@ export default class Calendar {
 	}
 
 
-	clickEventDay(date) {
+	clickEventDay(date, type = "calendar") {
 		return this.working(new Promise(async res => {
 			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
 			const eventDetails = (await Promise.allSettled(events.map(async v => this.renderEventDetails(v)))).filter(r => r.status === 'fulfilled').map(r => r.value);
@@ -322,11 +322,12 @@ export default class Calendar {
 			const dateholder = placeholder.create('div', 'modal-events__placeholder__date');
 			const placeholderEvents = placeholder.create('div', 'modal-events__placeholder__events');
 			const d = new Date(`${/^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDate(new Date(events[0].start))}T00:00:00`);
-			const options = { weekday: "long", day: "numeric", month: "long", timeZone: this.TIMEZONE};
+			const options = { weekday: "long", day: "numeric", month: "long", timeZone: this.TIMEZONE };
 			dateholder.innerHTML = new Intl.DateTimeFormat("fr-CA", options).format(d).replace(/^(\w+)/, "$1 le");
 			close.title = 'Fermer';
 			close.addEventListener('click', e => this.modal.hide());
 			placeholderEvents.append(...eventDetails);
+			events.map(evt => this.logEvent(evt, type));
 			this.modal.show(container).then(res);
 		}));
 	}
@@ -397,6 +398,17 @@ export default class Calendar {
 		const payload = this.payload.filter(v => v != null).map(v => preloadImage(v));
 		this.payload = [];
 		return Promise.allSettled(payload);
+	}
+
+
+	async logEvent(event, type) {
+		gtag('event', 'select_content', {
+			content_type: type,
+			item_id: event.id,
+			item_name: event.title,
+			location: event.location,
+			start_date: event.start,
+		});
 	}
 
 }
