@@ -43,7 +43,7 @@ export default class Calendar {
 					this.calendar.addEvents(eventSet),
 					this.addUpcomingEvents(),
 					this.initParams()
-				]).then(res).catch(() => {});
+				]).then(() => res()).catch(() => {});
 			});
 		})).then(() => this.processPayload());
 	}
