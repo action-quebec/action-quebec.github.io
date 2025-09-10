@@ -34,7 +34,7 @@ export default class Calendar {
 	constructor() {
 		this.busy(new Promise(res => {
 			this.modal = new Modal({ onlyBgClick: true });
-			Promise.all([
+			Promise.allSettled([
 				this.initCalendar(),
 				loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==')
 			})]).then(async () => {
