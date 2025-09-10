@@ -76,5 +76,33 @@ export default class YoutubeReplacer {
 	}
 
 
+	extractYouTubeId(url) {
+		if (!url) return null;
+		const u = url.replace(/&amp;/gi, "&");
+		const patterns = [
+			/(?:^|\/\/)youtu\.be\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
+			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/watch\?(?:[^#]*?&)?v=([A-Za-z0-9_-]{11})(?:[&#]|$)/i,
+			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/embed\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
+			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/v\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
+			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/shorts\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i
+		];
+		for (const re of patterns) {
+			const m = u.match(re);
+			if (m) return m[1];
+		}
+		return null;
+	}
+
+
+	replaceAnchors(html) {
+		if (!html) return html;
+		const A_TAG_RE = /<a\b[^>]*\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))[^>]*>[\s\S]*?<\/a>/gi;
+		return html.replace(A_TAG_RE, (full, h1, h2, h3) => {
+			const href = (h1 || h2 || h3 || "").trim();
+			const id = this.extractYouTubeId(href);
+			return id ? `<youtube id="${id}"></youtube>` : full;
+		});
+	}
+
 
 }

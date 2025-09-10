@@ -1,6 +1,7 @@
 import Modal from '../librairies/modal'
 import PXCalendar from '../librairies/pxcalendar';
 import SwipeDetector from '../librairies/swipedetector';
+import YoutubeReplacer from '../librairies/youtubereplacer';
 import Swiper from 'swiper';
 import { Autoplay, Navigation } from 'swiper/modules';
 
@@ -20,6 +21,7 @@ export default class Calendar {
 
 	calendar = null;
 	swipedetector = null;
+	ytreplacer = null;
 	swiper = null;
 	modal = null;
 	prec = null;
@@ -33,6 +35,7 @@ export default class Calendar {
 
 	constructor() {
 		this.busy(new Promise(res => {
+			this.ytreplacer = new YoutubeReplacer({ observer: true });
 			this.modal = new Modal({ onlyBgClick: true });
 			Promise.allSettled([
 				this.initCalendar(),
@@ -143,8 +146,9 @@ export default class Calendar {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
-			let { html, tags } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte']);
+			const { html, tags } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte']);
 			let { newHtml, firstImage } = this.replaceImageLinks(html);
+			const finalHtml = this.ytreplacer.replaceAnchors(newHtml);
 			tags['image-couverture'] = tags['image-couverture'] || firstImage || null;
 			tags['image-calendrier'] = tags['image-calendrier'] || tags['image-couverture'];
 			tags['image-carte'] = tags['image-carte'] || tags['image-couverture'];
@@ -154,8 +158,8 @@ export default class Calendar {
 				title: it.summary || '(Sans titre)',
 				start, end,
 				location: it.location || null,
-				raw: { htmlLink: it.htmlLink },
-				description: newHtml,
+				link: it.htmlLink,
+				description: finalHtml,
 				image: firstImage,
 				images: tags
 			};
@@ -334,6 +338,7 @@ export default class Calendar {
 
 
 	renderEventDetails(evt) {
+		console.log(evt.link);
 		const container = create('div', 'modal-events__placeholder__events__event');
 		const time = this.formatLabel(evt.start);
 		let str = '';
