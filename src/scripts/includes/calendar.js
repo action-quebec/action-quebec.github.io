@@ -34,12 +34,12 @@ export default class Calendar {
 	constructor() {
 		this.busy(new Promise(res => {
 			this.modal = new Modal({ onlyBgClick: true });
-			Promise.all([
+			Promise.allSettled([
 				this.initCalendar(),
 				loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==')
 			})]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
-				Promise.all([
+				Promise.allSettled([
 					this.calendar.addEvents(eventSet),
 					this.addUpcomingEvents(),
 					this.initParams()
@@ -343,7 +343,7 @@ export default class Calendar {
 			const addrparts = this.parseGoogleAddress(evt.location);
 			if(addrparts.place) addr = `${addrparts.place}, ${addrparts.city}`;
 			else addr = `${addrparts.street}, ${addrparts.city}`;
-			const url = `https://www.google.com/maps/search/${encodeURI(evt.location)}`
+			const url = `https://www.google.com/maps/search/${encodeURI(evt.location)}`;
 			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
 		}
 		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
