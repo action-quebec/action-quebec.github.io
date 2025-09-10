@@ -34,16 +34,16 @@ export default class Calendar {
 	constructor() {
 		this.busy(new Promise(res => {
 			this.modal = new Modal({ onlyBgClick: true });
-			Promise.allSettled([
+			Promise.all([
 				this.initCalendar(),
 				loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==')
 			})]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
-				Promise.allSettled([
+				Promise.all([
 					this.calendar.addEvents(eventSet),
 					this.addUpcomingEvents(),
 					this.initParams()
-				]).then(() => res()).catch(() => {});
+				]).then(() => res());//.catch(() => res());
 			});
 		})).then(() => this.processPayload());
 	}
