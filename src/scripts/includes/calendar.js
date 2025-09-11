@@ -180,15 +180,27 @@ export default class Calendar {
 		return { html: newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').trimStart(), tags: objTags }
 	}
 
-
+	
 	replaceImageLinks(html) {
-		const regex = /<a\b(?=[^>]*\bhref=(['"])([^"'<>]+)\1)[^>]*>\s*image\s*<\/a>/gi;
+		if (typeof html !== 'string' || !html) return { newHtml: html, firstImage: null };
+		const A_TAG_RE = /<a\b[^>]*\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'<>]+))[^>]*>[\s\S]*?<\/a>/gi;
 		let firstImage = null;
-		const newHtml = html.replace(regex, (_m, _q, url) => {
-			if (!firstImage) firstImage = url;
-			return `<img src="${url}">`;
+		const newHtml = html.replace(A_TAG_RE, (full, h1, h2, h3) => {
+			const href = (h1 || h2 || h3 || '').trim();
+			if (!this.isImageHref(href)) return full;
+			if (!firstImage) firstImage = href;
+			return `<img src="${href}">`;
 		});
 		return { newHtml, firstImage };
+	}
+
+
+	isImageHref(href) {
+		if (!href) return false;
+		const decoded = href.replace(/&amp;/gi, '&');
+		if (/^data:image\//i.test(decoded)) return true;
+		const path = decoded.split('#')[0].split('?')[0];
+		return /\.(?:avif|bmp|gif|heic|heif|ico|jpe?g|jfif|pjpeg|pjp|png|svg|tiff?|webp)$/i.test(path);
 	}
 
 
