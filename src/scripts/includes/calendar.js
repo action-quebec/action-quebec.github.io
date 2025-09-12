@@ -275,7 +275,7 @@ export default class Calendar {
 	}
 
 
-	addUpcomingEvents() {
+	async addUpcomingEvents() {
 		const preloads = [];
 		const events = this.getUpcomingEvents().slice(0, this.UPCOMINGS);
 		const placeholder = document.querySelector('.events-swiper .swiper-wrapper');
@@ -350,7 +350,7 @@ export default class Calendar {
 
 
 	renderEventDetails(evt) {
-		console.log(evt.link);
+		// console.log(evt.link);
 		const container = create('div', 'modal-events__placeholder__events__event');
 		const time = this.formatLabel(evt.start);
 		let str = '';

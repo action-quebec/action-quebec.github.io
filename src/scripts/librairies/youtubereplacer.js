@@ -2,6 +2,14 @@ export default class YoutubeReplacer {
 
 	observer = null;
 
+	patterns = [
+		/(?:^|\/\/)youtu\.be\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
+		/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/watch\?(?:[^#]*?&)?v=([A-Za-z0-9_-]{11})(?:[&#]|$)/i,
+		/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/embed\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
+		/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/v\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
+		/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/shorts\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i
+	];
+
 	opts = {
 		observer: false,
 	};
@@ -77,20 +85,8 @@ export default class YoutubeReplacer {
 
 
 	extractYouTubeId(url) {
-		if (!url) return null;
 		const u = url.replace(/&amp;/gi, "&");
-		const patterns = [
-			/(?:^|\/\/)youtu\.be\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
-			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/watch\?(?:[^#]*?&)?v=([A-Za-z0-9_-]{11})(?:[&#]|$)/i,
-			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/embed\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
-			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/v\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i,
-			/(?:^|\/\/)(?:www\.)?(?:m\.)?youtube\.com\/shorts\/([A-Za-z0-9_-]{11})(?:[?&#/]|$)/i
-		];
-		for (const re of patterns) {
-			const m = u.match(re);
-			if (m) return m[1];
-		}
-		return null;
+		return this.patterns.reduce((res, p) => res ?? u.match(p)?.[1] ?? null, null); 
 	}
 
 

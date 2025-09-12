@@ -48,7 +48,10 @@ export default class Modal {
 	hide() {
 		return new Promise(res => {
 			this.container.classList.remove('show');
-			setTimeout(() => res(!(this.opened = false)), this.duration);
+			setTimeout(() => {
+				this.placeholder.replaceChildren([]);
+				res(!(this.opened = false));
+			}, this.duration);
 		});
 	}
 
