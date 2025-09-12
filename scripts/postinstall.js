@@ -2,7 +2,7 @@ const fs = require("fs");
 const https = require("https");
 const path = require("path");
 
-const url = "https://action-quebec.github.io/bt1oh97j7X.json";
+const url = "https://action.quebec/bt1oh97j7X.json";
 const dest = path.join(process.cwd(), "src/bt1oh97j7X.json");
 
 https.get(url, res => {
