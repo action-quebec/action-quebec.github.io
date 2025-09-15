@@ -36,7 +36,7 @@ export default class PXCalendar {
 		const preloads = [];
 		const firstOfMonth = new Date(this.current.getFullYear(), this.current.getMonth(), 1);
 		const gridStart = startOfWeek(firstOfMonth, 0);
-		const cells = await Promise.all(Array.from({ length: 42 }, async (_, i) => {
+		const cells = await Promise.all([...Array(42).keys()].map(async i => {
 			const d = addDays(gridStart, i);
 			const iso = ymd(d);
 			const cell = create('div', 'pxcalendar__month__day', `<span>${d.getDate()}</span>`);
