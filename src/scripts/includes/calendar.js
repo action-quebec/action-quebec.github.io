@@ -365,7 +365,7 @@ export default class Calendar {
 			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
 		}
 		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
-		str += evt.description + `<br>EventID: ${evt.id}`;
+		str += evt.description;// + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
 		if(!evt.image) return container;
 		return new Promise(res => preloadImage(evt.image).then(() => res(container)));
