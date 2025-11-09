@@ -1,0 +1,30 @@
+{
+	"organisations": [
+		{
+			"slug": "ssjb",
+			"name": "SSJB"
+		},
+		{
+			"slug": "mei",
+			"name": "MÉI"
+		},
+		{
+			"slug": "ouiqc",
+			"name": "OUI Québec"
+		}
+	],
+	"types": [
+		{
+			"slug": "citoyen",
+			"name": "Citoyen"
+		},
+		{
+			"slug": "etudiant",
+			"name": "Étudiant"
+		},
+		{
+			"slug": "politique",
+			"name": "Politique"
+		}
+	]
+}

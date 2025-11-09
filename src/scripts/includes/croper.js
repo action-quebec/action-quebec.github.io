@@ -10,8 +10,12 @@ export default class Croper {
 	API_ENDPOINT = 'https://images.action.quebec';
 
 	secrets = null;
+	options = null;
 
 	container = null;
+	selorg = null;
+	seltype = null;
+
 	imagegroup = null;
 	imageL = null;
 	imageR = null;
@@ -38,9 +42,16 @@ export default class Croper {
 
 	
 	constructor() {
-		loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==') });
+
 		this.container = document.querySelector('.croper');
 		this.imagegroup = create('div', 'croper__images');
+		
+		const selgroup = this.imagegroup.create('div', 'croper__images__options');
+		this.selorg = selgroup.create('select');
+		this.selorg.create('option', null, '-- Organisation --').value = '';
+		this.seltype = selgroup.create('select');
+		this.seltype.create('option', null, '-- Type --').value = '';
+
 		this.image = create('img');
 		this.imageL = this.imagegroup.create('div', 'croper__images__box box--2-3');
 		this.imageR = this.imagegroup.create('div', 'croper__images__box box--5-4');
@@ -78,6 +89,14 @@ export default class Croper {
 		this.notif = new Notification;
 
 		this.container.replaceChildren(this.imagegroup, this.btngroup, this.results, this.splash, this.loader);
+
+		loadJsonProperties(this, {
+			secrets: atob('L2J0MW9oOTdqN1guanNvbg=='),
+			options: '/options.json'
+		}).then(() => {
+			this.options.organisations.forEach(org => this.selorg.create('option', null, org.name).value = org.slug );
+			this.options.types.forEach(type => this.seltype.create('option', null, type.name).value = type.slug );
+		});
 	}
 
 
