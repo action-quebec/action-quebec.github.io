@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "esbuild": "^0.26.0",
+    "esbuild": "^0.27.0",
     "firebase": "^12.5.0",
     "ignore": "^7.0.5",
     "sass": "^1.93.3",
