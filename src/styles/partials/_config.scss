@@ -22,10 +22,6 @@ $modal-resp:  calc($font-base * 100 / $modal-break);
 
     --scheme-transition-duration: 400ms;
 
-    --text-stroke: 
-					0.1rem 0 var(--bg), -0.1rem 0 var(--bg),
-					0 0.1rem var(--bg),  0 -0.1rem var(--bg),
-					0.1rem 0.1rem var(--bg),  0.1rem -0.1rem var(--bg),
-					-0.1rem 0.1rem var(--bg), -0.1rem -0.1rem var(--bg);
+    --text-stroke: 0.1rem 0 var(--bg), -0.1rem 0 var(--bg), 0 0.1rem var(--bg),  0 -0.1rem var(--bg), 0.1rem 0.1rem var(--bg),  0.1rem -0.1rem var(--bg), -0.1rem 0.1rem var(--bg), -0.1rem -0.1rem var(--bg);
 
 }

@@ -1,5 +1,3 @@
-// build.js
-// Node >= 16 recommandé
 const fs = require('fs/promises');
 const fscore = require('fs');
 const path = require('path');
@@ -9,7 +7,6 @@ const ROOT = process.cwd();
 const SRC = path.join(ROOT, 'src');
 const DIST = path.join(ROOT, 'dist');
 const BANNER = path.join(ROOT, 'scripts/banner.txt');
-
 
 
 function formatFrDate(dateInput = new Date(), timeZone = 'America/Toronto') {

@@ -11,21 +11,15 @@
         {
             "match": "src[/\\\\]scripts[/\\\\](?!.*\\.min\\.js$).*\\.js$",
             "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:build"],
+            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:buildjs"],
             "event": "onFileChange"
         },
         {
-            "match": "[\\\\/](?!_)[^\\\\/]+\\.scss$",
+            "match": "src[/\\\\]styles[/\\\\].*\\.scss$",
             "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:sass:master"],
+            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:buildcss"],
             "event": "onFileChange"
         },
-        {
-            "match": "[\\\\/]_[^\\\\/]+\\.scss$",
-            "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:sass:slave"],
-            "event": "onFileChange"
-        }
     ],
     "liveServer.settings.port": 5503,
     "liveServer.settings.CustomBrowser": "chrome",

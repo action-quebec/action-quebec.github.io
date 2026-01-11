@@ -2,46 +2,26 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "acqc:build",
-			"type": "shell",
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"command": "./node_modules/.bin/esbuild \"${workspaceFolder}/src/scripts/action.quebec.core.js\" --bundle --platform=browser --log-level=error --tree-shaking=true --minify --target=es2020 --legal-comments=none --outfile=\"${workspaceFolder}/src/scripts/action.quebec.core.min.js\"",
+			"label": "acqc:buildjs",
+			"type": "npm",
+			"script": "buildjs",
 			"presentation": {
 				"panel": "shared",
 				"group": "acqc",
 				"reveal": "never",
 				"showReuseMessage": false
-			}
+			},
 		},
 		{
-			"label": "acqc:sass:master",
-			"type": "shell",
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"command": "./node_modules/.bin/sass \"${file}\" \"${fileDirname}/${fileBasenameNoExtension}.min.css\" --load-path=node_modules --style=compressed --no-source-map --quiet",
+			"label": "acqc:buildcss",
+			"type": "npm",
+			"script": "buildcss",
 			"presentation": {
 				"panel": "shared",
 				"group": "acqc",
 				"reveal": "never",
 				"showReuseMessage": false
 			}
-		},
-		{
-			"label": "acqc:sass:slave",
-			"type": "shell",
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"command": "./node_modules/.bin/sass \"${fileDirname}/../action.quebec.core.scss\"  \"${fileDirname}/../action.quebec.core.min.css\" --load-path=node_modules --style=compressed --no-source-map --quiet",
-			"presentation": {
-				"panel": "shared",
-				"group": "acqc",
-				"reveal": "never",
-				"showReuseMessage": false
-			}
-		},
+		}
 	]
 }
