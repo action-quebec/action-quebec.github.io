@@ -14,6 +14,7 @@ const outfile = path.resolve(__dirname, "../src/scripts/action.quebec.core.min.j
 			logLevel: "error",
 			treeShaking: true,
 			minify: true,
+			supported: { "template-literal": false },
 			target: ["es2020"],
 			legalComments: "none",
 		});

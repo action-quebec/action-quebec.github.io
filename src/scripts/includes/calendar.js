@@ -13,6 +13,7 @@ export default class Calendar {
 	TRANSITION   = 150;
 	UPCOMINGS    = 12;
 	TIMEZONE     = 'America/Toronto';
+	DEFAULTPROPS = { organisation: "ssjb", type: "citoyen" };
 
 	RX_GOOGLE_CA = /^\s*(?:(?<place>(?!\d)[^,]+?),\s*)?(?<street>[^,]+?),\s*(?<city>[^,]+?),\s*(?<province>AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|Québec|Quebec|QC\.?)(?:\s+(?<postal>[A-Z]\d[A-Z][ -]?\d[A-Z]\d))?(?:,\s*(?<country>Canada))?\s*$/iu;
 
@@ -146,7 +147,7 @@ export default class Calendar {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
-			const { html, tags } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte']);
+			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte'], this.DEFAULTPROPS);
 			let { newHtml, firstImage } = this.replaceImageLinks(html);
 			const finalHtml = this.ytreplacer.replaceAnchors(newHtml);
 			tags['image-couverture'] = tags['image-couverture'] || firstImage || null;
@@ -161,23 +162,31 @@ export default class Calendar {
 				link: it.htmlLink,
 				description: finalHtml,
 				image: firstImage,
-				images: tags
+				images: tags,
+				properties: props
 			};
 		}));
 	}
 
 
-	extractLink(html, tags = []) {
+	extractLink(html, tags = [], props = {}) {
 		const escapeRegExp = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		const objTags = Object.fromEntries(tags.map(t => [t, null]));
-		const newHtml = tags.reduce((str, tag) => {
+		let newHtml = tags.reduce((str, tag) => {
 			const re = new RegExp(`<a\\s+href=(["'])(.*?)\\1[^>]*>${escapeRegExp(tag)}<\\/a>`, 'gi');
 			return str.replace(re, (_m, _q, url) => {
 				objTags[tag] = url;
 				return '';
 			});
 		}, html);
-		return { html: newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').trimStart(), tags: objTags }
+		const rep = /@([^\s:]+)\s*:\s*([^<\r\n]+)\s*(?:<br\s*\/?>|\r?\n|$)/gi;
+		newHtml = newHtml.replace(rep, (_m, key, value) => {
+			props[key] = value;
+			return '';
+		});
+
+		newHtml = newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').replace(/<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '').trimStart()
+		return { html: newHtml, tags: objTags, props: props }
 	}
 
 	

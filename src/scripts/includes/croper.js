@@ -5,8 +5,6 @@ import Notification from "../librairies/notification";
 
 export default class Croper {
 
-	PROXY_BASE   = 'https://catbox-proxy.action-quebec.workers.dev';
-	// API_ENDPOINT = 'https://phpstack-1276154-4854420.cloudwaysapps.com';
 	API_ENDPOINT = 'https://images.action.quebec';
 
 	secrets = null;
@@ -47,10 +45,16 @@ export default class Croper {
 		this.imagegroup = create('div', 'croper__images');
 		
 		const selgroup = this.imagegroup.create('div', 'croper__images__options');
+		
 		this.selorg = selgroup.create('select');
+		this.selorg.required = true;
 		this.selorg.create('option', null, '-- Organisation --').value = '';
+		this.selorg.addEventListener('change', () => this.changeSel());
+
 		this.seltype = selgroup.create('select');
+		this.seltype.required = true;
 		this.seltype.create('option', null, '-- Type --').value = '';
+		this.seltype.addEventListener('change', () => this.changeSel());
 
 		this.image = create('img');
 		this.imageL = this.imagegroup.create('div', 'croper__images__box box--2-3');
@@ -96,6 +100,9 @@ export default class Croper {
 		}).then(() => {
 			this.options.organisations.forEach(org => this.selorg.create('option', null, org.name).value = org.slug );
 			this.options.types.forEach(type => this.seltype.create('option', null, type.name).value = type.slug );
+			this.selorg.value = localStorage.getItem('selorg');
+			this.seltype.value = localStorage.getItem('seltype');
+			this.changeSel();
 		});
 	}
 
@@ -113,6 +120,13 @@ export default class Croper {
 		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-working');
 		return typeof promise == 'array' ? results : results[0];
+	}
+
+
+	async changeSel() {
+		this.uploadbtn.disabled = !(this.selorg.value && this.seltype.value);
+		localStorage.setItem('selorg', this.selorg.value);
+		localStorage.setItem('seltype', this.seltype.value);
 	}
 
 
@@ -196,34 +210,28 @@ export default class Croper {
 	}
 
 
-	async _uploadBlob(blobPromise) {
-		const blob = await blobPromise;
-		const fd = new FormData();
-		fd.append('reqtype', 'fileupload');
-		fd.append('fileToUpload', new File([blob], `image.webp`, { type: blob.type }));
-		const resp = await fetch(`${this.PROXY_BASE}/api/catbox`, { method: 'POST', body: fd });
-		const text = (await resp.text()).trim();
-		if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Upload Catbox échoué');
-		return text;
-	}
-
-
 	copyLinks() {
 		this.copyLabeledLinks([
 			{ label: `image-couverture`, url: this.links[0] },
 			{ label: `image-calendrier`, url: this.links[1] },
 			{ label: `image-carte`,      url: this.links[2] },
+		], [
+			{ label: `organisation`, value: this.selorg.value },
+			{ label: `type`,         value: this.seltype.value },
 		]).then(() => this.notif.thumbsUp('Liens copiés!'));
 	}
 
 
-	copyLabeledLinks(links) {
+	copyLabeledLinks(links, props) {
 		const esc = s => s.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-		const html = links.map(({ label, url }) => `<a href="${esc(url)}">${esc(label)}</a>`).join('<br>') + '<br>';
-		const text = links.map(({ label, url }) => `${label} — ${url}`).join("\n");
+		let html = props.map(({ label, value }) => `@${label}: ${value}`).join("<br>") + "<br>";
+		let text = props.map(({ label, value }) => `@${label}: ${value}`).join("\n") + "\n";
+		html += links.map(({ label, url }) => `<a href="${esc(url)}">${esc(label)}</a>`).join('<br>');
+		text += links.map(({ label, url }) => `${label} — ${url}`).join("\n") + "\n";
+		html += `<p>Plus de détails à venir...</p>`;
 		return navigator.clipboard.write([
 			new ClipboardItem({
-				'text/html': new Blob([html], { type: 'text/html' }),
+				'text/html': new Blob(['<p>' + html + '</p>'], { type: 'text/html' }),
 				'text/plain': new Blob([text], { type: 'text/plain' })
 			})
 		]);
