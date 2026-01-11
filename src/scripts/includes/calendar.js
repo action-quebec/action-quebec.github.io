@@ -231,7 +231,7 @@ export default class Calendar {
 			imgs.push(preloadImage(events[1].images['image-calendrier']));
 			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 		}
-		events.forEach(e => this.payload.push(e.images['image-couverture']));
+		// events.forEach(e => this.payload.push(e.images['image-couverture']));
 		return Promise.allSettled(imgs);
 	}
 
@@ -379,7 +379,7 @@ export default class Calendar {
 		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
 		str += evt.description;// + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
-		if(!evt.image) return container;
+		if(!evt.image) return container; // bizarre ça
 		return new Promise(res => preloadImage(evt.image).then(() => res(container)));
 	}
 
