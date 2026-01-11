@@ -19,6 +19,7 @@ export default class Calendar {
 
 	secrets = null;
 	events = null;
+	options = null;
 
 	calendar = null;
 	swipedetector = null;
@@ -40,7 +41,9 @@ export default class Calendar {
 			this.modal = new Modal({ onlyBgClick: true });
 			Promise.allSettled([
 				this.initCalendar(),
-				loadJsonProperties(this, { secrets: atob('L2J0MW9oOTdqN1guanNvbg==')
+				loadJsonProperties(this, {
+					secrets: atob('L2J0MW9oOTdqN1guanNvbg=='),
+					options: '/options.json'
 			})]).then(async () => {
 				const eventSet = await this.loadGoogleCalendar();
 				Promise.allSettled([
@@ -147,7 +150,7 @@ export default class Calendar {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
-			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte'], this.DEFAULTPROPS);
+			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte'], { ...this.DEFAULTPROPS });
 			let { newHtml, firstImage } = this.replaceImageLinks(html);
 			const finalHtml = this.ytreplacer.replaceAnchors(newHtml);
 			tags['image-couverture'] = tags['image-couverture'] || firstImage || null;
@@ -395,12 +398,13 @@ export default class Calendar {
 			await new Promise(requestAnimationFrame);
 			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
-			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(-100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
 			const render = this.calendar.next();
+			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(-100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
+			await render;
 			await this.calendar.parent.animate([{ transform: "translateX(100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
 			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
-			res(render);
+			res();
 		}));
 	}
 
@@ -410,12 +414,13 @@ export default class Calendar {
 			await new Promise(requestAnimationFrame);
 			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
-			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
 			const render = this.calendar.previous();
+			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
+			await render;
 			await this.calendar.parent.animate([{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
 			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
-			res(render);
+			res();
 		}));
 	}
 
