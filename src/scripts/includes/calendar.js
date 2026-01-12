@@ -257,6 +257,7 @@ export default class Calendar {
 
 
 	renderEventTip(evt) {
+		const org = this.getOrganisation(evt.properties.organisation);
 		const time = new Intl.DateTimeFormat('fr-CA', { timeZone: this.IMEZONE, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(evt.start));
 		let str = `<h3>${evt.title}</h3>`;
 		if(evt.location) {
@@ -267,7 +268,8 @@ export default class Calendar {
 				str += `<strong>Où:</strong> ${addr}<br>`;
 			}
 		}
-		str += `<strong>Quand:</strong> ${time}`;
+		str += `<strong>Quand:</strong> ${time}<br>`;
+		str += `<strong>Hôte:</strong> ${org.name}`;
 		return str;
 	}
 
