@@ -231,7 +231,7 @@ export default class Calendar {
 			imgs.push(preloadImage(events[1].images['image-calendrier']));
 			bgimg.style.setProperty('--image-2', `url(${events[1].images['image-calendrier']})`);
 		}
-		// events.forEach(e => this.payload.push(e.images['image-couverture']));
+		events.forEach(e => this.payload.push(e.images['image-couverture']));
 		return Promise.allSettled(imgs);
 	}
 
@@ -362,7 +362,7 @@ export default class Calendar {
 
 
 	renderEventDetails(evt) {
-		// console.log(evt.link);
+		const org = this.getOrganisation(evt.properties.organisation);
 		const container = create('div', 'modal-events__placeholder__events__event');
 		const time = this.formatLabel(evt.start);
 		let str = '';
@@ -376,11 +376,17 @@ export default class Calendar {
 			const url = `https://www.google.com/maps/search/${encodeURI(evt.location)}`;
 			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
 		}
-		str += `<span class="label"><strong>Quand:</strong> ${time}</span><br><br>`;
+		str += `<span class="label"><strong>Quand:</strong> <a href="${evt.link}" target="_blank" noopener noreferer>${time}</a></span><br>`;
+		str += `<span class="label"><strong>Hôte:</strong> <a href="${org.url}" target="_blank" noopener noreferer>${org.name}</a></span><br><br>`;
 		str += evt.description;// + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
 		if(!evt.image) return container; // bizarre ça
 		return new Promise(res => preloadImage(evt.image).then(() => res(container)));
+	}
+
+
+	getOrganisation(slug) {
+		return this.options.organisations.find(o => o.slug === slug) ?? this.getOrganisation('ssjb');
 	}
 
 

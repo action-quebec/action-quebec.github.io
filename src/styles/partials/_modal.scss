@@ -4,18 +4,19 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 100;
+	width: 100dvw;
+	height: 100dvh;
+	// z-index: 100;
 	align-items: center;
 	justify-content: center;
     visibility: hidden;
     opacity: 0;
 	z-index: 10000;
-
+// background-color: red;
     transition-property: opacity visibility;
     transition-duration: var(--transition-duration);
-	
+	overflow: hidden;
+	padding-right: calc(100vw - 100%);
 
 	&::before {
 		content: '';
