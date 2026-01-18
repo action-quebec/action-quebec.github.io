@@ -100,8 +100,8 @@ export default class Croper {
 		}).then(() => {
 			this.options.organisations.forEach(org => this.selorg.create('option', null, org.name).value = org.slug );
 			this.options.types.forEach(type => this.seltype.create('option', null, type.name).value = type.slug );
-			this.selorg.value = localStorage.getItem('selorg');
-			this.seltype.value = localStorage.getItem('seltype');
+			this.selorg.value = localStorage.getItem('selorg') ?? '';
+			this.seltype.value = localStorage.getItem('seltype') ?? '';
 			this.changeSel();
 		});
 	}
