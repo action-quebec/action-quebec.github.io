@@ -60,6 +60,12 @@ export default class PXCalendar {
 	}
 
 
+	setEvents(events) {
+		this.events = events;
+		return this.render();
+	}
+
+
 	addEvents(events) {
 		this.events = new Set([...this.events, ...events]);
 		return this.render();

@@ -28,6 +28,7 @@ export default class Calendar {
 	modal = null;
 	prec = null;
 	suiv = null;
+	type = null;
 
 	mutexSwiper = null;
 	mutexRem = null;
@@ -39,6 +40,7 @@ export default class Calendar {
 		this.busy(new Promise(res => {
 			this.ytreplacer = new YoutubeReplacer({ observer: true });
 			this.modal = new Modal({ onlyBgClick: true });
+			this.type = localStorage.getItem('eventType') ?? 'tous';
 			Promise.allSettled([
 				this.initCalendar(),
 				loadJsonProperties(this, {
@@ -84,7 +86,9 @@ export default class Calendar {
 			radio.name = 'type';
 			radio.value = type.slug;
 			radio.id = `type-${type.slug}`;
+			radio.checked = this.type == type.slug;
 			label.htmlFor = `type-${type.slug}`;
+			radio.addEventListener('click', () => this.filterEvents(type.slug));
 		});
 	}
 
@@ -122,7 +126,13 @@ export default class Calendar {
 
 	async loadGoogleCalendar() {
 		this.events = await this.queryGoogleCalendar();
-		return new Set(await Promise.all(this.events.map(async v => {
+		return this.getFilteredEvents();
+	}
+
+	
+	async getFilteredEvents() {
+		const events = this.events.filter(evt => evt.properties.type == this.type || this.type == 'tous');
+		return new Set(await Promise.all(events.map(async v => {
 			const s = new Date(v.start);
 			const d = new Date(s.getFullYear(), s.getMonth(), s.getDate());
 			return ymd(d);
@@ -189,6 +199,18 @@ export default class Calendar {
 	}
 
 
+	async filterEvents(type) {
+		return this.working(new Promise(async res => {
+			this.type = type;
+			localStorage.setItem('eventType', type);
+			const events = await this.getFilteredEvents();
+			await this.calendar.setEvents(events);
+			this.processPayload();
+			res();
+		}));
+	}
+
+
 	extractLink(html, tags = [], props = {}) {
 		const escapeRegExp = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		const objTags = Object.fromEntries(tags.map(t => [t, null]));
@@ -204,7 +226,6 @@ export default class Calendar {
 			props[key] = value;
 			return '';
 		});
-
 		newHtml = newHtml.replace(/^(?:\s*<br\b[^>]*>\s*)+/i, '').replace(/<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '').trimStart()
 		return { html: newHtml, tags: objTags, props: props }
 	}
@@ -257,7 +278,7 @@ export default class Calendar {
 		return this.events.filter(ev => {
 			const s = inTZ(ev.start, this.TIMEZONE);
 			const e = inTZ(new Date(new Date(ev.end) - 1), this.TIMEZONE);
-			return s <= date && date <= e;
+			return (s <= date && date <= e) && (this.type == 'tous' || ev.properties.type == this.type);
 		});
 	}
 
