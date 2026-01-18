@@ -129,7 +129,7 @@ export default class Calendar {
 		return this.getFilteredEvents();
 	}
 
-	
+
 	async getFilteredEvents() {
 		const events = this.events.filter(evt => evt.properties.type == this.type || this.type == 'tous');
 		return new Set(await Promise.all(events.map(async v => {
@@ -444,9 +444,8 @@ export default class Calendar {
 			await new Promise(requestAnimationFrame);
 			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
-			const render = this.calendar.next();
 			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(-100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
-			await render;
+			await this.calendar.next();
 			await this.calendar.parent.animate([{ transform: "translateX(100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
 			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
@@ -460,9 +459,8 @@ export default class Calendar {
 			await new Promise(requestAnimationFrame);
 			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
-			const render = this.calendar.previous();
 			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
-			await render;
+			await this.calendar.previous();
 			await this.calendar.parent.animate([{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
 			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
