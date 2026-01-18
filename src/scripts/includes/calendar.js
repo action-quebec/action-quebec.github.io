@@ -45,11 +45,13 @@ export default class Calendar {
 					secrets: atob('L2J0MW9oOTdqN1guanNvbg=='),
 					options: '/options.json'
 			})]).then(async () => {
+				const types = this.initTypes();
 				const eventSet = await this.loadGoogleCalendar();
 				Promise.allSettled([
 					this.calendar.addEvents(eventSet),
 					this.addUpcomingEvents(),
-					this.initParams()
+					this.initParams(),
+					types
 				]).then(() => res());//.catch(() => res());
 			});
 		})).then(() => this.processPayload());
@@ -69,6 +71,21 @@ export default class Calendar {
 		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-working');
 		return typeof promise == 'array' ? results : results[0];
+	}
+
+
+	async initTypes() {
+		const types = [{ slug: "tous", name: "Tous" }, ...this.options.types];
+		const container = document.querySelector('.calendar__types');
+		types.forEach(type => {
+			const radio = container.create('input');
+			const label = container.create('label', null, `<span>${type.name}</span>`);
+			radio.type = 'radio';
+			radio.name = 'type';
+			radio.value = type.slug;
+			radio.id = `type-${type.slug}`;
+			label.htmlFor = `type-${type.slug}`;
+		});
 	}
 
 

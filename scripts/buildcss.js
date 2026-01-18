@@ -10,7 +10,7 @@ let compiled;
 try {
 	compiled = sass.compile(inputScss, {
 		loadPaths: [path.resolve(__dirname, "../node_modules")],
-		style: "expanded",
+		style: "compressed",
 		sourceMap: false,
 		sourceMapIncludeSources: false,
 	});
