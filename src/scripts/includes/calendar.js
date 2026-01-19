@@ -111,6 +111,7 @@ export default class Calendar {
 			onRenderDate: (date, elm) => this.renderEvent(date, elm),
 			onClickDate: (date) => this.clickEventDay(date, 'calendar')
 		});
+		document.querySelector('.calendar__pagination__current').addEventListener('click', () => this.resetMonth());
 		document.querySelector('.calendar__pagination__prev > span').addEventListener('click', () => this.previousMonth());
 		document.querySelector('.calendar__pagination__next > span').addEventListener('click', () => this.nextMonth());
 		const elm = document.querySelector('.calendar__container');
@@ -439,14 +440,14 @@ export default class Calendar {
 	}
 
 
-	nextMonth() {
+	swipeMonth(direction = 'left', proc) {
 		return this.working(new Promise(async res => {
 			await new Promise(requestAnimationFrame);
 			const overflow = this.calendar.parent.parentElement.style.overflow;
 			this.calendar.parent.parentElement.style.overflow = 'hidden';
-			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(-100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
-			await this.calendar.next();
-			await this.calendar.parent.animate([{ transform: "translateX(100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
+			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: `translateX(${direction == 'left' ? -100 : 100}%)` }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
+			await proc();
+			await this.calendar.parent.animate([{ transform: `translateX(${direction == 'left' ? 100 : -100}%)` }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
 			this.calendar.parent.parentElement.style.overflow = overflow;
 			this.processPayload();
 			res();
@@ -454,18 +455,21 @@ export default class Calendar {
 	}
 
 
+	nextMonth() {
+		return this.swipeMonth('left', () => this.calendar.next());
+	}
+
+
 	previousMonth() {
-		return this.working(new Promise(async res => {
-			await new Promise(requestAnimationFrame);
-			const overflow = this.calendar.parent.parentElement.style.overflow;
-			this.calendar.parent.parentElement.style.overflow = 'hidden';
-			await this.calendar.parent.animate([{ transform: "translateX(0)" }, { transform: "translateX(100%)" }], { duration: this.TRANSITION, easing: "ease-in", fill: "forwards" }).finished;
-			await this.calendar.previous();
-			await this.calendar.parent.animate([{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }], { duration: this.TRANSITION, easing: "ease-out", fill: "forwards" }).finished;
-			this.calendar.parent.parentElement.style.overflow = overflow;
-			this.processPayload();
-			res();
-		}));
+		return this.swipeMonth('right', () => this.calendar.previous());
+	}
+
+
+	resetMonth() {
+		const now = new Date();
+		if(this.calendar.current.getFullYear() != now.getFullYear() || this.calendar.current.getMonth() != now.getMonth()) {
+			return this.swipeMonth(this.calendar.current > now ? 'right' : 'left', () => this.calendar.setMonth(now));
+		}
 	}
 
 
