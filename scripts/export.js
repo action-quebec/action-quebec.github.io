@@ -15,6 +15,7 @@ function formatFrDate(dateInput = new Date(), timeZone = 'America/Toronto') {
 		weekday: 'long',
 		day: 'numeric',
 		month: 'long',
+		year: 'numeric',
 		hour: 'numeric',
 		minute: '2-digit',
 		hour12: false,
@@ -22,7 +23,7 @@ function formatFrDate(dateInput = new Date(), timeZone = 'America/Toronto') {
 	});
 	const parts = Object.fromEntries(fmt.formatToParts(d).map(p => [p.type, p.value]));
 	const weekday = parts.weekday.charAt(0).toUpperCase() + parts.weekday.slice(1); // "Samedi"
-	return `${weekday} le ${parts.day} ${parts.month} à ${parts.hour} h ${parts.minute}`;
+	return `${weekday} le ${parts.day} ${parts.month} ${parts.year} à ${parts.hour} h ${parts.minute}`;
 }
 
 
@@ -92,7 +93,7 @@ async function walkAndCopy(dir, ig, stats) {
 				const lower = abs.toLowerCase();
 				if (lower.endsWith('.js')) await fs.writeFile(copied, "/*!\n\n" + bannerContent + "\n\n*/" + (await fs.readFile(copied, 'utf8')), "utf8");
 				else if (lower.endsWith('.css')) await fs.writeFile(copied, "/*!\n\n" + bannerContent + "\n\n*/" + (await fs.readFile(copied, 'utf8')), "utf8");
-				else if (lower.endsWith('.html')) await fs.writeFile(copied, "<!--\n\n" + bannerContent + "\n\n\-->\n" + (await fs.readFile(copied, 'utf8')), "utf8");
+				else if (lower.endsWith('.html')) await fs.writeFile(copied, "<!--\n\n" + bannerContent + "\n\n\-->\n" + (await fs.readFile(copied, 'utf8')).replaceAll(/###YEAR###/g, (new Date).getFullYear()), "utf8");
 				stats.copied++;
 			}
 			else stats.skipped++;
