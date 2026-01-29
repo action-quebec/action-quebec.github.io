@@ -4,7 +4,7 @@
     "esbuild": "^0.27.2",
     "ignore": "^7.0.5",
     "sass": "^1.97.3",
-    "swiper": "^12.0.3"
+    "swiper": "^12.1.0"
   },
   "scripts": {
     "export": "node scripts/export.js",
