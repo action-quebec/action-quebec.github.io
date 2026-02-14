@@ -2,26 +2,21 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "acqc:buildjs",
-			"type": "npm",
-			"script": "buildjs",
+			"label": "build:watch",
+			"type": "shell",
+			"command": "node ./scripts/watch.js",
+			"isBackground": true,
+			"runOptions": {
+				"runOn": "folderOpen",
+				"instanceLimit": 1
+			},
 			"presentation": {
 				"panel": "shared",
-				"group": "acqc",
-				"reveal": "never",
+				"group": "build-watch",
+				"reveal": "always",
 				"showReuseMessage": false
 			},
-		},
-		{
-			"label": "acqc:buildcss",
-			"type": "npm",
-			"script": "buildcss",
-			"presentation": {
-				"panel": "shared",
-				"group": "acqc",
-				"reveal": "never",
-				"showReuseMessage": false
-			}
+			"problemMatcher": []
 		}
 	]
 }
