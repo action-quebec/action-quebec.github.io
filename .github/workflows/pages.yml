@@ -46,6 +46,22 @@ jobs:
           }
           JSON
 
+      - name: Créer bt1oh97j7X.bin (base64 + rot13)
+        shell: bash
+        run: |
+          mkdir -p dist
+          cat > /tmp/bt1oh97j7X.json <<'JSON'
+          {
+            "GOOGLE_API_KEY": "${{ secrets.GOOGLE_API_KEY }}",
+            "CALENDAR_ID": "${{ secrets.CALENDAR_ID }}",
+            "IMAGE_API_KEY": "${{ secrets.IMAGE_API_KEY }}",
+            "SERVICE_PWD": "${{ secrets.SERVICE_PWD }}"
+          }
+          JSON
+          B64="$(base64 -w 0 /tmp/bt1oh97j7X.json)"
+          ROT="$(printf '%s' "$B64" | tr 'A-Za-z' 'N-ZA-Mn-za-m')"
+          printf '%s' "$ROT" | gzip -9 -c > dist/bt1oh97j7X.bin
+
       - name: Upload artifact (dist)
         uses: actions/upload-pages-artifact@v3
         with:
