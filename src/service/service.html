@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta property="og:locale" content="fr_ca">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="outil image | action.quebec">
+    <meta property="og:title" content="service d'image | action.quebec">
     <meta property="og:description" content="Action.quebec est un calendrier collectif qui regroupe les activités indépendantistes au Québec.">
     <meta property="og:url" content="https://action.quebec/">
     <meta property="og:image" content="https://action.quebec/images/ogimage.webp">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/styles/action.quebec.core.min.css">
-    <script src="/scripts/action.quebec.core.min.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5J9PDKQG2J"></script>
-    <title>outil image | action.quebec</title>
+    <link rel="stylesheet" href="./styles/action.quebec.core.min.css?###TIMESTAMP###">
+    <script src="./scripts/action.quebec.core.min.js?###TIMESTAMP###"></script>
+    <title>service d'image | action.quebec</title>
 </head>
 <body>
     <script type="application/ld+json">
@@ -39,9 +38,9 @@
     <main>
         <section>
             <div>
-                <h2>🖼️ Outil image</h2>
+                <h2>🖼️ Service d'image</h2>
                 <p>Google Calendar n’affiche pas d’images ; cet outil comble le manque. Glissez-déposez votre visuel, recadrez, téléversez, puis copiez l’URL directe dans l’événement. Rapide, simple, aucun compte requis.</p>
-                <div class="croper"></div>
+                <service-image></service-image>
             </div>
         </section>
 
@@ -49,12 +48,5 @@
     <footer title="Tous droits réservés © Société Saint-Jean-Baptiste de Montréal, ###YEAR###">
         © Tous droits réservés<br>Société Saint-Jean-Baptiste de Montréal, ###YEAR###
     </footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', e => Quebec.independant());
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-5J9PDKQG2J');
-    </script>
 </body>
 </html>

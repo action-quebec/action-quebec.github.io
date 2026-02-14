@@ -72,7 +72,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg-modal: var(--bg);
 
 	--sky-color: #{$light-sky-color};
-	--sky-image: url(../images/ciel-jour.webp);
+	--sky-image: url(https://action.quebec/images/ciel-jour.webp);
 
 	--cal-text: #{$light-cal-text};
 	--cal-text-alpha: #{$light-cal-text-alpha};
@@ -121,7 +121,7 @@ $dark-cal-border: color.adjust($dark-cal-text, $alpha: -0.8);
 	--bg-modal: #000000;
 
 	--sky-color: #{$dark-sky-color};
-	--sky-image: url(../images/ciel-nuit.webp);
+	--sky-image: url(https://action.quebec/images/ciel-nuit.webp);
 	
 	--cal-text: #{$dark-cal-text};
 	--cal-text-alpha: #{$dark-cal-text-alpha};

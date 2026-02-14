@@ -1,47 +1,73 @@
-import DNDZone from "../librairies/dndzone";
-import ImageFrame from "../librairies/imageframe";
-import Notification from "../librairies/notification";
+import '../../scripts/librairies/helpers';
+import '../../scripts/librairies/secrets';
+import '../../scripts/librairies/lightswitch';
+
+import DNDZone from "../../scripts/librairies/dndzone";
+import ImageFrame from "../../scripts/librairies/imageframe";
+import Notification from "../../scripts/librairies/notification";
+
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 
-export default class Croper {
+({ // ===>>> calendrier action.quebec 
 
-	API_ENDPOINT = 'https://images.action.quebec';
+	API_ENDPOINT: 'https://images.action.quebec',
 
-	secrets = null;
-	options = null;
+	secrets: null,
+	options: null,
 
-	container = null;
-	selorg = null;
-	seltype = null;
+	parent: null,
+	container: null,
+	selorg: null,
+	seltype: null,
 
-	imagegroup = null;
-	imageL = null;
-	imageR = null;
-	image = null;
+	imagegroup: null,
+	imageL: null,
+	imageR: null,
+	image: null,
 
-	frameL = null;
-	frameR = null;
+	frameL: null,
+	frameR: null,
 
-	btngroup = null;
-	uploadbtn = null;
-	browsebtn = null;
+	btngroup: null,
+	uploadbtn: null,
+	browsebtn: null,
 
-	results = null;
-	copybtn = null;
-	browse2btn = null;
-	links = null;
+	results: null,
+	copybtn: null,
+	browse2btn: null,
+	links: null,
 	
-	splash = null;
-	splashdnd = null;
+	splash: null,
+	splashdnd: null,
 
-	loader = null;
+	screenpass: null,
+	fingerprint: null,
+	passform: null,
+	passinput: null,
+	passtry: 0,
 
-	notif = null;
+	loader: null,
+	notif: null,
 
-	
-	constructor() {
 
-		this.container = document.querySelector('.croper');
+	init: async function() {
+		const opts = this.loadOptions();
+		await Promise.all([
+			this.loadSecrets(),
+			this.loadFingerprint(),
+			documentReady(() => this.initUI(opts))
+		]);
+		if(sessionStorage.getItem(this.fingerprint) != md5(`${this.secrets.SERVICE_PWD}:${this.fingerprint}`)) this.screenpass.classList.add('show');
+		this.container.replaceChildren(this.imagegroup, this.btngroup, this.results, this.splash, this.loader, this.screenpass);
+		this.parent.replaceWith(this.container);
+		if(this.screenpass.classList.contains('show')) this.passinput.focus();
+	},
+
+
+	initUI: async function(opts) {
+		this.parent = document.querySelector('service-image');
+		this.container = create('div', 'croper');
 		this.imagegroup = create('div', 'croper__images');
 		
 		const selgroup = this.imagegroup.create('div', 'croper__images__options');
@@ -87,70 +113,107 @@ export default class Croper {
 		this.loader = create('div', 'croper__loader');
 		this.loader.create('div', 'loading-double-circular');
 
+		this.screenpass = create('div', 'screenpass');
+		const passcont = this.screenpass.create('div', null, '<div>Entrez votre mot de passe:</div>');
+		this.passform = passcont.create('form');
+		this.passinput = this.passform.create('input', null, null, { name: "password", type: "password", autocomplete: true });
+		this.passform.create('input', null, null, { type: "submit", value: "Soumettre"});
+		this.passform.addEventListener('submit', e => this.verifyPassword(e));
+
 		this.frameL = new ImageFrame(this.imageL, '2/3');
 		this.frameR = new ImageFrame(this.imageR, '5:4');
 
 		this.notif = new Notification;
 
-		this.container.replaceChildren(this.imagegroup, this.btngroup, this.results, this.splash, this.loader);
+		await opts;
 
-		loadJsonProperties(this, {
-			secrets: atob('L2J0MW9oOTdqN1guanNvbg=='),
-			options: '/options.json'
-		}).then(() => {
-			this.options.organisations.forEach(org => this.selorg.create('option', null, org.name).value = org.slug );
-			this.options.types.forEach(type => this.seltype.create('option', null, type.name).value = type.slug );
-			this.selorg.value = localStorage.getItem('selorg') ?? '';
-			this.seltype.value = localStorage.getItem('seltype') ?? '';
-			this.changeSel();
-		});
-	}
+		this.options.organisations.forEach(org => this.selorg.create('option', null, org.name).value = org.slug );
+		this.options.types.forEach(type => this.seltype.create('option', null, type.name).value = type.slug );
+		this.selorg.value = localStorage.getItem('selorg') ?? '';
+		this.seltype.value = localStorage.getItem('seltype') ?? '';
+		this.changeSel();
+
+	},
 
 
-	async busy(promise) {
+	loadSecrets: async function() {
+		this.secrets = await SECRETS;
+	},
+
+
+	loadFingerprint: async function() {
+		const fp = await FingerprintJS.load();
+		this.fingerprint = (await fp.get()).visitorId;
+	},
+
+
+	loadOptions: async function() {
+		const res = await fetch('https://action.quebec/options.json');
+		this.options = await res.json();
+	},
+
+
+	busy: async function(promise) {
 		document.documentElement.classList.add('is-busy');	
 		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-busy');
 		return typeof promise == 'array' ? results : results[0];
-	}
+	},
 
 
-	async working(promise) {
+	working: async function(promise) {
 		document.documentElement.classList.add('is-working');	
 		const results = await Promise.allSettled(typeof promise == 'array' ? promise : [promise]);
 		document.documentElement.classList.remove('is-working');
 		return typeof promise == 'array' ? results : results[0];
-	}
+	},
 
 
-	async changeSel() {
+	changeSel: async function() {
 		this.uploadbtn.disabled = !(this.selorg.value && this.seltype.value);
 		localStorage.setItem('selorg', this.selorg.value);
 		localStorage.setItem('seltype', this.seltype.value);
-	}
+	},
 
 
-	handleFile(dropFile) {
+	verifyPassword: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if(md5(this.passinput.value) != this.secrets.SERVICE_PWD) {
+			if(this.passtry >= 2) return document.location.href = 'https://action.quebec/';
+			this.notif.error("Mot de passe invalide");
+			this.passinput.value = "";
+			this.passinput.focus();
+			this.passtry++;
+		} else {
+			sessionStorage.setItem(this.fingerprint, md5(`${this.secrets.SERVICE_PWD}:${this.fingerprint}`));
+			this.notif.thumbsUp('Mot de passe accepté');
+			this.screenpass.classList.remove('show');
+		}
+	},
+
+
+	handleFile: function(dropFile) {
 		return new Promise((res, rej) => {
 			if(dropFile.type.startsWith('image/') && dropFile.size <= 5242880) res(this.loadImage(dropFile));
 			else rej("Fichier rejeté");
 		});
-    }
+    },
 
 
-	async browseFile() {
+	browseFile: async function() {
 		browse('image/*').then(async file => {
 			await this.handleFile(file);
 		}).catch(e => this.notif.error("Fichier rejeté"));
-	}
+	},
 
 
-	drop(file) {
+	drop: function(file) {
 		this.handleFile(file).catch(e => this.notif.error(e)); 
-	}
+	},
 
 
-	async loadImage(file) {
+	loadImage: async function(file) {
 		this.image.src = URL.createObjectURL(file);
 		await Promise.all([
 			this.frameL.loadImage(file),
@@ -158,11 +221,11 @@ export default class Croper {
 		]);
 		this.splash.classList.remove('show');
 		this.results.classList.remove('show');
-	}
+	},
 
 
-	async uploadFiles() {
-		return this.working(new Promise(async (res, rej) => {
+	uploadFiles: async function() {
+		return this.busy(new Promise(async (res, rej) => {
 			await new Promise(requestAnimationFrame);
 			this.loader.classList.add('show');
 			try {
@@ -170,6 +233,7 @@ export default class Croper {
 					this.uploadBlob(this.exportBlob(640)),
 					this.uploadBlob(this.frameR.exportBlob(140)),
 					this.uploadBlob(this.frameL.exportBlob(280)),
+					this.uploadBlob(this.exportBlob(1200, 630)),
 				]);
 				await sleep(2000);
 				await new Promise(requestAnimationFrame);
@@ -184,22 +248,41 @@ export default class Croper {
 				rej();
 			}
 		}));
-	}
+	},
 
 
-	async exportBlob(outW) {
-		const outH = outW * this.image.naturalHeight / this.image.naturalWidth;
+	exportBlob: async function (outW, outH) {
+		const srcW = this.image.naturalWidth;
+		const srcH = this.image.naturalHeight;
+
+		if (!outH) outH = Math.round(outW * srcH / srcW);
+
 		const cvs = document.createElement('canvas');
 		cvs.width = outW;
 		cvs.height = outH;
+
 		const ctx = cvs.getContext('2d', { alpha: true });
+		ctx.imageSmoothingEnabled = true;
 		ctx.imageSmoothingQuality = 'high';
-		ctx.drawImage(this.image, 0, 0, this.image.naturalWidth, this.image.naturalHeight, 0, 0, outW, outH);
-		return new Promise((res, rej) => cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), `image/webp`, 0.92));
-	}
+
+		const targetAR = outW / outH;
+		const srcAR = srcW / srcH;
+		let sx = 0, sy = 0, sWidth = srcW, sHeight = srcH;
+
+		if (srcAR > targetAR) {
+			sWidth = Math.round(srcH * targetAR);
+			sx = Math.round((srcW - sWidth) / 2);
+		} else if (srcAR < targetAR) {
+			sHeight = Math.round(srcW / targetAR);
+			sy = Math.round((srcH - sHeight) / 2);
+		}
+
+		ctx.drawImage(this.image, sx, sy, sWidth, sHeight, 0, 0, outW, outH);
+		return new Promise((res, rej) => cvs.toBlob(b => b ? res(b) : rej(new Error('toBlob() a échoué')), 'image/webp', 0.92));
+	},
 
 
-	async uploadBlob(blobPromise) {
+	uploadBlob: async function(blobPromise) {
 		const form = new FormData();
 		form.append('image', new File([await blobPromise], `image.webp`, { type: 'image/webp' }));
 		const options = { headers: {'Authorization': `Bearer ${this.secrets.IMAGE_API_KEY}`}, method: 'POST', body: form };
@@ -207,22 +290,23 @@ export default class Croper {
 		const text = (await resp.text()).trim();
 		if (!resp.ok || !/^https?:\/\//i.test(text)) throw new Error(text || 'Téléversement échoué');
 		return text;
-	}
+	},
 
 
-	copyLinks() {
+	copyLinks: function() {
 		this.copyLabeledLinks([
 			{ label: `image-couverture`, url: this.links[0] },
 			{ label: `image-calendrier`, url: this.links[1] },
 			{ label: `image-carte`,      url: this.links[2] },
+			{ label: `image-scraper`,    url: this.links[3] },
 		], [
 			{ label: `organisation`, value: this.selorg.value },
 			{ label: `type`,         value: this.seltype.value },
 		]).then(() => this.notif.thumbsUp('Liens copiés!'));
-	}
+	},
 
 
-	copyLabeledLinks(links, props) {
+	copyLabeledLinks: function(links, props) {
 		const esc = s => s.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 		let html = props.map(({ label, value }) => `@${label}: ${value}`).join("<br>") + "<br>";
 		let text = props.map(({ label, value }) => `@${label}: ${value}`).join("\n") + "\n";
@@ -235,6 +319,7 @@ export default class Croper {
 				'text/plain': new Blob([text], { type: 'text/plain' })
 			})
 		]);
-	}
+	},
 
-}
+
+}).init();

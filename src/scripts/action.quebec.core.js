@@ -444,7 +444,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 		}
 		str += `<span class="label"><strong>Quand:</strong> <a href="${evt.link}" target="_blank" noopener noreferer>${time}</a></span><br>`;
 		str += `<span class="label"><strong>Hôte:</strong> <a href="${org.url}" target="_blank" noopener noreferer>${org.name}</a></span><br><br>`;
-		str += evt.description;// + `<br>EventID: ${evt.id}`;
+		str += evt.description + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
 		if(!evt.image) return container; // bizarre ça
 		return new Promise(res => preloadImage(evt.image).then(() => res(container)));

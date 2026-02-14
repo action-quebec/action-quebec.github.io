@@ -3,3 +3,6 @@
 /src/bt1oh97j7X.json
 /src/bt1oh97j7X.bin
 Thumbs.db
+/dist/service/
+/scripts/deploy-service-i.json
+/scripts/deploy-service-p.json

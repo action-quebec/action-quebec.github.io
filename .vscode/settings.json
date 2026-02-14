@@ -1,26 +1,11 @@
 {
     "terminal.integrated.enablePersistentSessions": false,
-    "terminal.integrated.windowsEnableConpty": false,
     "terminal.integrated.env.windows": {
         "PATH": "${workspaceFolder}\\node_modules\\.bin;${env:PATH};${workspaceFolder}"
     },
     "terminal.integrated.env.osx": {
         "PATH": "${workspaceFolder}/node_modules/.bin:${env:PATH}:${workspaceFolder}"
     },
-    "filewatcher.commands": [
-        {
-            "match": "src[/\\\\]scripts[/\\\\](?!.*\\.min\\.js$).*\\.js$",
-            "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:buildjs"],
-            "event": "onFileChange"
-        },
-        {
-            "match": "src[/\\\\]styles[/\\\\].*\\.scss$",
-            "isAsync": false,
-            "vscodeTask": ["workbench.action.tasks.runTask", "acqc:buildcss"],
-            "event": "onFileChange"
-        },
-    ],
     "liveServer.settings.port": 5503,
     "liveServer.settings.CustomBrowser": "chrome",
     "liveServer.settings.root": "./src/",

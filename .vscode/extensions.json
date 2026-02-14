@@ -1,6 +1,5 @@
 {
 	"recommendations": [
-		"appulate.filewatcher",
 		"ritwickdey.LiveServer"
 	],
 	"unwantedRecommendations": [

@@ -7,7 +7,7 @@
      ╚████╔╝ ███████╗╚██████╔╝███████╗██╗
       ╚═══╝  ╚══════╝ ╚══▀▀═╝ ╚══════╝╚═╝
 
-    Généré: Mardi le 3 février 2026 à 18 h 43
+    Généré: Samedi le 14 février 2026 à 17 h 29
     Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/action-quebec
 
@@ -29,8 +29,12 @@
     <script src="/scripts/action.quebec.core.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-5J9PDKQG2J"></script>
     <title>action.quebec | calendrier indépendantiste</title>
-</head>
-<body>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-5J9PDKQG2J');
+    </script>
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -40,6 +44,8 @@
         "description": "Calendrier collectif des événements indépendantistes au Québec."
     }
     </script>
+</head>
+<body>
     <header>
         <a href="/">
             <h1 title="action.quebec">
@@ -114,12 +120,5 @@
     <footer title="Tous droits réservés © Société Saint-Jean-Baptiste de Montréal, 2026">
         © Tous droits réservés<br>Société Saint-Jean-Baptiste de Montréal, 2026
     </footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', e => Quebec.unPays());
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-5J9PDKQG2J');
-    </script>
 </body>
 </html>
