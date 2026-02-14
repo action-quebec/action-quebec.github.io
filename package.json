@@ -2,9 +2,8 @@
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^5.0.1",
     "chokibasic": "^1.0.11",
-    "pako": "^2.1.0",
     "ssh2-sftp-client": "^12.0.1",
-    "swiper": "^12.1.0"
+    "swiper": "^12.1.1"
   },
   "scripts": {
     "export": "node scripts/export.js",

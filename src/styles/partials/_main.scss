@@ -30,13 +30,14 @@ body {
     color: var(--fg);
     background-color: var(--bg);
     overflow-x: hidden;
-
-    transition: background-color var(--scheme-transition-duration);
-
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
     min-height: 100dvh;
+
+    transition:
+        background-color var(--scheme-transition-duration),
+        color var(--scheme-transition-duration);
 
     &::before {
         content: '';
@@ -58,7 +59,7 @@ body {
          mask-image: linear-gradient(to bottom, black, transparent);
         transition: background-color var(--scheme-transition-duration);
 
-         z-index: -1;
+        z-index: -1;
     }
 
 }
@@ -139,7 +140,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.7rem;
+    font-size: 1.3rem;
     font-weight: 400;
     height: 12rem;
     margin-bottom: 2rem;

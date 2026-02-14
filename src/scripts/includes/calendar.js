@@ -178,7 +178,7 @@ export default class Calendar {
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
-			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte'], { ...this.DEFAULTPROPS });
+			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte', 'image-scraper'], { ...this.DEFAULTPROPS });
 			let { newHtml, firstImage } = this.replaceImageLinks(html);
 			const finalHtml = this.ytreplacer.replaceAnchors(newHtml);
 			tags['image-couverture'] = tags['image-couverture'] || firstImage || null;

