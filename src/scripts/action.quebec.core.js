@@ -209,7 +209,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 			const allDay = !!(it.start && it.start.date);
 			const start = allDay ? fmtDate(new Date(it.start.date)) : isoLocal(it.start.dateTime || it.start);
 			const end = allDay ? fmtDate(new Date(it.end.date)) : isoLocal(it.end.dateTime || it.end);
-			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte'], { ...this.DEFAULTPROPS });
+			const { html, tags, props } = this.extractLink(it.description || '', ['image-couverture', 'image-calendrier', 'image-carte', 'image-scraper', 'facebook'], { ...this.DEFAULTPROPS });
 			let { newHtml, firstImage } = this.replaceImageLinks(html);
 			const finalHtml = this.ytreplacer.replaceAnchors(newHtml);
 			tags['image-couverture'] = tags['image-couverture'] || firstImage || null;
@@ -223,6 +223,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 				location: it.location || null,
 				link: it.htmlLink,
 				description: finalHtml,
+				facebook: tags['facebook'] || null,
 				image: firstImage,
 				images: tags,
 				properties: props
@@ -434,6 +435,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 		let str = '';
 		if(evt.image) str += `<img src="${evt.image}"><br>`;
 		str += `<h1>${evt.title}</h1>`;
+		
 		if(evt.location) {
 			let addr = null;
 			const addrparts = this.parseGoogleAddress(evt.location);
@@ -442,12 +444,26 @@ import { Autoplay, Navigation } from 'swiper/modules';
 			const url = `https://www.google.com/maps/search/${encodeURI(evt.location)}`;
 			str += `<span class="label"><strong>Où:</strong> <a href="${url}" target="_blank" noopener noreferer>${addr}</a></span><br>`;
 		}
+		
 		str += `<span class="label"><strong>Quand:</strong> <a href="${evt.link}" target="_blank" noopener noreferer>${time}</a></span><br>`;
-		str += `<span class="label"><strong>Hôte:</strong> <a href="${org.url}" target="_blank" noopener noreferer>${org.name}</a></span><br><br>`;
-		str += evt.description + `<br>EventID: ${evt.id}`;
+		str += `<span class="label"><strong>Hôte:</strong> <a href="${org.url}" target="_blank" noopener noreferer>${org.name}</a></span><br>`;
+		str += `<span class="share" title="Partager l'événement" >Partager&nbsp;</span>`;
+		if(evt.facebook) str += `&nbsp;&nbsp;&nbsp;<a target="_blank" noopener noreferer href="${evt.facebook}"><span class="facebook" title="Voir l'événement sur Facebook">Facebook&nbsp;</span></a>`;
+		str += `<br><br>${evt.description}`;// + `<br>EventID: ${evt.id}`;
 		container.innerHTML = str;
+		
+		container.querySelector('.share').addEventListener('click', () => this.copyLink(evt.id));
 		if(!evt.image) return container; // bizarre ça
 		return new Promise(res => preloadImage(evt.image).then(() => res(container)));
+	},
+
+
+	copyLink: async function(id) {
+		if(await copyToClipboard(`https://partage.action.quebec/${id}/`)) {
+			this.notif.thumbsUp('Lien copié!');
+		} else {
+			this.notif.error('Erreur de presse papier.');
+		}
 	},
 
 
