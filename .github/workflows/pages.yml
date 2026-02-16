@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (dist)
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -25,17 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Setup Node
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 24
-      #     cache: npm
-      # - name: Install deps
-      #   run: npm ci
-      # - name: Build
-      #   run: npm run build
-
-      - name: Créer bt1oh97j7X.bin (base64 + rot13 + gzip sans header)
+      - name: Obfuscation
         shell: bash
         run: |
           mkdir -p dist
