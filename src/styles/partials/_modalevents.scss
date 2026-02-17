@@ -38,7 +38,7 @@
 		&__date {
 			position: relative;
 			display: flex;
-			justify-content: center;
+			justify-content: left;
 			align-items: center;
 			font-size: 2.5em;
 			font-weight: 800;
@@ -47,6 +47,7 @@
 			margin-bottom: 1rem;
 			background-color: var(--bg-part);
 			user-select: none;
+			padding-left: 0.8em;
 		}
 
 		&__events {
