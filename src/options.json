@@ -1,9 +1,9 @@
 {
 	"organisations": [
 		{
-			"slug": "ssjb",
-			"name": "SSJB",
-			"url": "https://ssjb.com"
+			"slug": "csuqam",
+			"name": "Comité Souverainiste de l'UQAM",
+			"url": "https://www.facebook.com/independanceuqam"
 		},
 		{
 			"slug": "mds",
@@ -24,6 +24,11 @@
 			"slug": "qs",
 			"name": "Québec Solidaire",
 			"url": "https://quebecsolidaire.net"
+		},
+		{
+			"slug": "ssjb",
+			"name": "SSJB",
+			"url": "https://ssjb.com"
 		}
 	],
 	"types": [
