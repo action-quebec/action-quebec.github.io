@@ -26,6 +26,11 @@
 			"url": "https://www.ouiquebec.org"
 		},
 		{
+			"slug": "pq",
+			"name": "Parti Québécois",
+			"url": "https://pq.org"
+		},
+		{
 			"slug": "qs",
 			"name": "Québec Solidaire",
 			"url": "https://quebecsolidaire.net"
