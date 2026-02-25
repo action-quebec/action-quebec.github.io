@@ -1,6 +1,11 @@
 {
 	"organisations": [
 		{
+			"slug": "ceran",
+			"name": "CÉRAN",
+			"url": "https://www.facebook.com/ceran.uqam"
+		},
+		{
 			"slug": "csuqam",
 			"name": "Comité Souverainiste de l'UQAM",
 			"url": "https://www.facebook.com/independanceuqam"
