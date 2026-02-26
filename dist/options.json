@@ -1,6 +1,11 @@
 {
 	"organisations": [
 		{
+			"slug": "bloc",
+			"name": "Bloc Québécois",
+			"url": "https://www.blocquebecois.org/"
+		},
+		{
 			"slug": "ceran",
 			"name": "CÉRAN",
 			"url": "https://www.facebook.com/ceran.uqam"
