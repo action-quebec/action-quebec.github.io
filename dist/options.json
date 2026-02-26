@@ -26,6 +26,11 @@
 			"url": "https://mei.quebec"
 		},
 		{
+			"slug": "mlq",
+			"name": "Mouvement laîque Québécois",
+			"url": "https://www.mlq.qc.ca/"
+		},
+		{
 			"slug": "ouiqc",
 			"name": "OUI Québec",
 			"url": "https://www.ouiquebec.org"
