@@ -408,7 +408,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 
 
 	clickEventDay: function(date, type = "calendar") {
-		return this.busy(new Promise(async res => {
+		return this.working(new Promise(async res => {
 			const events = /^\d{4}-\d{2}-\d{2}$/.test(date) ? this.getEventsByDate(date) : [this.getEventById(date)];
 			const eventDetails = (await Promise.allSettled(events.map(async v => this.renderEventDetails(v)))).filter(r => r.status === 'fulfilled').map(r => r.value);
 			const container = create('div', 'modal-events');
