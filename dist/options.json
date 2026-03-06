@@ -1,6 +1,11 @@
 {
 	"organisations": [
 		{
+			"slug": "audiogram",
+			"name": "Audiogram",
+			"url": "https://www.audiogram.com/"
+		},
+		{
 			"slug": "bloc",
 			"name": "Bloc Québécois",
 			"url": "https://www.blocquebecois.org/"
