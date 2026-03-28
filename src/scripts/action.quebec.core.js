@@ -339,7 +339,6 @@ import { Autoplay, Navigation } from 'swiper/modules';
 
 
 	parseGoogleAddress: function(addr) {
-		console.log(addr);
 		const rxgoogle = /^\s*(?:(?<place>(?!\d)[^,]+?),\s*)?(?<street>[^,]+?),\s*(?:(?<street2>[^,]+?),\s*)?(?<city>[^,]+?),\s*(?<province>AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|Québec|Quebec|QC\.?)(?:\s+(?<postal>[A-Z]\d[A-Z][ -]?\d[A-Z]\d))?(?:,\s*(?<country>Canada))?\s*$/iu;
 		const m = addr.match(rxgoogle);
 		if (!m) return null;
