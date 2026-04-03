@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^5.1.0",
-    "chokibasic": "^1.1.9",
+    "chokibasic": "^1.1.10",
     "ssh2-sftp-client": "^12.1.1",
     "swiper": "^12.1.3"
   },
