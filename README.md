@@ -13,7 +13,6 @@ code .
 ```
 
 ## Extensions VS Code recommandées
-- [File Watcher](https://marketplace.visualstudio.com/items?itemName=appulate.filewatcher) (Déclancher la compilation des fichiers JS et SCSS)
 - [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) (Serveur web intégré)
 
 
