@@ -51,6 +51,11 @@
 			"url": "https://quebecsolidaire.net"
 		},
 		{
+			"slug": "rps",
+			"name": "RPS Quebec",
+			"url": "https://rps.quebec"
+		},
+		{
 			"slug": "ssjb",
 			"name": "SSJB",
 			"url": "https://ssjb.com"
