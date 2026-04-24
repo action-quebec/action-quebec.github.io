@@ -5,7 +5,6 @@ import '../../scripts/librairies/lightswitch';
 import DNDZone from "../../scripts/librairies/dndzone";
 import ImageFrame from "../../scripts/librairies/imageframe";
 import Notification from "../../scripts/librairies/notification";
-
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 
