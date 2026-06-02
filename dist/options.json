@@ -26,6 +26,11 @@
 			"url": "https://www.facebook.com/independanceuqam"
 		},
 		{
+			"slug": "mndp",
+			"name": "Maison nationale des Patriotes",
+			"url": "https://www.mndp.qc.ca"
+		},
+		{
 			"slug": "mds",
 			"name": "MDS",
 			"url": "https://www.ledevoir.com/politique/quebec/122742/le-mouvement-democratie-souverainete-est-lance"
