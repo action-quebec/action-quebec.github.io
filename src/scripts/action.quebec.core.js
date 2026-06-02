@@ -14,7 +14,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 
 ({ // ===>>> calendrier action.quebec 
 
-	MONTHS_BACK:   6,
+	MONTHS_BACK:   2,
 	MONTHS_AHEAD:  12,
 	TRANSITION:    150,
 	UPCOMINGS:     12,
