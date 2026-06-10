@@ -1,7 +1,9 @@
-const path = require('path');
-const fs = require('fs/promises');
-const { exportDist } = require("chokibasic");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { exportDist } from "chokibasic";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const DIR = process.cwd();
 const SRC = path.join(DIR, 'src');
@@ -15,7 +17,7 @@ const SERVDST = path.resolve(__dirname, "../dist/service/bt1oh97j7X.bin");
 (async () => {
 	try {
 		const stats = await exportDist(SRC, DIST, BANNER);
-		await fs.copyFile(SERVSRC, SERVDST);
+		await fs.copyFileSync(SERVSRC, SERVDST);
 		stats.copied++;
 		console.log(`✅ Export finished.`);
 		console.log(`   Files copied : ${stats.copied}`);

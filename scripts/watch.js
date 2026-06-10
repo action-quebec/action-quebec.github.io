@@ -1,5 +1,7 @@
-const path = require("node:path");
-const { createWatchers, buildCSS, buildJS } = require("chokibasic");
+import path from "path";
+import { fileURLToPath } from 'url';
+import { createWatchers, buildCSS, buildJS } from "chokibasic";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 const { close } = createWatchers(

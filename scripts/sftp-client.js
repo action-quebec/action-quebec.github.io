@@ -1,6 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-const SftpClient = require("ssh2-sftp-client");
+import fs from "fs";
+import path from "path";
+import SftpClient from "ssh2-sftp-client";
+
 
 /**
  * @param {object} cfg  JSON préloadé:
@@ -173,4 +174,5 @@ async function deploySftp(cfg, items, opts = {}) {
 	console.log("Done.");
 }
 
-module.exports = { deploySftp };
+export { deploySftp };
+

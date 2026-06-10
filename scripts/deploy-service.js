@@ -1,6 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const { deploySftp } = require("./sftp-client");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { deploySftp } from "./sftp-client.js";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 
 
 const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, "deploy-service-i.json"), "utf8"));

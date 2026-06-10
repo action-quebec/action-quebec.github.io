@@ -1,5 +1,8 @@
-const path = require("path");
-const { buildCSS, buildJS } = require("chokibasic");
+import path from "path";
+import { fileURLToPath } from 'url';
+import { buildCSS, buildJS } from "chokibasic";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 
 (async () => {
 	await buildJS(
